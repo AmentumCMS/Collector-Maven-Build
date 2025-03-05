@@ -506,6 +506,14 @@
 			<artifactId>jib-maven-plugin</artifactId>
 			<version>3.4.2</version>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-jlink-plugin</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.akathist.maven.plugins.launch4j</groupId>
+			<artifactId>launch4j-maven-plugin</artifactId>
+		</dependency>
 	
 	</dependencies>
 	<dependencyManagement>
@@ -630,6 +638,50 @@
 							<artifactId>lombok</artifactId>
 						</exclude>
 					</excludes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jlink-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>jlink</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/runtime-image</outputDirectory>
+							<modulePaths>
+								<modulePath>${project.build.directory}/modules</modulePath>
+							</modulePaths>
+							<addModules>your.module.name</addModules>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>com.akathist.maven.plugins.launch4j</groupId>
+				<artifactId>launch4j-maven-plugin</artifactId>
+				<version>1.7.25</version>
+				<executions>
+					<execution>
+						<id>default</id>
+						<phase>package</phase>
+						<goals>
+								<goal>launch4j</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<outfile>target/myapp.exe</outfile>
+					<jar>target/myapp.jar</jar>
+					<mainClassName>com.example.Main</mainClassName>
+					<headerType>gui</headerType>
+					<jre>
+						<minVersion>17</minVersion>
+					</jre>
+					<classpath>
+							<mainClass>com.example.Main</mainClass>
+					</classpath>
 				</configuration>
 			</plugin>
 
