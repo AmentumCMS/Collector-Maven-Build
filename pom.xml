@@ -642,7 +642,7 @@
 					</excludes>
 				</configuration>
 			</plugin>
-			<plugin>
+			<!-- <plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jlink-plugin</artifactId>
 				<version>3.2.0</version>
@@ -660,8 +660,8 @@
 						</configuration>
 					</execution>
 				</executions>
-			</plugin>
-			<plugin>
+			</plugin> -->
+			<!-- <plugin>
 				<groupId>com.akathist.maven.plugins.launch4j</groupId>
 				<artifactId>launch4j-maven-plugin</artifactId>
 				<version>1.7.25</version>
@@ -686,7 +686,7 @@
 							<mainClass>com.example.Main</mainClass>
 					</classpath>
 				</configuration>
-			</plugin>
+			</plugin> -->
 
 			<!-- Download dependencies from eFoss put in target directory -->
       <plugin>
