@@ -509,10 +509,12 @@
 		<dependency>
 			<groupId>org.apache.maven.plugins</groupId>
 			<artifactId>maven-jlink-plugin</artifactId>
+			<version>3.2.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.akathist.maven.plugins.launch4j</groupId>
 			<artifactId>launch4j-maven-plugin</artifactId>
+			<version>1.7.25</version>
 		</dependency>
 	
 	</dependencies>
@@ -643,6 +645,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jlink-plugin</artifactId>
+				<version>3.2.0</version>
 				<executions>
 					<execution>
 						<goals>
