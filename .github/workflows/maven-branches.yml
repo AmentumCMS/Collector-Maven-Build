@@ -81,8 +81,8 @@ jobs:
           cache: maven
 
       - name: process-sources with Maven
-        run: mvn -DskipTests=true --no-transfer-progress \
-          -B process-sources
+        run: mvn -DskipTests=true -B --no-transfer-progress \
+          process-sources
 
       - name: TARchive .m2 directory
         run: |
