@@ -18,7 +18,7 @@
 	<description>maven-collector project for Spring Boot</description>
 	<properties>
 		<!-- Properites used by Maven plugins -->
-		<java.version>1.8</java.version>
+		<!-- <java.version>1.8</java.version> -->
 		<spring-cloud.version>2023.0.0</spring-cloud.version>
 		<spring-modulith.version>1.1.2</spring-modulith.version>
 		<spring-shell.version>3.2.0</spring-shell.version>
