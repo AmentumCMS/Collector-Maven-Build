@@ -570,7 +570,7 @@
 				<artifactId>jib-maven-plugin</artifactId>
 				<version>3.4.0</version>
 			</plugin> -->
-			<plugin>
+			<!-- <plugin>
 				<groupId>org.apache.maven.wagon</groupId>
 				<artifactId>wagon-http</artifactId>
 				<version>3.5.3</version>
@@ -588,8 +588,8 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-deploy-plugin</artifactId>
 				<version>3.1.2</version>
-			</plugin>
-			<plugin>
+			</plugin> -->
+			<!-- <plugin>
 				<groupId>org.codehaus.plexus</groupId>
 				<artifactId>plexus-utils</artifactId>
 				<version>3.5.1</version>
@@ -598,18 +598,18 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>3.2.5</version>
-			</plugin>
+			</plugin> -->
 			<!-- <plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
 				<version>3.5.3</version>
 			</plugin> -->
-			<plugin>
+			<!-- <plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
 				<version>3.4.1</version>
-			</plugin>
-			<plugin>
+			</plugin> -->
+			<!-- <plugin>
 				<groupId>org.sonarsource.scanner.maven</groupId>
 				<artifactId>sonar-maven-plugin</artifactId>
 				<version>3.11.0.3922</version>
@@ -618,7 +618,7 @@
 				<groupId>com.checkmarx.maven</groupId>
 				<artifactId>checkmarx-maven-plugin</artifactId>
 				<version>2022.2.3</version>
-			</plugin>
+			</plugin> -->
 			<plugin>
 				<groupId>org.asciidoctor</groupId>
 				<artifactId>asciidoctor-maven-plugin</artifactId>
