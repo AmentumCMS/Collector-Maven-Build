@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	
+
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>3.4.3</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 
 	<groupId>com.amentumservices</groupId>
 	<artifactId>maven-collector</artifactId>
 	<version>0.0.1</version>
-	
+
 	<name>maven-collector</name>
 	<description>maven-collector project for Spring Boot</description>
 	<properties>
@@ -31,7 +32,7 @@
 		<maven.exec.plugin.version>1.6.0</maven.exec.plugin.version>
 		<maven.assembly.plugin.version>3.1.0</maven.assembly.plugin.version>-->
 	</properties>
-	
+
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -44,8 +45,8 @@
 		<dependency>
 			<groupId>org.redisson</groupId>
 			<artifactId>redisson</artifactId>
-			<version>3.11.5</version>
-		</dependency>  
+			<version>3.11</version>
+		</dependency>
 		<dependency>
 			<groupId>redis.clients</groupId>
 			<artifactId>jedis</artifactId>
@@ -357,7 +358,7 @@
 			<artifactId>postgresql</artifactId>
 			<scope>runtime</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
@@ -373,7 +374,7 @@
 			<artifactId>spring-boot-testcontainers</artifactId>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.springframework.amqp</groupId>
 			<artifactId>spring-rabbit-test</artifactId>
@@ -423,6 +424,16 @@
 			<groupId>org.testcontainers</groupId>
 			<artifactId>junit-jupiter</artifactId>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>5.16.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-bom</artifactId>
+			<version>5.16.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.testcontainers</groupId>
@@ -533,8 +544,8 @@
 		</dependency>
 		<dependency>
 			<groupId>org.codehaus.mojo</groupId>
-    			<artifactId>xmlbeans-maven-plugin</artifactId>
-    			<version>2.3.2</version>
+			<artifactId>xmlbeans-maven-plugin</artifactId>
+			<version>2.3.2</version>
 		</dependency>
 	</dependencies>
 	<dependencyManagement>
@@ -708,38 +719,38 @@
 			</plugin> -->
 
 			<!-- Download dependencies from eFoss put in target directory -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <!-- <version>${maven.dependency.plugin.version}</version> -->
-        <executions>
-          <execution>
-            <id>Collect Maven Dependencies</id>
-            <phase>initialize</phase>
-            <goals>
-              <goal>copy-dependencies</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.directory}</outputDirectory>
-              <stripVersion>false</stripVersion>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<!-- <version>${maven.dependency.plugin.version}</version> -->
+				<executions>
+					<execution>
+						<id>Collect Maven Dependencies</id>
+						<phase>initialize</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}</outputDirectory>
+							<stripVersion>false</stripVersion>
 						</configuration>
 					</execution>
 					<execution>
-            <id>prepare for offline Maven Dependencies</id>
-            <phase>initialize</phase>
-            <goals>
-              <goal>go-offline</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.directory}</outputDirectory>
-              <stripVersion>false</stripVersion>
+						<id>prepare for offline Maven Dependencies</id>
+						<phase>initialize</phase>
+						<goals>
+							<goal>go-offline</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}</outputDirectory>
+							<stripVersion>false</stripVersion>
 						</configuration>
 					</execution>
 				</executions>
-      </plugin>
+			</plugin>
 			<plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>versions-maven-plugin</artifactId>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>versions-maven-plugin</artifactId>
 				<executions>
 					<execution>
 						<phase>package</phase>
@@ -748,77 +759,77 @@
 						</goals>
 					</execution>
 				</executions>
-      </plugin>
+			</plugin>
 
-      <!-- Generate SWBom -->
-      <plugin>
-        <groupId>org.cyclonedx</groupId>
-        <artifactId>cyclonedx-maven-plugin</artifactId>
-		<version>2.8.0</version>
-        <!-- <version>2.7.0</version> -->
-        <executions>
-            <execution>
-                <phase>package</phase>
-                <goals>
-                    <goal>makeAggregateBom</goal>
-                </goals>
-            </execution>
-        </executions>
-        <configuration>
-            <projectType>library</projectType>
-            <schemaVersion>1.4</schemaVersion>
-            <includeBomSerialNumber>true</includeBomSerialNumber>
-            <includeCompileScope>true</includeCompileScope>
-            <includeProvidedScope>true</includeProvidedScope>
-            <includeRuntimeScope>true</includeRuntimeScope>
-            <includeSystemScope>true</includeSystemScope>
-            <includeTestScope>false</includeTestScope>
-            <includeLicenseText>false</includeLicenseText>
-            <outputReactorProjects>true</outputReactorProjects>
-            <outputFormat>all</outputFormat>
-            <outputName>bom</outputName>
-        </configuration>
-      </plugin>
-      
-      <!-- Create ZIP of the Collection -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <!-- <version>${maven.assembly.plugin.version}</version> -->
-        <executions>
-          <execution>
-            <id>Package Plugins</id>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-            <configuration>
-              <appendAssemblyId>false</appendAssemblyId>
-              <descriptors>
-                <descriptor>${basedir}/package-plugins.xml</descriptor>
-              </descriptors>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-  </plugins>
-</build>
-<reporting>
-  <plugins>
-    <plugin>
-      <groupId>org.codehaus.mojo</groupId>
-      <artifactId>versions-maven-plugin</artifactId>
-      <version>2.16.2</version>
-      <reportSets>
-        <reportSet>
-          <reports>
-            <report>dependency-updates-report</report>
-            <report>plugin-updates-report</report>
-            <report>property-updates-report</report>
-          </reports>
-        </reportSet>
-      </reportSets>
-    </plugin>
-  </plugins>
-</reporting>
+			<!-- Generate SWBom -->
+			<plugin>
+				<groupId>org.cyclonedx</groupId>
+				<artifactId>cyclonedx-maven-plugin</artifactId>
+				<version>2.8.0</version>
+				<!-- <version>2.7.0</version> -->
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>makeAggregateBom</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<projectType>library</projectType>
+					<schemaVersion>1.4</schemaVersion>
+					<includeBomSerialNumber>true</includeBomSerialNumber>
+					<includeCompileScope>true</includeCompileScope>
+					<includeProvidedScope>true</includeProvidedScope>
+					<includeRuntimeScope>true</includeRuntimeScope>
+					<includeSystemScope>true</includeSystemScope>
+					<includeTestScope>false</includeTestScope>
+					<includeLicenseText>false</includeLicenseText>
+					<outputReactorProjects>true</outputReactorProjects>
+					<outputFormat>all</outputFormat>
+					<outputName>bom</outputName>
+				</configuration>
+			</plugin>
+
+			<!-- Create ZIP of the Collection -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<!-- <version>${maven.assembly.plugin.version}</version> -->
+				<executions>
+					<execution>
+						<id>Package Plugins</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<appendAssemblyId>false</appendAssemblyId>
+							<descriptors>
+								<descriptor>${basedir}/package-plugins.xml</descriptor>
+							</descriptors>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>versions-maven-plugin</artifactId>
+				<version>2.16.2</version>
+				<reportSets>
+					<reportSet>
+						<reports>
+							<report>dependency-updates-report</report>
+							<report>plugin-updates-report</report>
+							<report>property-updates-report</report>
+						</reports>
+					</reportSet>
+				</reportSets>
+			</plugin>
+		</plugins>
+	</reporting>
 </project>
