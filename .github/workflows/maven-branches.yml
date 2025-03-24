@@ -6,8 +6,8 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-name: Maven Collector - Branch
-run-name: ${{ github.actor }} is Collecting Maven-ness🚀
+name: Maven Collector - Other Branch
+run-name: ${{ github.actor }} is Collecting Maven-ness (Other Branch)🚀
 on:
   push:
     branches-ignore:

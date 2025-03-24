@@ -7,7 +7,7 @@
 # documentation.
 
 name: Maven Collector - Main
-run-name: ${{ github.actor }} is Collecting Maven-ness🚀
+run-name: ${{ github.actor }} is Collecting Maven-ness (Main) 🚀
 on:
   push:
     branches:
