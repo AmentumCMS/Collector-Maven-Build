@@ -6,12 +6,13 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-name: Maven Collector - Branch
-run-name: ${{ github.actor }} is Collecting Maven-ness🚀
+name: Maven Collector - Other Branch
+run-name: ${{ github.actor }} is Collecting Maven-ness (Other Branch)🚀
 on:
   push:
     branches-ignore:
       - main
+      - develop
   workflow_dispatch:
 jobs:
   Date:
@@ -35,7 +36,7 @@ jobs:
       contents: write
       pull-requests: read
     env:
-        GH_TOKEN: ${{ github.token }}
+      GH_TOKEN: ${{ github.token }}
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
@@ -52,7 +53,7 @@ jobs:
           git config user.name "$(git log -n 1 --pretty=format:%an)"
           git config user.email "$(git log -n 1 --pretty=format:%ae)"
 
-      - name: Advance Dependecy versions
+      - name: Advance Dependency versions
         run: |
           set +ex
           mvn --no-transfer-progress -DskipTests=true -B versions:update-parent
@@ -77,7 +78,7 @@ jobs:
           cache: maven
 
       - name: Build with Maven
-        run: mvn -DskipTests=true -B package
+        run: mvn -DskipTests=true --no-transfer-progress -B package
 
       - name: TARchive .m2 directory
         run: |
@@ -192,8 +193,6 @@ jobs:
   MakeISO:
     runs-on: ubuntu-24.04
     needs: [Date, CollectM2, CollectBOM, CollectXSD, UpdateVers, Code]
-    env:
-        GH_TOKEN: ${{ github.token }}
     permissions:
       contents: write
       pull-requests: read
