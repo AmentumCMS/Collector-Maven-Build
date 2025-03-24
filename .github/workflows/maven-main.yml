@@ -163,6 +163,8 @@ jobs:
   MakeISO:
     runs-on: ubuntu-24.04
     needs: [Date, CollectM2, CollectBOM, CollectXSD, Code]
+    env:
+        GH_TOKEN: ${{ github.token }}
     permissions:
       contents: write
       pull-requests: read
