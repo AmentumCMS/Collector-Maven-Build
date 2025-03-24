@@ -45,17 +45,17 @@
 		<dependency>
 				<groupId>org.redisson</groupId>
 				<artifactId>redisson-spring-boot-starter</artifactId>
-				<version>3.45</version>
+				<version>3.45.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.redisson</groupId>
 			<artifactId>redisson</artifactId>
-			<version>3.45</version>
+			<version>3.45.1</version>
 		</dependency>
 		<dependency>
 			<groupId>redis.clients</groupId>
 			<artifactId>jedis</artifactId>
-			<version>5.3</version>
+			<version>5.2.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -156,7 +156,7 @@
 		<dependency>
 			<groupId>org.apache.camel.springboot</groupId>
 			<artifactId>camel-spring-boot-starter</artifactId>
-			<version>4.10</version>
+			<version>4.10.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.kafka</groupId>
@@ -433,12 +433,13 @@
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
-			<version>5.16</version>
+			<version>5.16.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-bom</artifactId>
-			<version>5.16</version>
+			<version>5.16.1</version>
+			<type>POM</type>
 		</dependency>
 		<dependency>
 			<groupId>org.testcontainers</groupId>
@@ -586,11 +587,11 @@
 				<artifactId>native-maven-plugin</artifactId>
 				<version>0.10.0</version>
 			</plugin>
-			<plugin>
+			<!-- <plugin>
 				<groupId>com.google.cloud.tools</groupId>
 				<artifactId>jib-maven-plugin</artifactId>
 				<version>3.4.0</version>
-			</plugin>
+			</plugin> -->
 			<plugin>
 				<groupId>org.apache.maven.wagon</groupId>
 				<artifactId>wagon-http</artifactId>
@@ -601,7 +602,7 @@
 				<artifactId>wagon-file</artifactId>
 				<version>3.5.3</version>
 			</plugin>
-			<plugin>
+			<!-- <plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 			</plugin>
@@ -624,8 +625,8 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
 				<version>3.5.3</version>
-			</plugin>
-			<plugin>
+			</plugin> -->
+			<!-- <plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
 				<version>3.4.1</version>
@@ -639,7 +640,7 @@
 				<groupId>com.checkmarx.maven</groupId>
 				<artifactId>checkmarx-maven-plugin</artifactId>
 				<version>2022.2.3</version>
-			</plugin>
+			</plugin> -->
 			<plugin>
 				<groupId>org.asciidoctor</groupId>
 				<artifactId>asciidoctor-maven-plugin</artifactId>
@@ -750,18 +751,6 @@
 							<outputDirectory>${project.build.directory}</outputDirectory>
 							<stripVersion>false</stripVersion>
 						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>versions-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>dependency-updates-report</goal>
-						</goals>
 					</execution>
 				</executions>
 			</plugin>
