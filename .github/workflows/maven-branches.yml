@@ -12,6 +12,7 @@ on:
   push:
     branches-ignore:
       - main
+      - develop
   workflow_dispatch:
 jobs:
   Date:
@@ -34,8 +35,6 @@ jobs:
     permissions:
       contents: write
       pull-requests: read
-    env:
-        GH_TOKEN: ${{ github.token }}
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
@@ -52,7 +51,7 @@ jobs:
           git config user.name "$(git log -n 1 --pretty=format:%an)"
           git config user.email "$(git log -n 1 --pretty=format:%ae)"
 
-      - name: Advance Dependecy versions
+      - name: Advance Dependency versions
         run: |
           set +ex
           mvn --no-transfer-progress -DskipTests=true -B versions:update-parent
@@ -168,14 +167,7 @@ jobs:
       pull-requests: read
     steps:
       - name: Collect http://maven.apache.org/xsd
-        run: |
-          set +e
-          wget -np -rN -l 1 --no-verbose http://maven.apache.org/xsd
-          case $? in
-            0) echo "Success";;
-            8) echo "No changes";;
-            *) echo "Failed";;
-          esac
+        run: wget -np -rN -l 1 --no-verbose http://maven.apache.org/xsd
 
       - name: Zipup XSDs
         run: |
@@ -192,8 +184,6 @@ jobs:
   MakeISO:
     runs-on: ubuntu-24.04
     needs: [Date, CollectM2, CollectBOM, CollectXSD, UpdateVers, Code]
-    env:
-        GH_TOKEN: ${{ github.token }}
     permissions:
       contents: write
       pull-requests: read
@@ -263,8 +253,6 @@ jobs:
   Release:
     runs-on: ubuntu-24.04
     needs: [Date, MakeISO]
-    env:
-        GH_TOKEN: ${{ github.token }}
     permissions:
       contents: write
       pull-requests: read
@@ -283,8 +271,6 @@ jobs:
   Sharepoint:
     runs-on: ubuntu-24.04
     needs: [Date, MakeISO]
-    env:
-        GH_TOKEN: ${{ github.token }}
     permissions:
       contents: write
       pull-requests: read

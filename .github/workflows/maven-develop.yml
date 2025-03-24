@@ -6,14 +6,12 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-name: Maven Collector - Main
+name: Maven Collector - Branch
 run-name: ${{ github.actor }} is Collecting Maven-ness🚀
 on:
   push:
     branches:
-      - main
-  schedule:
-    - cron: "0 0 * * 1" # Update weekly on Monday Midnight
+      - develop
   workflow_dispatch:
 jobs:
   Date:
@@ -30,8 +28,39 @@ jobs:
           echo "Values:"
           cat $GITHUB_OUTPUT
 
-  CollectM2:
+  UpdateVers:
+    runs-on: ubuntu-24.04
     needs: [Date]
+    permissions:
+      contents: write
+      pull-requests: read
+    env:
+        GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: "temurin"
+          cache: maven
+
+      - name: Set up git
+        run: |
+          git config user.name "$(git log -n 1 --pretty=format:%an)"
+          git config user.email "$(git log -n 1 --pretty=format:%ae)"
+
+      - name: Advance Dependecy versions
+        run: |
+          set +ex
+          mvn --no-transfer-progress -DskipTests=true -B versions:update-parent
+          git commit -am "Update versions (${{ needs.Date.outputs.Date }})"
+          git push
+
+  CollectM2:
+    needs: [Date, UpdateVers]
     runs-on: ubuntu-24.04
     permissions:
       contents: write
@@ -96,7 +125,7 @@ jobs:
           path: ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.bundle
 
   CollectBOM:
-    needs: [Date]
+    needs: [Date, UpdateVers]
     runs-on: ubuntu-24.04
     permissions:
       contents: write
@@ -162,7 +191,9 @@ jobs:
 
   MakeISO:
     runs-on: ubuntu-24.04
-    needs: [Date, CollectM2, CollectBOM, CollectXSD, Code]
+    needs: [Date, CollectM2, CollectBOM, CollectXSD, UpdateVers, Code]
+    env:
+        GH_TOKEN: ${{ github.token }}
     permissions:
       contents: write
       pull-requests: read
@@ -249,29 +280,6 @@ jobs:
       - name: Show Artifacts
         run: ls -Alh ${{ vars.COLLECTOR }}-*.*
 
-      - name: Set up git
-        run: |
-          git config user.name "$(git log -n 1 --pretty=format:%an)"
-          git config user.email "$(git log -n 1 --pretty=format:%ae)"
-
-      - name: Create tag
-        uses: rickstaa/action-create-tag@v1
-        id: tag_create
-        with:
-          tag: ${{ needs.Date.outputs.Date }}
-          github_token: ${{secrets.GITHUB_TOKEN}}
-          tag_exists_error: false
-          message: "Release for ${{ needs.Date.outputs.Date }} run"
-
-      - name: Create Release
-        id: create_release
-        uses: softprops/action-gh-release@v2
-        with:
-          name: ${{ vars.COLLECTOR }} ${{ needs.Date.outputs.Date }}
-          tag_name: ${{ needs.Date.outputs.Date }}
-          make_latest: true
-          files: ${{ vars.COLLECTOR }}-*.*
-
   Sharepoint:
     runs-on: ubuntu-24.04
     needs: [Date, MakeISO]
@@ -291,17 +299,3 @@ jobs:
 
       - name: Show Artifacts
         run: ls -Alh ${{ vars.COLLECTOR }}-*.*
-
-      - name: Send Files to Sharepoint
-        uses: amentumcms/sharepoint-file-upload-action@main
-        with:
-          file_path: "${{ vars.COLLECTOR }}-*.*"
-          host_name: "${{ secrets.SHAREPOINT_HOST }}"
-          site_name: "${{ secrets.SHAREPOINT_SITE }}"
-          upload_path: "${{ secrets.SHAREPOINT_BASEPATH }}/${{ vars.COLLECTOR }}/${{ needs.Date.outputs.Date }}"
-          tenant_id: ${{ secrets.SHAREPOINT_TENANT_ID }}
-          client_id: ${{ secrets.SHAREPOINT_APP_ID }}
-          client_secret: ${{ secrets.SHAREPOINT_APP_SECRET }}
-          login_endpoint: "login.microsoftonline.us"
-          graph_endpoint: "graph.microsoft.us"
-
