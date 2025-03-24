@@ -35,6 +35,8 @@ jobs:
     permissions:
       contents: write
       pull-requests: read
+    env:
+      GH_TOKEN: ${{ github.token }}
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
