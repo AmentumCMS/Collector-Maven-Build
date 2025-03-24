@@ -169,7 +169,14 @@ jobs:
       pull-requests: read
     steps:
       - name: Collect http://maven.apache.org/xsd
-        run: wget -np -rN -l 1 --no-verbose http://maven.apache.org/xsd
+        run: |
+          set +e
+          wget -np -rN -l 1 --no-verbose http://maven.apache.org/xsd
+          case $? in
+            0) echo "Success";;
+            8) echo "No changes";;
+            *) echo "Failed";;
+          esac
 
       - name: Zipup XSDs
         run: |
@@ -255,6 +262,8 @@ jobs:
   Release:
     runs-on: ubuntu-24.04
     needs: [Date, MakeISO]
+    env:
+        GH_TOKEN: ${{ github.token }}
     permissions:
       contents: write
       pull-requests: read
@@ -273,6 +282,8 @@ jobs:
   Sharepoint:
     runs-on: ubuntu-24.04
     needs: [Date, MakeISO]
+    env:
+        GH_TOKEN: ${{ github.token }}
     permissions:
       contents: write
       pull-requests: read
