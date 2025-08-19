@@ -210,7 +210,7 @@ jobs:
       - name: Generate Artifact Hash
         run: |
           sha256sum -b ${{ vars.COLLECTOR }}-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}* | tee \
-            ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.sha
+            ${{ vars.COLLECTOR }}-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.sha
 
       - name: Upload Artifact sha artifact
         uses: actions/upload-artifact@v4
