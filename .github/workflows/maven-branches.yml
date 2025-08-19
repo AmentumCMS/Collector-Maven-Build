@@ -226,7 +226,7 @@ jobs:
         run: |
           mkisofs -J -R -v -T -l \
             -V 'MvnM2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}' \
-            -A '${{ vars.COLLECTOR }-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}' \
+            -A '${{ vars.COLLECTOR }}-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}' \
             -o ${{ vars.COLLECTOR }}-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.iso \
             ${{ vars.COLLECTOR }}-*.*
 
