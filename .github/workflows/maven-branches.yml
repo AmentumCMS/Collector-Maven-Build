@@ -117,7 +117,7 @@ jobs:
       - name: Bundle Repo1 code base for ${{ vars.COLLECTOR }}
         run: |
           git bundle create --progress ${{ vars.COLLECTOR }}-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.bundle --all
-          ls -Alht *
+          ls -1Ssh *
 
       - name: Upload bundle
         uses: actions/upload-artifact@v4
@@ -193,6 +193,8 @@ jobs:
   MakeISO:
     runs-on: ubuntu-24.04
     needs: [Date, CollectM2, CollectBOM, CollectXSD, UpdateVers, Code]
+    env:
+        GH_TOKEN: ${{ github.token }}
     permissions:
       contents: write
       pull-requests: read
@@ -220,7 +222,7 @@ jobs:
           if-no-files-found: error
 
       - name: Show Artifacts
-        run: ls -Alh ${{ vars.COLLECTOR }}-*.*
+        run: ls -1Ssh ${{ vars.COLLECTOR }}-*.*
 
       - name: Make ISO
         run: |
@@ -239,7 +241,7 @@ jobs:
             ${{ vars.COLLECTOR }}-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.iso.sha
 
       - name: Show ISO & Hash
-        run: ls -Alh *.iso*
+        run: ls -1Ssh *.iso*
 
       - name: Upload iso artifact
         uses: actions/upload-artifact@v4
@@ -252,9 +254,59 @@ jobs:
       #- name: Update dependency graph
       #  uses: advanced-security/maven-dependency-submission-action@571e99aab1055c2e71a1e2309b9691de18d6b7d6
 
-  Release:
+  VirusScan:
     runs-on: ubuntu-24.04
     needs: [Date, MakeISO]
+    permissions:
+      contents: write
+      pull-requests: read
+    steps:
+      - name: Download ISO artifact
+        uses: actions/download-artifact@v4
+        with:
+          pattern: "*.iso"
+
+      # - name: Download TGZ artifacts
+      #   uses: actions/download-artifact@v4
+      #   with:
+      #     merge-multiple: true
+      #     pattern: "*-${{ needs.Date.outputs.Date }}.tgz"
+
+      - name: List files to scan
+        run: |
+          echo "Files to be scanned:"
+          ls -lh
+
+      - name: Scan files for viruses
+        id: virus_scan
+        uses: hugoalh/scan-virus-ghaction/clamav@v0.20.1
+        with:
+          clamav_update: true
+          found_log: true
+          found_summary: true
+          statistics_log: true
+          statistics_summary: true
+
+      - name: Save scan summary
+        if: always()
+        run: |
+          echo "Virus scan completed" > ${{ vars.COLLECTOR }}-virus-scan-report-${{ needs.Date.outputs.Date }}.txt
+          echo "Scan finished: ${{ steps.virus_scan.outputs.finish }}" >> ${{ vars.COLLECTOR }}-virus-scan-report-${{ needs.Date.outputs.Date }}.txt
+          echo "Viruses found: ${{ steps.virus_scan.outputs.found }}" >> ${{ vars.COLLECTOR }}-virus-scan-report-${{ needs.Date.outputs.Date }}.txt
+          echo "" >> ${{ vars.COLLECTOR }}-virus-scan-report-${{ needs.Date.outputs.Date }}.txt
+          echo "For detailed scan results, check the job logs and step summary." >> ${{ vars.COLLECTOR }}-virus-scan-report-${{ needs.Date.outputs.Date }}.txt
+
+      - name: Upload virus scan report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ vars.COLLECTOR }}-virus-scan-report-${{ needs.Date.outputs.Date }}.txt
+          path: "*-virus-scan-report-*.txt"
+          if-no-files-found: warn
+
+  Release:
+    runs-on: ubuntu-24.04
+    needs: [Date, VirusScan]
     env:
         GH_TOKEN: ${{ github.token }}
     permissions:
@@ -270,11 +322,11 @@ jobs:
           merge-multiple: true
 
       - name: Show Artifacts
-        run: ls -Alh ${{ vars.COLLECTOR }}-*.*
+        run: ls -1Ssh ${{ vars.COLLECTOR }}-*.*
 
   Sharepoint:
     runs-on: ubuntu-24.04
-    needs: [Date, MakeISO]
+    needs: [Date, VirusScan]
     env:
         GH_TOKEN: ${{ github.token }}
     permissions:
@@ -290,6 +342,6 @@ jobs:
           merge-multiple: true
 
       - name: Show Artifacts
-        run: ls -Alh ${{ vars.COLLECTOR }}-*.*
+        run: ls -1Ssh ${{ vars.COLLECTOR }}-*.*
 
 
