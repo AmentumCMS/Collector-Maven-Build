@@ -276,7 +276,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ vars.COLLECTOR }}-virus-scan-report-${{ needs.Date.outputs.Date }}.txt
-          path: virus-scan-report-${{ needs.Date.outputs.Date }}.txt
+          path: "*virus-scan-report*.txt"
           if-no-files-found: warn
 
   Release:
