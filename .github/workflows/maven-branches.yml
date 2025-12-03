@@ -264,13 +264,13 @@ jobs:
       - name: Download ISO artifact
         uses: actions/download-artifact@v4
         with:
-          name: ${{ vars.COLLECTOR }}-${{ needs.Setup.outputs.Date }}.iso
+          name: ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso
 
       - name: Download TGZ artifacts
         uses: actions/download-artifact@v4
         with:
           merge-multiple: true
-          pattern: "*-${{ needs.Setup.outputs.Date }}.tgz"
+          pattern: "*-${{ needs.Date.outputs.Date }}.tgz"
 
       - name: List files to scan
         run: |
@@ -290,18 +290,18 @@ jobs:
       - name: Save scan summary
         if: always()
         run: |
-          echo "Virus scan completed" > virus-scan-report-${{ needs.Setup.outputs.Date }}.txt
-          echo "Scan finished: ${{ steps.virus_scan.outputs.finish }}" >> virus-scan-report-${{ needs.Setup.outputs.Date }}.txt
-          echo "Viruses found: ${{ steps.virus_scan.outputs.found }}" >> virus-scan-report-${{ needs.Setup.outputs.Date }}.txt
-          echo "" >> virus-scan-report-${{ needs.Setup.outputs.Date }}.txt
-          echo "For detailed scan results, check the job logs and step summary." >> virus-scan-report-${{ needs.Setup.outputs.Date }}.txt
+          echo "Virus scan completed" > virus-scan-report-${{ needs.Date.outputs.Date }}.txt
+          echo "Scan finished: ${{ steps.virus_scan.outputs.finish }}" >> virus-scan-report-${{ needs.Date.outputs.Date }}.txt
+          echo "Viruses found: ${{ steps.virus_scan.outputs.found }}" >> virus-scan-report-${{ needs.Date.outputs.Date }}.txt
+          echo "" >> virus-scan-report-${{ needs.Date.outputs.Date }}.txt
+          echo "For detailed scan results, check the job logs and step summary." >> virus-scan-report-${{ needs.Date.outputs.Date }}.txt
 
       - name: Upload virus scan report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: virus-scan-report-${{ needs.Setup.outputs.Date }}.txt
-          path: virus-scan-report-${{ needs.Setup.outputs.Date }}.txt
+          name: virus-scan-report-${{ needs.Date.outputs.Date }}.txt
+          path: virus-scan-report-${{ needs.Date.outputs.Date }}.txt
           if-no-files-found: warn
 
   Release:
