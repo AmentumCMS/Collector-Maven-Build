@@ -243,11 +243,11 @@ jobs:
         with:
           name: ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso
 
-      - name: Download TGZ artifacts
-        uses: actions/download-artifact@v4
-        with:
-          merge-multiple: true
-          pattern: "*-${{ needs.Date.outputs.Date }}.tgz"
+      # - name: Download TGZ artifacts
+      #   uses: actions/download-artifact@v4
+      #   with:
+      #     merge-multiple: true
+      #     pattern: "*-${{ needs.Date.outputs.Date }}.tgz"
 
       - name: List files to scan
         run: |
