@@ -117,7 +117,7 @@ jobs:
       - name: Bundle Repo1 code base for ${{ vars.COLLECTOR }}
         run: |
           git bundle create --progress ${{ vars.COLLECTOR }}-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.bundle --all
-          ls -Alht *
+          ls -1Ssh *
 
       - name: Upload bundle
         uses: actions/upload-artifact@v4
@@ -222,7 +222,7 @@ jobs:
           if-no-files-found: error
 
       - name: Show Artifacts
-        run: ls -Alh ${{ vars.COLLECTOR }}-*.*
+        run: ls -1Ssh ${{ vars.COLLECTOR }}-*.*
 
       - name: Make ISO
         run: |
@@ -241,7 +241,7 @@ jobs:
             ${{ vars.COLLECTOR }}-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.iso.sha
 
       - name: Show ISO & Hash
-        run: ls -Alh *.iso*
+        run: ls -1Ssh *.iso*
 
       - name: Upload iso artifact
         uses: actions/upload-artifact@v4
@@ -322,7 +322,7 @@ jobs:
           merge-multiple: true
 
       - name: Show Artifacts
-        run: ls -Alh ${{ vars.COLLECTOR }}-*.*
+        run: ls -1Ssh ${{ vars.COLLECTOR }}-*.*
 
   Sharepoint:
     runs-on: ubuntu-24.04
@@ -342,6 +342,6 @@ jobs:
           merge-multiple: true
 
       - name: Show Artifacts
-        run: ls -Alh ${{ vars.COLLECTOR }}-*.*
+        run: ls -1Ssh ${{ vars.COLLECTOR }}-*.*
 
 
