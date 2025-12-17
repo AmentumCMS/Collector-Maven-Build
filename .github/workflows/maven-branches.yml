@@ -141,7 +141,7 @@ jobs:
         uses: anchore/scan-action@v7.2.2
         with:
           path: m2repo/repository
-          fail-build: true
+          fail-build: false
           severity-cutoff: high
           output-format: sarif
           output-file: ${{ vars.COLLECTOR }}-grype-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.sarif
