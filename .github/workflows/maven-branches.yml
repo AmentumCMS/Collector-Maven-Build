@@ -98,6 +98,74 @@ jobs:
           name: ${{ vars.COLLECTOR }}-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.tgz.txt
           path: ${{ vars.COLLECTOR }}-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.tgz.txt
 
+  VulnScan:
+    needs: [Date, UpdateVers]
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: "temurin"
+          cache: maven
+
+      - name: Build with Maven (populate ~/.m2)
+        run: mvn -DskipTests=true --no-transfer-progress -B package
+
+      # syft/sbom-action "path" is relative to repo root, so expose ~/.m2/repository inside workspace
+      - name: Link Maven repository into workspace
+        run: |
+          mkdir -p m2repo
+          ln -s ~/.m2/repository m2repo/repository
+          ls -lAh m2repo
+
+      - name: Generate SBOM (Syft via sbom-action)
+        uses: anchore/sbom-action@v0.20.11
+        with:
+          path: m2repo/repository
+          format: spdx-json
+          output-file: ${{ vars.COLLECTOR }}-sbom-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.spdx.json
+
+      - name: Upload SBOM
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ vars.COLLECTOR }}-sbom-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.spdx.json
+          path: ${{ vars.COLLECTOR }}-sbom-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.spdx.json
+
+      - name: Grype scan (scan-action) - SARIF
+        uses: anchore/scan-action@v7.2.2
+        with:
+          path: m2repo/repository
+          fail-build: true
+          severity-cutoff: high
+          output-format: sarif
+          output-file: ${{ vars.COLLECTOR }}-grype-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.sarif
+
+      - name: Upload Grype SARIF
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ vars.COLLECTOR }}-grype-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.sarif
+          path: ${{ vars.COLLECTOR }}-grype-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.sarif
+
+      - name: Grype scan (scan-action) - JSON
+        uses: anchore/scan-action@v7.2.2
+        with:
+          path: m2repo/repository
+          fail-build: false
+          output-format: json
+          output-file: ${{ vars.COLLECTOR }}-grype-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.json
+
+      - name: Upload Grype JSON
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ vars.COLLECTOR }}-grype-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.json
+          path: ${{ vars.COLLECTOR }}-grype-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.json
+
   Code:
     needs: [Date]
     runs-on: ubuntu-24.04
