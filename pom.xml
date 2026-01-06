@@ -880,7 +880,7 @@
 			</plugin>
 
 			<!-- Reproduciable build support --> 
-			<plugin>
+			<!-- <plugin>
         <groupId>io.github.zlika</groupId>
         <artifactId>reproducible-build-maven-plugin</artifactId>
         <!-- Use the latest available in your Nexus mirror -->
@@ -904,7 +904,7 @@
             </goals>
           </execution>
         </executions>
-      </plugin>
+      </plugin> -->
 
 		</plugins>
 	</build>
