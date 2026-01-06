@@ -1,6 +1,6 @@
 #!/bin/bash
 SRC=$(basename "$PWD")
-REPO="amentumservices/$SRC"
+REPO="amentumcms/$SRC"
 DEST="$HOME/Downloads/$SRC"
 
 echo -e "\nWorking with github repo $REPO"
