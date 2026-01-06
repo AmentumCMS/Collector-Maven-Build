@@ -56,7 +56,7 @@ jobs:
       - name: Advance Dependency versions
         run: |
           set +ex
-          mvn --no-transfer-progress -DskipTests=true -B versions:update-parent
+          mvn --no-transfer-progress -DskipTests=true -ssettings.xml -B versions:update-parent
           git commit -am "Update versions (${{ needs.Date.outputs.Date }})"
           git push
 
@@ -78,7 +78,7 @@ jobs:
           cache: maven
 
       - name: Build with Maven
-        run: mvn -DskipTests=true --no-transfer-progress -B package
+        run: mvn -DskipTests=true --no-transfer-progress -s settings.xml -B package
 
       - name: TARchive .m2 directory
         run: |
@@ -143,7 +143,7 @@ jobs:
           cache: maven
 
       - name: Build with Maven
-        run: mvn -DskipTests=true -B --no-transfer-progress cyclonedx:makeAggregateBom
+        run: mvn -DskipTests=true -B --no-transfer-progress  -s settings.xml cyclonedx:makeAggregateBom
 
       - name: Create BoM ZIP
         run: |
@@ -227,7 +227,7 @@ jobs:
       - name: Make ISO
         run: |
           mkisofs -J -R -v -T -l \
-            -V 'MvnM2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}' \
+            -V '${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}' \
             -A '${{ vars.COLLECTOR }}-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}' \
             -o ${{ vars.COLLECTOR }}-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.iso \
             ${{ vars.COLLECTOR }}-*.*
