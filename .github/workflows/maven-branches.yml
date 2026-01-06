@@ -56,7 +56,7 @@ jobs:
       - name: Advance Dependency versions
         run: |
           set +ex
-          mvn --no-transfer-progress -DskipTests=true -B versions:update-parent
+          mvn --no-transfer-progress -DskipTests=true -ssettings.xml -B versions:update-parent
           git commit -am "Update versions (${{ needs.Date.outputs.Date }})"
           git push
 
