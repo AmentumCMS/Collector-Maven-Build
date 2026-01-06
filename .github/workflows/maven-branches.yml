@@ -56,7 +56,7 @@ jobs:
       - name: Advance Dependency versions
         run: |
           set +ex
-          mvn --no-transfer-progress -DskipTests=true -B versions:update-parent
+          mvn --no-transfer-progress -DskipTests=true -ssettings.xml -B versions:update-parent
           git commit -am "Update versions (${{ needs.Date.outputs.Date }})"
           git push
 
@@ -78,7 +78,7 @@ jobs:
           cache: maven
 
       - name: Build with Maven
-        run: mvn -DskipTests=true --no-transfer-progress -B package
+        run: mvn -DskipTests=true --no-transfer-progress -s settings.xml -B package
 
       - name: TARchive .m2 directory
         run: |
@@ -143,7 +143,7 @@ jobs:
           cache: maven
 
       - name: Build with Maven
-        run: mvn -DskipTests=true -B --no-transfer-progress cyclonedx:makeAggregateBom
+        run: mvn -DskipTests=true -B --no-transfer-progress  -s settings.xml cyclonedx:makeAggregateBom
 
       - name: Create BoM ZIP
         run: |
@@ -227,7 +227,7 @@ jobs:
       - name: Make ISO
         run: |
           mkisofs -J -R -v -T -l \
-            -V 'MvnM2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}' \
+            -V '${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}' \
             -A '${{ vars.COLLECTOR }}-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}' \
             -o ${{ vars.COLLECTOR }}-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.iso \
             ${{ vars.COLLECTOR }}-*.*
@@ -290,18 +290,18 @@ jobs:
       - name: Save scan summary
         if: always()
         run: |
-          echo "Virus scan completed" > ${{ vars.COLLECTOR }}-virus-scan-report-${{ needs.Date.outputs.Date }}.txt
-          echo "Scan finished: ${{ steps.virus_scan.outputs.finish }}" >> ${{ vars.COLLECTOR }}-virus-scan-report-${{ needs.Date.outputs.Date }}.txt
-          echo "Viruses found: ${{ steps.virus_scan.outputs.found }}" >> ${{ vars.COLLECTOR }}-virus-scan-report-${{ needs.Date.outputs.Date }}.txt
-          echo "" >> ${{ vars.COLLECTOR }}-virus-scan-report-${{ needs.Date.outputs.Date }}.txt
-          echo "For detailed scan results, check the job logs and step summary." >> ${{ vars.COLLECTOR }}-virus-scan-report-${{ needs.Date.outputs.Date }}.txt
+          echo "Virus scan completed" > ${{ vars.COLLECTOR }}-virus-scan-report-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.txt
+          echo "Scan finished: ${{ steps.virus_scan.outputs.finish }}" >> ${{ vars.COLLECTOR }}-virus-scan-report-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.txt
+          echo "Viruses found: ${{ steps.virus_scan.outputs.found }}" >> ${{ vars.COLLECTOR }}-virus-scan-report-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.txt
+          echo "" >> ${{ vars.COLLECTOR }}-virus-scan-report-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.txt
+          echo "For detailed scan results, check the job logs and step summary." >> ${{ vars.COLLECTOR }}-virus-scan-report-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.txt
 
       - name: Upload virus scan report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ vars.COLLECTOR }}-virus-scan-report-${{ needs.Date.outputs.Date }}.txt
-          path: "*-virus-scan-report-*.txt"
+          name: ${{ vars.COLLECTOR }}-virus-scan-report-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.txt
+          path: "*virus-scan-report*.txt"
           if-no-files-found: warn
 
   Release:
@@ -343,5 +343,3 @@ jobs:
 
       - name: Show Artifacts
         run: ls -1Ssh ${{ vars.COLLECTOR }}-*.*
-
-
