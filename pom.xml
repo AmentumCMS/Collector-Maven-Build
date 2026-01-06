@@ -35,9 +35,9 @@
 
 	<dependencies>
 		<dependency>
-		  <groupId>com.fasterxml.jackson.module</groupId>
-		  <artifactId>jackson-module-jaxb-annotations</artifactId>
-		  <version>2.15.3</version>
+			<groupId>com.fasterxml.jackson.module</groupId>
+			<artifactId>jackson-module-jaxb-annotations</artifactId>
+			<version>2.15.3</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -48,9 +48,9 @@
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
 		<dependency>
-				<groupId>org.redisson</groupId>
-				<artifactId>redisson-spring-boot-starter</artifactId>
-				<version>3.45.1</version>
+			<groupId>org.redisson</groupId>
+			<artifactId>redisson-spring-boot-starter</artifactId>
+			<version>3.45.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.redisson</groupId>
@@ -168,9 +168,9 @@
 			<artifactId>kafka-streams</artifactId>
 		</dependency>
 		<dependency>
-    		<groupId>org.apache.activemq</groupId>
-		    <artifactId>artemis-server</artifactId>
-		    <version>2.44.0</version> <!-- Use the latest version available -->
+			<groupId>org.apache.activemq</groupId>
+			<artifactId>artemis-server</artifactId>
+			<version>2.44.0</version> <!-- Use the latest version available -->
 		</dependency>
 		<dependency>
 			<groupId>org.flywaydb</groupId>
@@ -379,9 +379,9 @@
 			<version>1.5.6</version>
 		</dependency>
 		<dependency>
-		    <groupId>org.jfree</groupId>
-		    <artifactId>jcommon</artifactId>
-		    <version>1.0.24</version>
+			<groupId>org.jfree</groupId>
+			<artifactId>jcommon</artifactId>
+			<version>1.0.24</version>
 		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
@@ -531,8 +531,8 @@
 			<version>3.5.3</version>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.maven.plugins</groupId>
-			<artifactId>reproducible-build-maven-plugin</artifactId>			
+			<groupId>io.github.zlika</groupId>
+			<artifactId>reproducible-build-maven-plugin</artifactId>
 		</dependency>
 
 		<dependency>
@@ -562,25 +562,25 @@
 			<version>2.6.0</version>
 		</dependency>
 		<dependency>
-		    <groupId>colt</groupId>
-		    <artifactId>colt</artifactId>
-		    <version>1.2.0</version>
+			<groupId>colt</groupId>
+			<artifactId>colt</artifactId>
+			<version>1.2.0</version>
 		</dependency>
 		<dependency>
-		    <groupId>com.github.rwl</groupId>
-		    <artifactId>optimization</artifactId>
-		    <version>1.3</version>
+			<groupId>com.github.rwl</groupId>
+			<artifactId>optimization</artifactId>
+			<version>1.3</version>
 		</dependency>
 		<dependency>
-		    <groupId>javax.help</groupId>
-		    <artifactId>javahelp</artifactId>
-		    <version>2.0.05</version>
+			<groupId>javax.help</groupId>
+			<artifactId>javahelp</artifactId>
+			<version>2.0.05</version>
 		</dependency>
 		<dependency>
-		    <groupId>nl.tudelft.simulation</groupId>
-		    <artifactId>dsol</artifactId>
-		    <version>4.2.11</version>
-				<type>pom</type>
+			<groupId>nl.tudelft.simulation</groupId>
+			<artifactId>dsol</artifactId>
+			<version>4.2.11</version>
+			<type>pom</type>
 		</dependency>
 		<dependency>
 			<groupId>org.jvnet.jaxb2.maven2</groupId>
@@ -623,7 +623,7 @@
 			<version>2.3.0.1</version>
 		</dependency>
 	</dependencies>
-	
+
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -876,6 +876,34 @@
 					</execution>
 				</executions>
 			</plugin>
+
+			<!-- Reproduciable build support --> 
+			<plugin>
+        <groupId>io.github.zlika</groupId>
+        <artifactId>reproducible-build-maven-plugin</artifactId>
+        <!-- Use the latest available in your Nexus mirror -->
+        <version>0.17</version>
+        <executions>
+          <!-- Strip non-reproducible elements from the main JAR after package -->
+          <execution>
+            <id>strip-jar</id>
+            <phase>package</phase>
+            <goals>
+              <goal>strip-jar</goal>
+            </goals>
+          </execution>
+
+          <!-- Strip again after assembly to normalize archive metadata -->
+          <execution>
+            <id>strip-archive</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <goal>strip-jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
 		</plugins>
 	</build>
 	<reporting>
