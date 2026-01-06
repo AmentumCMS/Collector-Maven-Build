@@ -533,6 +533,8 @@
 		<dependency>
 			<groupId>io.github.zlika</groupId>
 			<artifactId>reproducible-build-maven-plugin</artifactId>
+			<!-- Use the latest available in your Nexus mirror -->
+      <version>0.17</version>
 		</dependency>
 
 		<dependency>
