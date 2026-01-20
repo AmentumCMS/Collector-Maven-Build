@@ -193,13 +193,7 @@
 	        <groupId>org.apache.activemq</groupId>
 	        <artifactId>activemq-pool</artifactId>
 	        <version>5.18.3</version>
-	    </dependency>   
-	    <dependency>
-	        <groupId>com.oracle.database.jdbc</groupId>
-	        <artifactId>wlthint3client</artifactId>
-	        <version>14.1.2.0.0</version>
-	        <scope>compile</scope>
-	    </dependency>		
+	    </dependency>	
 	    <dependency>
 	        <groupId>org.apache.geronimo.specs</groupId>
 	        <artifactId>geronimo-j2ee-management_1.1_spec</artifactId>
