@@ -169,11 +169,43 @@
 			<groupId>org.apache.kafka</groupId>
 			<artifactId>kafka-streams</artifactId>
 		</dependency>
+		<!-- JMS Emulator packages -->
 		<dependency>
 			<groupId>org.apache.activemq</groupId>
 			<artifactId>artemis-server</artifactId>
-			<version>2.44.0</version> <!-- Use the latest version available -->
+			<version>2.44.0</version>
 		</dependency>
+	    <dependency>
+	        <groupId>org.apache.activemq</groupId>
+	        <artifactId>activemq-broker</artifactId>
+	        <version>5.18.3</version>
+	    </dependency>
+	    <dependency>
+	        <groupId>org.apache.activemq</groupId>
+	        <artifactId>activemq-kahadb-store</artifactId>
+	        <version>5.18.3</version>
+	    </dependency>
+	    <dependency>
+	        <groupId>org.springframework.boot</groupId>
+	        <artifactId>spring-boot-starter-activemq</artifactId>
+	    </dependency>
+	    <dependency>
+	        <groupId>org.apache.activemq</groupId>
+	        <artifactId>activemq-pool</artifactId>
+	        <version>5.18.3</version>
+	    </dependency>   
+	    <dependency>
+	        <groupId>com.oracle.database.jdbc</groupId>
+	        <artifactId>wlthint3client</artifactId>
+	        <version>14.1.2.0.0</version>
+	        <scope>compile</scope>
+	    </dependency>		
+	    <dependency>
+	        <groupId>org.apache.geronimo.specs</groupId>
+	        <artifactId>geronimo-j2ee-management_1.1_spec</artifactId>
+	        <version>1.0.1</version>
+	    </dependency>
+		<!-- END JMS Emulator packages -->
 		<dependency>
 			<groupId>org.flywaydb</groupId>
 			<artifactId>flyway-core</artifactId>
