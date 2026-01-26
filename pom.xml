@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>4.0.1</version>
+		<version>4.1.0-M1</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 
@@ -179,7 +179,22 @@
 	        <groupId>org.apache.activemq</groupId>
 	        <artifactId>activemq-broker</artifactId>
 	        <version>5.18.3</version>
-	    </dependency>
+	    </dependency>		
+        <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-client</artifactId>
+            <version>5.18.3</version>
+        </dependency>        
+        <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-openwire-legacy</artifactId>
+            <version>5.18.3</version>
+        </dependency>        
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-jms_1.1_spec</artifactId>
+            <version>1.1.1</version>
+        </dependency>
 	    <dependency>
 	        <groupId>org.apache.activemq</groupId>
 	        <artifactId>activemq-kahadb-store</artifactId>
