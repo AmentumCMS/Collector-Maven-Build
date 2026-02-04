@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>4.0.0</version>
+		<version>4.1.0-M1</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 
@@ -169,6 +169,52 @@
 			<groupId>org.apache.kafka</groupId>
 			<artifactId>kafka-streams</artifactId>
 		</dependency>
+		<!-- JMS Emulator packages -->
+		<dependency>
+			<groupId>org.apache.activemq</groupId>
+			<artifactId>artemis-server</artifactId>
+			<version>2.44.0</version>
+		</dependency>
+	    <dependency>
+	        <groupId>org.apache.activemq</groupId>
+	        <artifactId>activemq-broker</artifactId>
+	        <version>5.18.3</version>
+	    </dependency>		
+        <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-client</artifactId>
+            <version>5.18.3</version>
+        </dependency>        
+        <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-openwire-legacy</artifactId>
+            <version>5.18.3</version>
+        </dependency>        
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-jms_1.1_spec</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+	    <dependency>
+	        <groupId>org.apache.activemq</groupId>
+	        <artifactId>activemq-kahadb-store</artifactId>
+	        <version>5.18.3</version>
+	    </dependency>
+	    <dependency>
+	        <groupId>org.springframework.boot</groupId>
+	        <artifactId>spring-boot-starter-activemq</artifactId>
+	    </dependency>
+	    <dependency>
+	        <groupId>org.apache.activemq</groupId>
+	        <artifactId>activemq-pool</artifactId>
+	        <version>5.18.3</version>
+	    </dependency>	
+	    <dependency>
+	        <groupId>org.apache.geronimo.specs</groupId>
+	        <artifactId>geronimo-j2ee-management_1.1_spec</artifactId>
+	        <version>1.0.1</version>
+	    </dependency>
+		<!-- END JMS Emulator packages -->
 		<dependency>
 			<groupId>org.flywaydb</groupId>
 			<artifactId>flyway-core</artifactId>
@@ -444,7 +490,7 @@
 		<dependency>
 			<groupId>org.testcontainers</groupId>
 			<artifactId>junit-jupiter</artifactId>
-			<version>1.21.3</version>
+			<version>1.21.4</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -461,55 +507,55 @@
 		<dependency>
 			<groupId>org.testcontainers</groupId>
 			<artifactId>kafka</artifactId>
-			<version>1.21.3</version>
+			<version>1.21.4</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.testcontainers</groupId>
 			<artifactId>mariadb</artifactId>
-			<version>1.21.3</version>
+			<version>1.21.4</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.testcontainers</groupId>
 			<artifactId>mongodb</artifactId>
-			<version>1.21.3</version>
+			<version>1.21.4</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.testcontainers</groupId>
 			<artifactId>mysql</artifactId>
-			<version>1.21.3</version>
+			<version>1.21.4</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.testcontainers</groupId>
 			<artifactId>oracle-free</artifactId>
-			<version>1.21.3</version>
+			<version>1.21.4</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.testcontainers</groupId>
 			<artifactId>postgresql</artifactId>
-			<version>1.21.3</version>
+			<version>1.21.4</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.testcontainers</groupId>
 			<artifactId>pulsar</artifactId>
-			<version>1.21.3</version>
+			<version>1.21.4</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.testcontainers</groupId>
 			<artifactId>rabbitmq</artifactId>
-			<version>1.21.3</version>
+			<version>1.21.4</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.testcontainers</groupId>
 			<artifactId>vault</artifactId>
-			<version>1.21.3</version>
+			<version>1.21.4</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -536,6 +582,12 @@
 			<groupId>org.apache.maven.plugins</groupId>
 			<artifactId>maven-shade-plugin</artifactId>
 			<version>3.5.3</version>
+		</dependency>
+		<dependency>
+			<groupId>io.github.zlika</groupId>
+			<artifactId>reproducible-build-maven-plugin</artifactId>
+			<!-- Use the latest available in your Nexus mirror -->
+      <version>0.17</version>
 		</dependency>
 
 		<dependency>
@@ -879,6 +931,34 @@
 					</execution>
 				</executions>
 			</plugin>
+
+			<!-- Reproduciable build support --> 
+			<plugin>
+        <groupId>io.github.zlika</groupId>
+        <artifactId>reproducible-build-maven-plugin</artifactId>
+        <!-- Use the latest available in your Nexus mirror -->
+        <version>0.17</version>
+        <executions>
+          <!-- Strip non-reproducible elements from the main JAR after package -->
+          <execution>
+            <id>strip-jar</id>
+            <phase>package</phase>
+            <goals>
+              <goal>strip-jar</goal>
+            </goals>
+          </execution>
+
+          <!-- Strip again after assembly to normalize archive metadata -->
+          <execution>
+            <id>strip-archive</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <goal>strip-jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
 		</plugins>
 	</build>
 	<reporting>
