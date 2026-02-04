@@ -174,7 +174,7 @@ jobs:
           name: ${{ vars.COLLECTOR }}-grype-m2-main-${{ needs.Date.outputs.Date }}.json
           path: ${{ vars.COLLECTOR }}-grype-m2-main-${{ needs.Date.outputs.Date }}.json
 
-      # Human-friendly "proof" report into Step Summary (like your container workflow)
+      # Human-friendly "proof" report into Step Summary
       - name: Generate Grype Proof Report
         if: always()
         run: |
@@ -205,7 +205,7 @@ jobs:
       # OSV scanning + Summary
       - name: OSV scan
         id: osv
-        uses: google/osv-scanner-action@v2
+        uses: google/osv-scanner-action@v2.3.2
         with:
           scan-args: >-
             --format=json
