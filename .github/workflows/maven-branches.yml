@@ -101,10 +101,11 @@ jobs:
           path: ${{ vars.COLLECTOR }}-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.tgz.txt
 
   VulnScan:
-    needs: [Date, UpdateVers]
+    needs: [Date]
     runs-on: ubuntu-24.04
     permissions:
       contents: read
+      security-events: write
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
@@ -117,7 +118,7 @@ jobs:
           cache: maven
 
       - name: Build with Maven (populate ~/.m2)
-        run: mvn -DskipTests=true --no-transfer-progress -B package
+        run: mvn -DskipTests=true --no-transfer-progress -B -s settings.xml package
 
       # syft/sbom-action "path" is relative to repo root, so expose ~/.m2/repository inside workspace
       - name: Link Maven repository into workspace
@@ -126,47 +127,142 @@ jobs:
           ln -s ~/.m2/repository m2repo/repository
           ls -lAh m2repo
 
-      - name: Generate SBOM (Syft via sbom-action)
+      - name: Generate SBOM (Syft) for ~/.m2/repository
         uses: anchore/sbom-action@v0.20.11
         with:
           path: m2repo/repository
           format: spdx-json
-          output-file: ${{ vars.COLLECTOR }}-sbom-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.spdx.json
+          output-file: ${{ vars.COLLECTOR }}-sbom-m2-main-${{ needs.Date.outputs.Date }}.spdx.json
 
       - name: Upload SBOM
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ vars.COLLECTOR }}-sbom-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.spdx.json
-          path: ${{ vars.COLLECTOR }}-sbom-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.spdx.json
+          name: ${{ vars.COLLECTOR }}-sbom-m2-main-${{ needs.Date.outputs.Date }}.spdx.json
+          path: ${{ vars.COLLECTOR }}-sbom-m2-main-${{ needs.Date.outputs.Date }}.spdx.json
 
-      - name: Grype scan (scan-action) - SARIF
+      - name: Grype scan (SARIF)
         uses: anchore/scan-action@v7.2.2
         with:
           path: m2repo/repository
           fail-build: false
           severity-cutoff: high
           output-format: sarif
-          output-file: ${{ vars.COLLECTOR }}-grype-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.sarif
+          output-file: ${{ vars.COLLECTOR }}-grype-m2-main-${{ needs.Date.outputs.Date }}.sarif
 
       - name: Upload Grype SARIF
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ vars.COLLECTOR }}-grype-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.sarif
-          path: ${{ vars.COLLECTOR }}-grype-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.sarif
+          name: ${{ vars.COLLECTOR }}-grype-m2-main-${{ needs.Date.outputs.Date }}.sarif
+          path: ${{ vars.COLLECTOR }}-grype-m2-main-${{ needs.Date.outputs.Date }}.sarif
 
-      - name: Grype scan (scan-action) - JSON
+      - name: Upload SARIF to GitHub Code Scanning
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: ${{ vars.COLLECTOR }}-grype-m2-main-${{ needs.Date.outputs.Date }}.sarif
+
+      - name: Grype scan (JSON)
         uses: anchore/scan-action@v7.2.2
         with:
           path: m2repo/repository
           fail-build: false
+          severity-cutoff: high
           output-format: json
-          output-file: ${{ vars.COLLECTOR }}-grype-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.json
+          output-file: ${{ vars.COLLECTOR }}-grype-m2-main-${{ needs.Date.outputs.Date }}.json
 
       - name: Upload Grype JSON
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ vars.COLLECTOR }}-grype-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.json
-          path: ${{ vars.COLLECTOR }}-grype-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.json
+          name: ${{ vars.COLLECTOR }}-grype-m2-main-${{ needs.Date.outputs.Date }}.json
+          path: ${{ vars.COLLECTOR }}-grype-m2-main-${{ needs.Date.outputs.Date }}.json
+
+      # Human-friendly "proof" report into Step Summary (like your container workflow)
+      - name: Generate Grype Proof Report
+        if: always()
+        run: |
+          set +e
+          curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh -s -- -b .
+          ./grype --version
+
+          # Table format is easiest to read in summary
+          ./grype m2repo/repository -o table > grype-report.txt
+
+          echo "## Grype Results (Maven ~/.m2) ⚓" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          # Avoid mega summaries; keep it readable
+          head -n 250 grype-report.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+          total_lines=$(wc -l < grype-report.txt | tr -d ' ')
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "_Grype report saved as artifact. Total lines: ${total_lines}_" >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload Grype Evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: evidence-grype-report-m2-main-${{ needs.Date.outputs.Date }}
+          path: grype-report.txt
+
+      # OSV scanning + Summary
+      - name: OSV scan
+        id: osv
+        uses: google/osv-scanner-action@v2
+        with:
+          scan-args: >-
+            --format=json
+            --output=${{ vars.COLLECTOR }}-osv-main-${{ needs.Date.outputs.Date }}.json
+
+      - name: Upload OSV JSON
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ vars.COLLECTOR }}-osv-main-${{ needs.Date.outputs.Date }}.json
+          path: ${{ vars.COLLECTOR }}-osv-main-${{ needs.Date.outputs.Date }}.json
+
+      - name: Publish OSV Summary
+        if: always()
+        run: |
+          set +e
+          f="${{ vars.COLLECTOR }}-osv-main-${{ needs.Date.outputs.Date }}.json"
+          if [ ! -f "$f" ]; then
+            echo "OSV output file not found: $f"
+            exit 0
+          fi
+
+          echo "## OSV Results (Project / ecosystem scan) 🛡️" >> $GITHUB_STEP_SUMMARY
+
+          # Count severities (OSV schema can vary; try best-effort)
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Severity counts (best-effort):**" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          jq -r '
+            def sev(x):
+              (x // "" | ascii_upcase);
+            [
+              .. | objects | .severity? // empty
+            ] | flatten
+            | map(sev(.))
+            | reduce .[] as $s ({}; .[$s] = (.[$s] // 0) + 1)
+            | to_entries
+            | sort_by(.key)
+            | .[]
+            | "\(.key): \(.value)"
+          ' "$f" 2>/dev/null || echo "Could not parse severities from OSV JSON"
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+          # Print a small excerpt for quick eyeballing
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**OSV excerpt (first findings):**" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          jq -r '
+            .results[]? 
+            | select(.packages != null)
+            | .packages[]?
+            | "\(.package.ecosystem // "ecosystem") \(.package.name // "name") @ \(.package.version // "version")"
+          ' "$f" 2>/dev/null | head -n 40 || echo "No package summary available"
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
 
   Code:
     needs: [Date]
