@@ -204,14 +204,26 @@ jobs:
           name: evidence-grype-report-m2-main-${{ needs.Date.outputs.Date }}
           path: grype-report.txt
 
-      # OSV scanning + Summary
-      - name: OSV scan
-        id: osv
-        uses: google/osv-scanner-action@v2.3.2
-        with:
-          scan-args: >-
-            --format=json
-            --output=${{ vars.COLLECTOR }}-osv-main-${{ needs.Date.outputs.Date }}.json
+      - name: Install OSV-Scanner CLI
+        if: always()
+        run: |
+          set -euo pipefail
+          OSV_VERSION="v2.3.2"
+          curl -sSfL "https://github.com/google/osv-scanner/releases/download/${OSV_VERSION}/osv-scanner_${OSV_VERSION#v}_linux_amd64" -o osv-scanner
+          chmod +x ./osv-scanner
+          ./osv-scanner --version
+
+      - name: OSV scan (JSON + SARIF)
+        if: always()
+        run: |
+          set +e
+          ./osv-scanner scan . \
+            --format json \
+            --output "${{ vars.COLLECTOR }}-osv-main-${{ needs.Date.outputs.Date }}.json"
+
+          ./osv-scanner scan . \
+            --format sarif \
+            --output "${{ vars.COLLECTOR }}-osv-main-${{ needs.Date.outputs.Date }}.sarif"
 
       - name: Upload OSV JSON
         if: always()
@@ -220,48 +232,28 @@ jobs:
           name: ${{ vars.COLLECTOR }}-osv-main-${{ needs.Date.outputs.Date }}.json
           path: ${{ vars.COLLECTOR }}-osv-main-${{ needs.Date.outputs.Date }}.json
 
+      - name: Upload OSV SARIF artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ vars.COLLECTOR }}-osv-main-${{ needs.Date.outputs.Date }}.sarif
+          path: ${{ vars.COLLECTOR }}-osv-main-${{ needs.Date.outputs.Date }}.sarif
+
+      - name: Upload OSV SARIF to GitHub Code Scanning
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: ${{ vars.COLLECTOR }}-osv-main-${{ needs.Date.outputs.Date }}.sarif
+
       - name: Publish OSV Summary
         if: always()
         run: |
-          set +e
-          f="${{ vars.COLLECTOR }}-osv-main-${{ needs.Date.outputs.Date }}.json"
-          if [ ! -f "$f" ]; then
-            echo "OSV output file not found: $f"
-            exit 0
-          fi
-
-          echo "## OSV Results (Project / ecosystem scan) 🛡️" >> $GITHUB_STEP_SUMMARY
-
-          # Count severities (OSV schema can vary; try best-effort)
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Severity counts (best-effort):**" >> $GITHUB_STEP_SUMMARY
+          echo "## OSV-Scanner Results 🛡️" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-          jq -r '
-            def sev(x):
-              (x // "" | ascii_upcase);
-            [
-              .. | objects | .severity? // empty
-            ] | flatten
-            | map(sev(.))
-            | reduce .[] as $s ({}; .[$s] = (.[$s] // 0) + 1)
-            | to_entries
-            | sort_by(.key)
-            | .[]
-            | "\(.key): \(.value)"
-          ' "$f" 2>/dev/null || echo "Could not parse severities from OSV JSON"
+          # keep summary readable
+          head -n 200 "${{ vars.COLLECTOR }}-osv-main-${{ needs.Date.outputs.Date }}.json" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
 
-          # Print a small excerpt for quick eyeballing
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**OSV excerpt (first findings):**" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          jq -r '
-            .results[]? 
-            | select(.packages != null)
-            | .packages[]?
-            | "\(.package.ecosystem // "ecosystem") \(.package.name // "name") @ \(.package.version // "version")"
-          ' "$f" 2>/dev/null | head -n 40 || echo "No package summary available"
-          echo '```' >> $GITHUB_STEP_SUMMARY
 
 
   Code:
