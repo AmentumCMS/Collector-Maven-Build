@@ -173,6 +173,7 @@ jobs:
           path: m2repo/repository
           format: spdx-json
           output-file: ${{ vars.COLLECTOR }}-sbom-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.spdx.json
+          dependency-snapshot: true
 
       - name: Upload SBOM
         uses: actions/upload-artifact@v4
