@@ -88,6 +88,28 @@ jobs:
           tree target || true
           echo -e "\nZipping BOMs"
           zip -jD ${{ vars.COLLECTOR }}-bom-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.zip target/bom.*
+      - name: Export Maven dependency tree (text + dot)
+        run: |
+          # Text tree (reactor)
+          mvn -DskipTests=true --no-transfer-progress -B -s settings.xml \
+            -DoutputType=text \
+            -DoutputFile="${{ vars.COLLECTOR }}-deptree-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.txt" \
+            dependency:tree
+
+          # Optional: Graphviz DOT format (nice for visualizing)
+          mvn -DskipTests=true --no-transfer-progress -B -s settings.xml \
+            -DoutputType=dot \
+            -DoutputFile="${{ vars.COLLECTOR }}-deptree-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.dot" \
+            dependency:tree
+
+          ls -lAh ${{ vars.COLLECTOR }}-deptree-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.*
+      - name: Upload dependency tree artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ vars.COLLECTOR }}-deptree-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}
+          path: |
+            ${{ vars.COLLECTOR }}-deptree-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.txt
+            ${{ vars.COLLECTOR }}-deptree-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.dot
 
       - name: Upload BOM ZIP
         uses: actions/upload-artifact@v4
