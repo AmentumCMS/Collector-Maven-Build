@@ -8,13 +8,17 @@
 
 name: Maven Collector - Main
 run-name: ${{ github.actor }} is Collecting Maven-ness (Main) 🚀
+
 on:
   push:
     branches:
       - main
   schedule:
-    - cron: "0 0 1 * *" # Update on First of month at midnight UTC
+    - cron: "0 0 1 * *" # First of month at midnight UTC
   workflow_dispatch:
+
+env:
+  BRANCH_NAME: main
 
 jobs:
   Date:
@@ -31,12 +35,14 @@ jobs:
           echo "Values:"
           cat $GITHUB_OUTPUT
 
-  CollectM2:
-    needs: [Date]
+  UpdateVers:
     runs-on: ubuntu-24.04
+    needs: [Date]
     permissions:
       contents: write
       pull-requests: read
+    env:
+      GH_TOKEN: ${{ github.token }}
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
@@ -48,29 +54,93 @@ jobs:
           distribution: "temurin"
           cache: maven
 
-      - name: Build with Maven
-        run: mvn -DskipTests=true --no-transfer-progress -s settings.xml -B package
-
-      - name: TARchive .m2 directory
+      - name: Set up git
         run: |
-          ls -lAh ${{ github.workspace }}
-          tar -cvzf ${{ vars.COLLECTOR }}-m2-${{ needs.Date.outputs.Date }}.tgz -C ~/.m2 repository \
-            | tee ${{ vars.COLLECTOR }}-m2-${{ needs.Date.outputs.Date }}.tgz.txt
+          git config user.name "$(git log -n 1 --pretty=format:%an)"
+          git config user.email "$(git log -n 1 --pretty=format:%ae)"
+
+      - name: Advance Dependency versions
+        run: |
+          set +ex
+          mvn --no-transfer-progress -DskipTests=true -ssettings.xml -B versions:update-parent
+          git commit -am "Update versions (${{ needs.Date.outputs.Date }})" || true
+          git push || true
+
+  BuildOnce:
+    needs: [Date, UpdateVers]
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: "temurin"
+          cache: maven
+
+      - name: Build once (populate ~/.m2 + generate BOM)
+        run: |
+          mvn -DskipTests=true --no-transfer-progress -B -s settings.xml \
+            package cyclonedx:makeAggregateBom
+
+      - name: Create BoM ZIP
+        run: |
+          echo -e "\nTarget Directory Listing"
+          ls -lAh target/* || true
+          echo -e "\nTree of Target directory"
+          tree target || true
+          echo -e "\nZipping BOMs"
+          zip -jD ${{ vars.COLLECTOR }}-bom-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.zip target/bom.*
+
+      - name: Export Maven dependency tree (text + dot)
+        run: |
+          mvn -DskipTests=true --no-transfer-progress -B -s settings.xml \
+            -DoutputType=text \
+            -DoutputFile="${{ vars.COLLECTOR }}-deptree-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.txt" \
+            dependency:tree
+
+          mvn -DskipTests=true --no-transfer-progress -B -s settings.xml \
+            -DoutputType=dot \
+            -DoutputFile="${{ vars.COLLECTOR }}-deptree-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.dot" \
+            dependency:tree
+
+          ls -lAh ${{ vars.COLLECTOR }}-deptree-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.*
+
+      - name: Upload dependency tree artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ vars.COLLECTOR }}-deptree-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}
+          path: |
+            ${{ vars.COLLECTOR }}-deptree-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.txt
+            ${{ vars.COLLECTOR }}-deptree-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.dot
+
+      - name: Upload BOM ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ vars.COLLECTOR }}-bom-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.zip
+          path: ${{ vars.COLLECTOR }}-bom-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.zip
+
+      - name: TARchive .m2 directory (collector payload)
+        run: |
+          tar -cvzf ${{ vars.COLLECTOR }}-m2-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.tgz -C ~/.m2 repository \
+            | tee ${{ vars.COLLECTOR }}-m2-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.tgz.txt
 
       - name: Upload M2 artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ vars.COLLECTOR }}-m2-${{ needs.Date.outputs.Date }}.tgz
-          path: ${{ vars.COLLECTOR }}-m2-${{ needs.Date.outputs.Date }}.tgz
+          name: ${{ vars.COLLECTOR }}-m2-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.tgz
+          path: ${{ vars.COLLECTOR }}-m2-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.tgz
 
       - name: Upload M2 ToC artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ vars.COLLECTOR }}-m2-${{ needs.Date.outputs.Date }}.tgz.txt
-          path: ${{ vars.COLLECTOR }}-m2-${{ needs.Date.outputs.Date }}.tgz.txt
+          name: ${{ vars.COLLECTOR }}-m2-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.tgz.txt
+          path: ${{ vars.COLLECTOR }}-m2-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.tgz.txt
 
   VulnScan:
-    needs: [Date]
+    needs: [Date, BuildOnce]
     runs-on: ubuntu-24.04
     permissions:
       contents: read
@@ -79,17 +149,17 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
+      - name: Download M2 artifact from BuildOnce
+        uses: actions/download-artifact@v4
         with:
-          java-version: "17"
-          distribution: "temurin"
-          cache: maven
+          name: ${{ vars.COLLECTOR }}-m2-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.tgz
+          path: .
 
-      - name: Build with Maven (populate ~/.m2)
-        run: mvn -DskipTests=true --no-transfer-progress -B -s settings.xml package
+      - name: Restore ~/.m2/repository
+        run: |
+          mkdir -p ~/.m2
+          tar -xzf "${{ vars.COLLECTOR }}-m2-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.tgz" -C ~/.m2
 
-      # syft/sbom-action "path" is relative to repo root, so expose ~/.m2/repository inside workspace
       - name: Link Maven repository into workspace
         run: |
           mkdir -p m2repo
@@ -101,13 +171,14 @@ jobs:
         with:
           path: m2repo/repository
           format: spdx-json
-          output-file: ${{ vars.COLLECTOR }}-sbom-m2-main-${{ needs.Date.outputs.Date }}.spdx.json
+          output-file: ${{ vars.COLLECTOR }}-sbom-m2-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.spdx.json
+          dependency-snapshot: true
 
       - name: Upload SBOM
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ vars.COLLECTOR }}-sbom-m2-main-${{ needs.Date.outputs.Date }}.spdx.json
-          path: ${{ vars.COLLECTOR }}-sbom-m2-main-${{ needs.Date.outputs.Date }}.spdx.json
+          name: ${{ vars.COLLECTOR }}-sbom-m2-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.spdx.json
+          path: ${{ vars.COLLECTOR }}-sbom-m2-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.spdx.json
 
       - name: Grype scan (SARIF)
         uses: anchore/scan-action@v7.2.2
@@ -116,19 +187,19 @@ jobs:
           fail-build: false
           severity-cutoff: high
           output-format: sarif
-          output-file: ${{ vars.COLLECTOR }}-grype-m2-main-${{ needs.Date.outputs.Date }}.sarif
+          output-file: ${{ vars.COLLECTOR }}-grype-m2-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.sarif
 
       - name: Upload Grype SARIF
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ vars.COLLECTOR }}-grype-m2-main-${{ needs.Date.outputs.Date }}.sarif
-          path: ${{ vars.COLLECTOR }}-grype-m2-main-${{ needs.Date.outputs.Date }}.sarif
+          name: ${{ vars.COLLECTOR }}-grype-m2-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.sarif
+          path: ${{ vars.COLLECTOR }}-grype-m2-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.sarif
 
       - name: Upload SARIF to GitHub Code Scanning
         if: always()
         uses: github/codeql-action/upload-sarif@v3
         with:
-          sarif_file: ${{ vars.COLLECTOR }}-grype-m2-main-${{ needs.Date.outputs.Date }}.sarif
+          sarif_file: ${{ vars.COLLECTOR }}-grype-m2-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.sarif
 
       - name: Grype scan (JSON)
         uses: anchore/scan-action@v7.2.2
@@ -137,15 +208,14 @@ jobs:
           fail-build: false
           severity-cutoff: high
           output-format: json
-          output-file: ${{ vars.COLLECTOR }}-grype-m2-main-${{ needs.Date.outputs.Date }}.json
+          output-file: ${{ vars.COLLECTOR }}-grype-m2-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.json
 
       - name: Upload Grype JSON
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ vars.COLLECTOR }}-grype-m2-main-${{ needs.Date.outputs.Date }}.json
-          path: ${{ vars.COLLECTOR }}-grype-m2-main-${{ needs.Date.outputs.Date }}.json
+          name: ${{ vars.COLLECTOR }}-grype-m2-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.json
+          path: ${{ vars.COLLECTOR }}-grype-m2-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.json
 
-      # Human-friendly "proof" report into Step Summary (like your container workflow)
       - name: Generate Grype Proof Report
         if: always()
         run: |
@@ -153,12 +223,10 @@ jobs:
           curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh -s -- -b .
           ./grype --version
 
-          # Table format is easiest to read in summary
           ./grype m2repo/repository -o table > grype-report.txt
 
           echo "## Grype Results (Maven ~/.m2) ⚓" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-          # Avoid mega summaries; keep it readable
           head -n 250 grype-report.txt >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
 
@@ -170,70 +238,63 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: evidence-grype-report-m2-main-${{ needs.Date.outputs.Date }}
+          name: evidence-grype-report-m2-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}
           path: grype-report.txt
 
-      # OSV scanning + Summary
-      - name: OSV scan
-        id: osv
-        uses: google/osv-scanner-action@v2
-        with:
-          scan-args: >-
-            --format=json
-            --output=${{ vars.COLLECTOR }}-osv-main-${{ needs.Date.outputs.Date }}.json
+      - name: Install OSV-Scanner CLI
+        if: always()
+        run: |
+          set -euo pipefail
+          OSV_VERSION="v2.3.2"
+          curl -sSfL "https://github.com/google/osv-scanner/releases/download/${OSV_VERSION}/osv-scanner_linux_amd64" -o osv-scanner
+          chmod +x ./osv-scanner
+          ./osv-scanner --version
+
+      - name: OSV scan (JSON + SARIF)
+        if: always()
+        run: |
+          set +e
+          ./osv-scanner scan . \
+            --format json \
+            --output "${{ vars.COLLECTOR }}-osv-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.json"
+
+          ./osv-scanner scan . \
+            --format sarif \
+            --output "${{ vars.COLLECTOR }}-osv-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.sarif"
 
       - name: Upload OSV JSON
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ vars.COLLECTOR }}-osv-main-${{ needs.Date.outputs.Date }}.json
-          path: ${{ vars.COLLECTOR }}-osv-main-${{ needs.Date.outputs.Date }}.json
+          name: ${{ vars.COLLECTOR }}-osv-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.json
+          path: ${{ vars.COLLECTOR }}-osv-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.json
+
+      - name: Upload OSV SARIF artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ vars.COLLECTOR }}-osv-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.sarif
+          path: ${{ vars.COLLECTOR }}-osv-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.sarif
+
+      - name: Upload OSV SARIF to GitHub Code Scanning
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: ${{ vars.COLLECTOR }}-osv-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.sarif
 
       - name: Publish OSV Summary
         if: always()
         run: |
-          set +e
-          f="${{ vars.COLLECTOR }}-osv-main-${{ needs.Date.outputs.Date }}.json"
-          if [ ! -f "$f" ]; then
-            echo "OSV output file not found: $f"
-            exit 0
-          fi
-
-          echo "## OSV Results (Project / ecosystem scan) 🛡️" >> $GITHUB_STEP_SUMMARY
-
-          # Count severities (OSV schema can vary; try best-effort)
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Severity counts (best-effort):**" >> $GITHUB_STEP_SUMMARY
+          echo "## OSV-Scanner Results 🛡️" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-          jq -r '
-            def sev(x):
-              (x // "" | ascii_upcase);
-            [
-              .. | objects | .severity? // empty
-            ] | flatten
-            | map(sev(.))
-            | reduce .[] as $s ({}; .[$s] = (.[$s] // 0) + 1)
-            | to_entries
-            | sort_by(.key)
-            | .[]
-            | "\(.key): \(.value)"
-          ' "$f" 2>/dev/null || echo "Could not parse severities from OSV JSON"
+          head -n 200 "${{ vars.COLLECTOR }}-osv-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.json" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
 
-          # Print a small excerpt for quick eyeballing
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**OSV excerpt (first findings):**" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          jq -r '
-            .results[]? 
-            | select(.packages != null)
-            | .packages[]?
-            | "\(.package.ecosystem // "ecosystem") \(.package.name // "name") @ \(.package.version // "version")"
-          ' "$f" 2>/dev/null | head -n 40 || echo "No package summary available"
-          echo '```' >> $GITHUB_STEP_SUMMARY
+      - name: Update dependency graph
+        uses: advanced-security/maven-dependency-submission-action@571e99aab1055c2e71a1e2309b9691de18d6b7d6
 
   Code:
-    needs: [Date]
+    needs: [Date, UpdateVers]
     runs-on: ubuntu-24.04
     steps:
       - name: Check out repository code
@@ -250,50 +311,14 @@ jobs:
 
       - name: Bundle Repo1 code base for ${{ vars.COLLECTOR }}
         run: |
-          git bundle create --progress ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.bundle --all
+          git bundle create --progress ${{ vars.COLLECTOR }}-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.bundle --all
           ls -1Ssht *
 
       - name: Upload bundle
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.bundle
-          path: ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.bundle
-
-  CollectBOM:
-    needs: [Date]
-    runs-on: ubuntu-24.04
-    permissions:
-      contents: write
-      pull-requests: read
-    steps:
-      - name: Check out repository code
-        uses: actions/checkout@v4
-
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: "17"
-          distribution: "temurin"
-          cache: maven
-
-      - name: Build with Maven
-        run: mvn -DskipTests=true -B --no-transfer-progress -s settings.xml cyclonedx:makeAggregateBom
-
-      - name: Create BoM ZIP
-        run: |
-          echo -e "\nTarget Directory Listing"
-          ls -lAh target/*
-          echo -e "\nTree of Target directory"
-          tree target
-          echo -e "\nZipping BOMs"
-          zip -jD ${{ vars.COLLECTOR }}-bom-${{ needs.Date.outputs.Date }}.zip \
-            target/bom.*
-
-      - name: Upload BOM ZIP
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ vars.COLLECTOR }}-bom-${{ needs.Date.outputs.Date }}.zip
-          path: ${{ vars.COLLECTOR }}-bom-${{ needs.Date.outputs.Date }}.zip
+          name: ${{ vars.COLLECTOR }}-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.bundle
+          path: ${{ vars.COLLECTOR }}-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.bundle
 
   CollectXSD:
     needs: [Date]
@@ -326,7 +351,7 @@ jobs:
 
   MakeISO:
     runs-on: ubuntu-24.04
-    needs: [Date, CollectM2, CollectBOM, CollectXSD, Code, VulnScan]
+    needs: [Date, BuildOnce, VulnScan, CollectXSD, UpdateodelVers, Code]
     env:
       GH_TOKEN: ${{ github.token }}
     permissions:
@@ -345,14 +370,14 @@ jobs:
 
       - name: Generate Artifact Hash
         run: |
-          sha256sum -b ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}* | tee \
-            ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.sha
+          sha256sum -b ${{ vars.COLLECTOR }}-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}* | tee \
+            ${{ vars.COLLECTOR }}-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.sha
 
       - name: Upload Artifact sha artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.sha
-          path: ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.sha
+          name: ${{ vars.COLLECTOR }}-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.sha
+          path: ${{ vars.COLLECTOR }}-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.sha
           if-no-files-found: error
 
       - name: Show Artifacts
@@ -362,17 +387,17 @@ jobs:
         run: |
           mkisofs -J -R -v -T -l \
             -V '${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}' \
-            -A '${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}' \
-            -o ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso \
+            -A '${{ vars.COLLECTOR }}-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}' \
+            -o ${{ vars.COLLECTOR }}-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.iso \
             ${{ vars.COLLECTOR }}-*.*
 
       - name: Implant MD5 sum into iso
-        run: implantisomd5 ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso
+        run: implantisomd5 ${{ vars.COLLECTOR }}-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.iso
 
       - name: Generate ISO Hash
         run: |
-          sha256sum -b ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso | tee \
-            ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso.sha
+          sha256sum -b ${{ vars.COLLECTOR }}-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.iso | tee \
+            ${{ vars.COLLECTOR }}-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.iso.sha
 
       - name: Show ISO & Hash
         run: ls -1Ssh *.iso*
@@ -380,7 +405,7 @@ jobs:
       - name: Upload iso artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ vars.COLLECTOR }}-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.iso
+          name: ${{ vars.COLLECTOR }}-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.iso
           path: "*.iso*"
           if-no-files-found: error
 
@@ -414,18 +439,18 @@ jobs:
       - name: Save scan summary
         if: always()
         run: |
-          echo "Virus scan completed" > ${{ vars.COLLECTOR }}-virus-scan-report-${{ needs.Date.outputs.Date }}.txt
-          echo "Scan finished: ${{ steps.virus_scan.outputs.finish }}" >> ${{ vars.COLLECTOR }}-virus-scan-report-${{ needs.Date.outputs.Date }}.txt
-          echo "Viruses found: ${{ steps.virus_scan.outputs.found }}" >> ${{ vars.COLLECTOR }}-virus-scan-report-${{ needs.Date.outputs.Date }}.txt
-          echo "" >> ${{ vars.COLLECTOR }}-virus-scan-report-${{ needs.Date.outputs.Date }}.txt
-          echo "For detailed scan results, check the job logs and step summary." >> ${{ vars.COLLECTOR }}-virus-scan-report-${{ needs.Date.outputs.Date }}.txt
+          echo "Virus scan completed" > ${{ vars.COLLECTOR }}-virus-scan-report-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.txt
+          echo "Scan finished: ${{ steps.virus_scan.outputs.finish }}" >> ${{ vars.COLLECTOR }}-virus-scan-report-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.txt
+          echo "Viruses found: ${{ steps.virus_scan.outputs.found }}" >> ${{ vars.COLLECTOR }}-virus-scan-report-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.txt
+          echo "" >> ${{ vars.COLLECTOR }}-virus-scan-report-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.txt
+          echo "For detailed scan results, check the job logs and step summary." >> ${{ vars.COLLECTOR }}-virus-scan-report-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.txt
 
       - name: Upload virus scan report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ vars.COLLECTOR }}-virus-scan-report-${{ needs.Date.outputs.Date }}.txt
-          path: "*-virus-scan-report-*.txt"
+          name: ${{ vars.COLLECTOR }}-virus-scan-report-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.txt
+          path: "*virus-scan-report*.txt"
           if-no-files-found: warn
 
   Release:
@@ -463,7 +488,6 @@ jobs:
           message: "Release for ${{ needs.Date.outputs.Date }} run"
 
       - name: Create Release
-        id: create_release
         uses: softprops/action-gh-release@v2
         with:
           name: ${{ vars.COLLECTOR }} ${{ needs.Date.outputs.Date }}
@@ -503,4 +527,5 @@ jobs:
           client_secret: ${{ secrets.SHAREPOINT_APP_SECRET }}
           login_endpoint: "login.microsoftonline.us"
           graph_endpoint: "graph.microsoft.us"
+
 
