@@ -351,7 +351,7 @@ jobs:
 
   MakeISO:
     runs-on: ubuntu-24.04
-    needs: [Date, BuildOnce, VulnScan, CollectXSD, UpdateodelVers, Code]
+    needs: [Date, BuildOnce, VulnScan, CollectXSD, UpdateVers, Code]
     env:
       GH_TOKEN: ${{ github.token }}
     permissions:
