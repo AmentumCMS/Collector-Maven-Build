@@ -119,7 +119,10 @@ jobs:
 
       - name: TARchive .m2 directory (collector payload)
         run: |
-          tar -cvzf ${{ vars.COLLECTOR }}-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.tgz -C ~/.m2 repository \
+          ls -lAh ${{ github.workspace }}
+          tar -cvzf ${{ vars.COLLECTOR }}-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.tgz \
+            --exclude='_remote.repositories' -C ~/.m2 \
+            repository \
             | tee ${{ vars.COLLECTOR }}-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.tgz.txt
 
       - name: Upload M2 artifact
