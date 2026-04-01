@@ -766,7 +766,7 @@
 				<artifactId>maven-shade-plugin</artifactId>
 				<version>3.5.3</version>
 			</plugin> -->
-			<!-- <plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
 				<version>3.4.1</version>
@@ -774,13 +774,13 @@
 			<plugin>
 				<groupId>org.sonarsource.scanner.maven</groupId>
 				<artifactId>sonar-maven-plugin</artifactId>
-				<version>3.11.0.3922</version>
+				<version>5.5.0</version>
 			</plugin>
 			<plugin>
 				<groupId>com.checkmarx.maven</groupId>
 				<artifactId>checkmarx-maven-plugin</artifactId>
 				<version>2022.2.3</version>
-			</plugin> -->
+			</plugin>
 			<plugin>
 				<groupId>org.asciidoctor</groupId>
 				<artifactId>asciidoctor-maven-plugin</artifactId>
