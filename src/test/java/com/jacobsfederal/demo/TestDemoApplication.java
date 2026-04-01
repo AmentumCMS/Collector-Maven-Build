@@ -1,4 +1,4 @@
-package com.amentumservices.demo;
+package com.amentumcms.demo;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.test.context.TestConfiguration;
