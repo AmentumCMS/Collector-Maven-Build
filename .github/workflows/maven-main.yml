@@ -9,11 +9,13 @@
 name: Maven Collector - Main
 run-name: ${{ github.actor }} is Collecting Maven-ness (Main) 🚀
 
+
 on:
   push:
     branches:
       - main
   schedule:
+    - cron: "0 0 1 * *" # First of month at midnight UTC
     - cron: "0 0 1 * *" # First of month at midnight UTC
   workflow_dispatch:
 
@@ -130,20 +132,19 @@ jobs:
             repository \
             | tee ${{ vars.COLLECTOR }}-m2-${{ needs.Date.outputs.Date }}.tgz.txt
 
+      - name: Generate TGZ Hash
+        run: |
+          sha256sum -b ${{ vars.COLLECTOR }}-m2-${{ needs.Date.outputs.Date }}.tgz  \
+          | tee ${{ vars.COLLECTOR }}-m2-${{ needs.Date.outputs.Date }}.tgz.sha
+
       - name: Upload M2 artifact
         uses: actions/upload-artifact@v6
         with:
           name: ${{ vars.COLLECTOR }}-m2-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.tgz
-          path: ${{ vars.COLLECTOR }}-m2-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.tgz
-
-      - name: Upload M2 ToC artifact
-        uses: actions/upload-artifact@v6
-        with:
-          name: ${{ vars.COLLECTOR }}-m2-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.tgz.txt
-          path: ${{ vars.COLLECTOR }}-m2-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.tgz.txt
+          path: ${{ vars.COLLECTOR }}-m2-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.tgz*
 
   VulnScan:
-    needs: [Date]
+    needs: [Date, BuildOnce]
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -519,6 +520,8 @@ jobs:
         run: |
           sha256sum -b ${{ vars.COLLECTOR }}-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}* | tee \
             ${{ vars.COLLECTOR }}-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.sha
+          sha256sum -b ${{ vars.COLLECTOR }}-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}* | tee \
+            ${{ vars.COLLECTOR }}-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.sha
 
       - name: Upload Artifact sha artifact
         uses: actions/upload-artifact@v6
@@ -536,6 +539,8 @@ jobs:
             -V '${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}' \
             -A '${{ vars.COLLECTOR }}-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}' \
             -o ${{ vars.COLLECTOR }}-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.iso \
+            -A '${{ vars.COLLECTOR }}-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}' \
+            -o ${{ vars.COLLECTOR }}-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.iso \
             ${{ vars.COLLECTOR }}-*.*
 
       - name: Implant MD5 sum into iso
@@ -543,6 +548,8 @@ jobs:
 
       - name: Generate ISO Hash
         run: |
+          sha256sum -b ${{ vars.COLLECTOR }}-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.iso | tee \
+            ${{ vars.COLLECTOR }}-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.iso.sha
           sha256sum -b ${{ vars.COLLECTOR }}-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.iso | tee \
             ${{ vars.COLLECTOR }}-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.iso.sha
 
@@ -586,6 +593,11 @@ jobs:
       - name: Save scan summary
         if: always()
         run: |
+          echo "Virus scan completed" > ${{ vars.COLLECTOR }}-virus-scan-report-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.txt
+          echo "Scan finished: ${{ steps.virus_scan.outputs.finish }}" >> ${{ vars.COLLECTOR }}-virus-scan-report-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.txt
+          echo "Viruses found: ${{ steps.virus_scan.outputs.found }}" >> ${{ vars.COLLECTOR }}-virus-scan-report-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.txt
+          echo "" >> ${{ vars.COLLECTOR }}-virus-scan-report-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.txt
+          echo "For detailed scan results, check the job logs and step summary." >> ${{ vars.COLLECTOR }}-virus-scan-report-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.txt
           echo "Virus scan completed" > ${{ vars.COLLECTOR }}-virus-scan-report-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.txt
           echo "Scan finished: ${{ steps.virus_scan.outputs.finish }}" >> ${{ vars.COLLECTOR }}-virus-scan-report-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.txt
           echo "Viruses found: ${{ steps.virus_scan.outputs.found }}" >> ${{ vars.COLLECTOR }}-virus-scan-report-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.txt
