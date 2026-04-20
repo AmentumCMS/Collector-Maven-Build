@@ -36,6 +36,8 @@ jobs:
     permissions:
       contents: write
       pull-requests: read
+    env:
+      GH_TOKEN: ${{ github.token }}
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
@@ -115,7 +117,7 @@ jobs:
           cache: maven
 
       - name: Build with Maven
-        run: mvn -DskipTests=true -B --no-transfer-progress  -s settings.xml cyclonedx:makeAggregateBom
+        run: mvn -DskipTests=true -B --no-transfer-progress -s settings.xml cyclonedx:makeAggregateBom
 
       - name: Create BoM ZIP
         run: |
@@ -164,7 +166,7 @@ jobs:
 
   MakeISO:
     runs-on: ubuntu-latest
-    needs: [Date, CollectXSD, Code]
+    needs: [Date, CollectM2, CollectBOM, CollectXSD, Code]
     env:
         GH_TOKEN: ${{ github.token }}
     permissions:
@@ -338,17 +340,3 @@ jobs:
 
       - name: Show Artifacts
         run: ls -1Ssh ${{ vars.COLLECTOR }}-*.*
-
-      - name: Send Files to Sharepoint
-        uses: amentumcms/sharepoint-file-upload-action@main
-        with:
-          file_path: "${{ vars.COLLECTOR }}-*.*"
-          host_name: "${{ secrets.SHAREPOINT_HOST }}"
-          site_name: "${{ secrets.SHAREPOINT_SITE }}"
-          upload_path: "${{ secrets.SHAREPOINT_BASEPATH }}/${{ vars.COLLECTOR }}/${{ needs.Date.outputs.Date }}"
-          tenant_id: ${{ secrets.SHAREPOINT_TENANT_ID }}
-          client_id: ${{ secrets.SHAREPOINT_APP_ID }}
-          client_secret: ${{ secrets.SHAREPOINT_APP_SECRET }}
-          login_endpoint: "login.microsoftonline.us"
-          graph_endpoint: "graph.microsoft.us"
-

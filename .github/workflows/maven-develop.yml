@@ -163,7 +163,7 @@ jobs:
           if-no-files-found: error
 
   MakeISO:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     needs: [Date, CollectM2, CollectBOM, CollectXSD, Code]
     env:
         GH_TOKEN: ${{ github.token }}
@@ -218,15 +218,8 @@ jobs:
       - name: Upload iso artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso
-          path: ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso
-          if-no-files-found: error
-
-      - name: Upload iso sha artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso.sha
-          path: ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso.sha
+          name: ${{ vars.COLLECTOR }}-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.iso
+          path: "*.iso*"
           if-no-files-found: error
 
       # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
@@ -280,7 +273,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ vars.COLLECTOR }}-virus-scan-report-${{ needs.Date.outputs.Date }}.txt
-          path: "*virus-scan-report*.txt"
+          path: "*-virus-scan-report-*.txt"
           if-no-files-found: warn
 
   Release:
