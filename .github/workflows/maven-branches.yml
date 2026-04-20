@@ -127,20 +127,19 @@ jobs:
             repository \
             | tee ${{ vars.COLLECTOR }}-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.tgz.txt
 
+      - name: Generate TGZ Hash
+        run: |
+          sha256sum -b ${{ vars.COLLECTOR }}-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.tgz  \
+          | tee ${{ vars.COLLECTOR }}-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.tgz.sha
+
       - name: Upload M2 artifact
         uses: actions/upload-artifact@v6
         with:
           name: ${{ vars.COLLECTOR }}-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.tgz
-          path: ${{ vars.COLLECTOR }}-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.tgz
-
-      - name: Upload M2 ToC artifact
-        uses: actions/upload-artifact@v6
-        with:
-          name: ${{ vars.COLLECTOR }}-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.tgz.txt
-          path: ${{ vars.COLLECTOR }}-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.tgz.txt
+          path: ${{ vars.COLLECTOR }}-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.tgz*
 
   VulnScan:
-    needs: [Date, BuildOnce]
+    needs: [Date, BuildOnce, UpdateVers]
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -296,7 +295,6 @@ jobs:
           echo '```' >> $GITHUB_STEP_SUMMARY
       - name: Update dependency graph
         uses: advanced-security/maven-dependency-submission-action@571e99aab1055c2e71a1e2309b9691de18d6b7d6
-
 
   Code:
     needs: [Date, UpdateVers]
@@ -466,7 +464,7 @@ jobs:
 
   Release:
     runs-on: ubuntu-latest
-    needs: [Date, VirusScan]
+    needs: [Date, VirusScan, VulnScan]
     env:
         GH_TOKEN: ${{ github.token }}
     permissions:
@@ -486,7 +484,7 @@ jobs:
 
   Sharepoint:
     runs-on: ubuntu-latest
-    needs: [Date, VirusScan]
+    needs: [Date, VirusScan, VulnScan]
     env:
         GH_TOKEN: ${{ github.token }}
     permissions:

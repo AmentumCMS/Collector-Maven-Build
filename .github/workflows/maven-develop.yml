@@ -58,17 +58,16 @@ jobs:
             repository \
             | tee ${{ vars.COLLECTOR }}-m2-${{ needs.Date.outputs.Date }}.tgz.txt
 
+      - name: Generate TGZ Hash
+        run: |
+          sha256sum -b ${{ vars.COLLECTOR }}-m2-${{ needs.Date.outputs.Date }}.tgz  \
+          | tee ${{ vars.COLLECTOR }}-m2-${{ needs.Date.outputs.Date }}.tgz.sha
+
       - name: Upload M2 artifact
         uses: actions/upload-artifact@v6
         with:
           name: ${{ vars.COLLECTOR }}-m2-${{ needs.Date.outputs.Date }}.tgz
-          path: ${{ vars.COLLECTOR }}-m2-${{ needs.Date.outputs.Date }}.tgz
-
-      - name: Upload M2 ToC artifact
-        uses: actions/upload-artifact@v6
-        with:
-          name: ${{ vars.COLLECTOR }}-m2-${{ needs.Date.outputs.Date }}.tgz.txt
-          path: ${{ vars.COLLECTOR }}-m2-${{ needs.Date.outputs.Date }}.tgz.txt
+          path: ${{ vars.COLLECTOR }}-m2-${{ needs.Date.outputs.Date }}.tgz*
 
   Code:
     needs: [Date]
