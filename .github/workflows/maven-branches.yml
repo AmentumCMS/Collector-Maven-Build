@@ -106,7 +106,7 @@ jobs:
 
           ls -lAh ${{ vars.COLLECTOR }}-deptree-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.*
       - name: Upload dependency tree artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: ${{ vars.COLLECTOR }}-deptree-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}
           path: |
@@ -114,7 +114,7 @@ jobs:
             ${{ vars.COLLECTOR }}-deptree-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.dot
 
       - name: Upload BOM ZIP
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: ${{ vars.COLLECTOR }}-bom-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.zip
           path: ${{ vars.COLLECTOR }}-bom-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.zip
@@ -141,13 +141,13 @@ jobs:
 
   VulnScan:
     needs: [Date, BuildOnce]
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       security-events: write
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Download M2 artifact from BuildOnce
         uses: actions/download-artifact@v4
@@ -176,7 +176,7 @@ jobs:
           dependency-snapshot: true
 
       - name: Upload SBOM
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: ${{ vars.COLLECTOR }}-sbom-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.spdx.json
           path: ${{ vars.COLLECTOR }}-sbom-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.spdx.json
@@ -191,7 +191,7 @@ jobs:
           output-file: ${{ vars.COLLECTOR }}-grype-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.sarif
 
       - name: Upload Grype SARIF
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: ${{ vars.COLLECTOR }}-grype-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.sarif
           path: ${{ vars.COLLECTOR }}-grype-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.sarif
@@ -212,7 +212,7 @@ jobs:
           output-file: ${{ vars.COLLECTOR }}-grype-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.json
 
       - name: Upload Grype JSON
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: ${{ vars.COLLECTOR }}-grype-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.json
           path: ${{ vars.COLLECTOR }}-grype-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.json
@@ -240,7 +240,7 @@ jobs:
 
       - name: Upload Grype Evidence
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: evidence-grype-report-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}
           path: grype-report.txt
@@ -268,14 +268,14 @@ jobs:
 
       - name: Upload OSV JSON
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: ${{ vars.COLLECTOR }}-osv-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.json
           path: ${{ vars.COLLECTOR }}-osv-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.json
 
       - name: Upload OSV SARIF artifact
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: ${{ vars.COLLECTOR }}-osv-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.sarif
           path: ${{ vars.COLLECTOR }}-osv-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.sarif
@@ -300,7 +300,7 @@ jobs:
 
   Code:
     needs: [Date, UpdateVers]
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
         uses: actions/checkout@v6
