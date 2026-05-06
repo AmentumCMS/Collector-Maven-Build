@@ -82,7 +82,7 @@ jobs:
           ls -1sh ${{ vars.COLLECTOR }}-deptree-${{ needs.Date.outputs.Date }}.*
 
       - name: Upload dependency tree artifacts
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ vars.COLLECTOR }}-deptree-${{ needs.Date.outputs.Date }}
           path: |
@@ -90,7 +90,7 @@ jobs:
             ${{ vars.COLLECTOR }}-deptree-${{ needs.Date.outputs.Date }}.dot
 
       - name: Upload BOM ZIP
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ vars.COLLECTOR }}-bom-${{ needs.Date.outputs.Date }}.zip
           path: ${{ vars.COLLECTOR }}-bom-${{ needs.Date.outputs.Date }}.zip
@@ -128,7 +128,7 @@ jobs:
           git config user.email "$(git log -n 1 --pretty=format:%ae)"
 
       - name: Cache Maven repository
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.m2/repository
           key: maven-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}
@@ -145,7 +145,7 @@ jobs:
           dependency-snapshot: true
 
       - name: Upload SBOM
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ vars.COLLECTOR }}-sbom-m2-${{ needs.Date.outputs.Date }}.spdx.json
           path: ${{ vars.COLLECTOR }}-sbom-m2-${{ needs.Date.outputs.Date }}.spdx.json
@@ -160,7 +160,7 @@ jobs:
           output-file: ${{ vars.COLLECTOR }}-grype-m2-${{ needs.Date.outputs.Date }}.sarif
 
       - name: Upload Grype SARIF
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ vars.COLLECTOR }}-grype-m2-${{ needs.Date.outputs.Date }}.sarif
           path: ${{ vars.COLLECTOR }}-grype-m2-${{ needs.Date.outputs.Date }}.sarif
@@ -181,7 +181,7 @@ jobs:
           output-file: ${{ vars.COLLECTOR }}-grype-m2-${{ needs.Date.outputs.Date }}.json
 
       - name: Upload Grype JSON
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ vars.COLLECTOR }}-grype-m2-${{ needs.Date.outputs.Date }}.json
           path: ${{ vars.COLLECTOR }}-grype-m2-${{ needs.Date.outputs.Date }}.json
@@ -213,7 +213,7 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Cache Maven repository
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.m2/repository
           key: maven-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}
@@ -270,7 +270,7 @@ jobs:
           output-file: ${{ vars.COLLECTOR }}-grype-${{ needs.Date.outputs.Date }}.sarif
 
       - name: Upload Grype SARIF
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ vars.COLLECTOR }}-grype-${{ needs.Date.outputs.Date }}.sarif
           path: ${{ vars.COLLECTOR }}-grype-${{ needs.Date.outputs.Date }}.sarif
@@ -291,7 +291,7 @@ jobs:
           output-file: ${{ vars.COLLECTOR }}-grype-${{ needs.Date.outputs.Date }}.json
 
       - name: Upload Grype JSON
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ vars.COLLECTOR }}-grype-${{ needs.Date.outputs.Date }}.json
           path: ${{ vars.COLLECTOR }}-grype-${{ needs.Date.outputs.Date }}.json
@@ -319,7 +319,7 @@ jobs:
 
       - name: Upload Grype Evidence
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: evidence-grype-report-${{ needs.Date.outputs.Date }}
           path: grype-report.txt
@@ -335,7 +335,7 @@ jobs:
 
       - name: Upload OSV JSON
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ vars.COLLECTOR }}-osv-main-${{ needs.Date.outputs.Date }}.json
           path: ${{ vars.COLLECTOR }}-osv-main-${{ needs.Date.outputs.Date }}.json
