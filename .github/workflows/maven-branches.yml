@@ -87,15 +87,6 @@ jobs:
           mvn -DskipTests=true --no-transfer-progress -B -s settings.xml \
             package cyclonedx:makeAggregateBom
 
-      - name: Create BoM ZIP
-        run: |
-          echo -e "\nTarget Directory Listing"
-          ls -lAh target/* || true
-          echo -e "\nTree of Target directory"
-          tree target || true
-          echo -e "\nZipping BOMs"
-          zip -jD ${{ vars.COLLECTOR }}-bom-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.zip target/bom.*
-
       - name: Export Maven dependency tree (text + dot)
         run: |
           mvn -DskipTests=true --no-transfer-progress -B -s settings.xml \
@@ -118,12 +109,6 @@ jobs:
             ${{ vars.COLLECTOR }}-deptree-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.txt
             ${{ vars.COLLECTOR }}-deptree-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.dot
 
-      - name: Upload BOM ZIP
-        uses: actions/upload-artifact@v7
-        with:
-          name: ${{ vars.COLLECTOR }}-bom-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.zip
-          path: ${{ vars.COLLECTOR }}-bom-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.zip
-
       - name: TARchive .m2 directory (collector payload)
         run: |
           ls -lAh ${{ github.workspace }}
@@ -144,6 +129,14 @@ jobs:
           name: ${{ vars.COLLECTOR }}-m2-${{ needs.Date.outputs.Date }}.tgz.txt
           path: ${{ vars.COLLECTOR }}-m2-${{ needs.Date.outputs.Date }}.tgz.txt
 
+      - name: Cache Maven repository
+        uses: actions/cache@v5
+        with:
+          path: ~/.m2/repository
+          key: maven-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            maven-${{ runner.os }}-
+
   Code:
     needs: [ Date ]
     runs-on: ubuntu-latest
@@ -155,64 +148,6 @@ jobs:
         run: |
           git config user.name "$(git log -n 1 --pretty=format:%an)"
           git config user.email "$(git log -n 1 --pretty=format:%ae)"
-
-      - name: Cache Maven repository
-        uses: actions/cache@v5
-        with:
-          path: ~/.m2/repository
-          key: maven-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            maven-${{ runner.os }}-
-
-      - name: Generate SBOM (Syft) for ~/.m2/repository
-        uses: anchore/sbom-action@v0.20.11
-        with:
-          path: ~/.m2/repository
-          format: spdx-json
-          output-file: ${{ vars.COLLECTOR }}-sbom-m2-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.spdx.json
-          dependency-snapshot: true
-
-      - name: Upload SBOM
-        uses: actions/upload-artifact@v7
-        with:
-          name: ${{ vars.COLLECTOR }}-sbom-m2-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.spdx.json
-          path: ${{ vars.COLLECTOR }}-sbom-m2-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.spdx.json
-
-      - name: Grype scan (SARIF)
-        uses: anchore/scan-action@v7.2.2
-        with:
-          path: ~/.m2/repository
-          fail-build: false
-          severity-cutoff: high
-          output-format: sarif
-          output-file: ${{ vars.COLLECTOR }}-grype-m2-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.sarif
-
-      - name: Upload Grype SARIF
-        uses: actions/upload-artifact@v7
-        with:
-          name: ${{ vars.COLLECTOR }}-grype-m2-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.sarif
-          path: ${{ vars.COLLECTOR }}-grype-m2-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.sarif
-
-      - name: Upload SARIF to GitHub Code Scanning
-        if: always()
-        uses: github/codeql-action/upload-sarif@v4
-        with:
-          sarif_file: ${{ vars.COLLECTOR }}-grype-m2-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.sarif
-
-      - name: Grype scan (JSON)
-        uses: anchore/scan-action@v7.2.2
-        with:
-          path: ~/.m2/repository
-          fail-build: false
-          severity-cutoff: high
-          output-format: json
-          output-file: ${{ vars.COLLECTOR }}-grype-m2-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.json
-
-      - name: Upload Grype JSON
-        uses: actions/upload-artifact@v7
-        with:
-          name: ${{ vars.COLLECTOR }}-grype-m2-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.json
-          path: ${{ vars.COLLECTOR }}-grype-m2-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.json
 
       - name: Bundle code base
         run: |
@@ -231,7 +166,7 @@ jobs:
           path: ${{ vars.COLLECTOR }}-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.bundle*
 
   CollectBOM:
-    needs: [ Date, UpdateVers ]
+    needs: [ Date, CollectM2 ]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -438,7 +373,7 @@ jobs:
 
   MakeISO:
     runs-on: ubuntu-latest
-    needs: [ Date, CollectM2, CollectBOM, CollectXSD, UpdateVers, Code ]
+    needs: [ Date, CollectM2, CollectBOM, CollectXSD, Code ]
     env:
       GH_TOKEN: ${{ github.token }}
     permissions:
