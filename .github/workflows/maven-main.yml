@@ -156,7 +156,7 @@ jobs:
           ls -lAh m2repo
 
       - name: Generate SBOM (Syft) for ~/.m2/repository
-        uses: anchore/sbom-action@v0.20.11
+        uses: anchore/sbom-action@v0.24.0
         with:
           path: m2repo/repository
           format: spdx-json
