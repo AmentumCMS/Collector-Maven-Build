@@ -170,7 +170,7 @@ jobs:
           path: ${{ vars.COLLECTOR }}-sbom-m2-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.spdx.json
 
       - name: Grype scan (SARIF)
-        uses: anchore/scan-action@v7.2.2
+        uses: anchore/scan-action@v7.4.0
         with:
           path: m2repo/repository
           fail-build: false
@@ -191,7 +191,7 @@ jobs:
           sarif_file: ${{ vars.COLLECTOR }}-grype-m2-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.sarif
 
       - name: Grype scan (JSON)
-        uses: anchore/scan-action@v7.2.2
+        uses: anchore/scan-action@v7.4.0
         with:
           path: m2repo/repository
           fail-build: false
