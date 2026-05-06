@@ -27,8 +27,8 @@ jobs:
           echo "Setting Date"
           echo "DATE=$(date '+%Y%m%d-%H%M')" >> $GITHUB_OUTPUT
           echo -e "\n$GITHUB_OUTPUT\n"
-          echo "Values:"
-          cat $GITHUB_OUTPUT
+          echo -e "Values: $(cat $GITHUB_OUTPUT)\n"
+          env
 
   # Update Component Versions
   # Unneeded in main branch, as we want to capture the "natural" state of the repository without modifications. This step is more relevant for branches where active development is happening and versions may need to be updated to avoid conflicts or to reflect the current state of the codebase.
@@ -263,7 +263,7 @@ jobs:
       - name: Grype scan (SARIF)
         uses: anchore/scan-action@v7.4.0
         with:
-          path: m2repo/repository
+          path: ~/.m2/repository
           fail-build: false
           severity-cutoff: high
           output-format: sarif
@@ -284,7 +284,7 @@ jobs:
       - name: Grype scan (JSON)
         uses: anchore/scan-action@v7.4.0
         with:
-          path: m2repo/repository
+          path: ~/.m2/repository
           fail-build: false
           severity-cutoff: high
           output-format: json
@@ -305,7 +305,7 @@ jobs:
           ./grype --version
 
           # Table format is easiest to read in summary
-          ./grype m2repo/repository -o table > grype-report.txt
+          ./grype ~/.m2/repository -o table > grype-report.txt
 
           echo "## Grype Results (Maven ~/.m2) ⚓" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
