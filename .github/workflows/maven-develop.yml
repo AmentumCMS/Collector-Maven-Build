@@ -292,21 +292,21 @@ jobs:
         uses: google/osv-scanner-action@v2.3.5
         with:
           scan-args: >-
-            --format=json --output=${{ vars.COLLECTOR }}-osv-main-${{
-            needs.Date.outputs.Date }}.json
+            --format=json \
+            --output=${{ vars.COLLECTOR }}-osv-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.json
 
       - name: Upload OSV JSON
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: ${{ vars.COLLECTOR }}-osv-main-${{ needs.Date.outputs.Date }}.json
-          path: ${{ vars.COLLECTOR }}-osv-main-${{ needs.Date.outputs.Date }}.json
+          name: ${{ vars.COLLECTOR }}-osv-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.json
+          path: ${{ vars.COLLECTOR }}-osv-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.json
 
       - name: Publish OSV Summary
         if: always()
         run: |
           set +e
-          f="${{ vars.COLLECTOR }}-osv-main-${{ needs.Date.outputs.Date }}.json"
+          f="${{ vars.COLLECTOR }}-osv-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.json"
           if [ ! -f "$f" ]; then
             echo "OSV output file not found: $f"
             exit 0
