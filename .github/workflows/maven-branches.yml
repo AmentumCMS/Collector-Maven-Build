@@ -167,7 +167,7 @@ jobs:
       - name: Generate SBOM (Syft) for ~/.m2/repository
         uses: anchore/sbom-action@v0.20.11
         with:
-          path: m2repo/repository
+          path: ~/.m2/repository
           format: spdx-json
           output-file: ${{ vars.COLLECTOR }}-sbom-m2-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.spdx.json
           dependency-snapshot: true
@@ -181,7 +181,7 @@ jobs:
       - name: Grype scan (SARIF)
         uses: anchore/scan-action@v7.2.2
         with:
-          path: m2repo/repository
+          path: ~/.m2/repository
           fail-build: false
           severity-cutoff: high
           output-format: sarif
@@ -202,7 +202,7 @@ jobs:
       - name: Grype scan (JSON)
         uses: anchore/scan-action@v7.2.2
         with:
-          path: m2repo/repository
+          path: ~/.m2/repository
           fail-build: false
           severity-cutoff: high
           output-format: json
@@ -278,7 +278,7 @@ jobs:
       - name: Generate SBOM (Syft) for ~/.m2/repository
         uses: anchore/sbom-action@v0.20.11
         with:
-          path: m2repo/repository
+          path: ~/.m2/repository
           format: spdx-json
           output-file: ${{ vars.COLLECTOR }}-sbom-${{ env.BRANCH_NAME }}-${{ needs.Date.outputs.Date }}.spdx.json
 
@@ -291,7 +291,7 @@ jobs:
       - name: Grype scan (SARIF)
         uses: anchore/scan-action@v7.4.0
         with:
-          path: m2repo/repository
+          path: ~/.m2/repository
           fail-build: false
           severity-cutoff: high
           output-format: sarif
@@ -312,7 +312,7 @@ jobs:
       - name: Grype scan (JSON)
         uses: anchore/scan-action@v7.4.0
         with:
-          path: m2repo/repository
+          path: ~/.m2/repository
           fail-build: false
           severity-cutoff: high
           output-format: json
@@ -333,7 +333,7 @@ jobs:
           ./grype --version
 
           # Table format is easiest to read in summary
-          ./grype m2repo/repository -o table > grype-report.txt
+          ./grype ~/.m2/repository -o table > grype-report.txt
 
           echo "## Grype Results (Maven ~/.m2) ⚓" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
