@@ -23,10 +23,10 @@ jobs:
       - name: Get current date
         id: DATE
         run: |
-          echo "Setting Date"
+          echo -n "Setting Date in "
           echo "DATE=$(date '+%Y%m%d-%H%M')" >> $GITHUB_OUTPUT
-          echo -e "\n$GITHUB_OUTPUT\n"
-          echo -e "Values: $(cat $GITHUB_OUTPUT)\n"
+          echo "$GITHUB_OUTPUT"
+          echo "Values: $(cat $GITHUB_OUTPUT)"
       - name: Display Envars
         run: env
 
@@ -126,12 +126,14 @@ jobs:
         with:
           name: ${{ vars.COLLECTOR }}-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.tgz
           path: ${{ vars.COLLECTOR }}-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.tgz*
+          if-no-files-found: error
 
       - name: Upload M2 ToC artifact
         uses: actions/upload-artifact@v7
         with:
           name: ${{ vars.COLLECTOR }}-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.tgz.txt
           path: ${{ vars.COLLECTOR }}-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.tgz.txt
+          if-no-files-found: error
 
       - name: Cache Maven repository
         uses: actions/cache@v5
