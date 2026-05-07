@@ -135,6 +135,9 @@ jobs:
           path: ${{ vars.COLLECTOR }}-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.tgz.txt
           if-no-files-found: error
 
+      - name: Update dependency graph
+        uses: advanced-security/maven-dependency-submission-action@v5.0.0
+
       - name: Cache Maven repository
         uses: actions/cache@v5
         with:
@@ -347,9 +350,6 @@ jobs:
       #       | "\(.key): \(.value)"
       #     ' "$f" 2>/dev/null || echo "Could not parse severities from OSV JSON"
       #     echo '```' >> $GITHUB_STEP_SUMMARY
-
-      - name: Update dependency graph
-        uses: advanced-security/maven-dependency-submission-action@v5.0.0
 
   CollectXSD:
     needs: [ Date ]
