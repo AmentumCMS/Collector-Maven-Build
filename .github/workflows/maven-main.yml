@@ -24,11 +24,12 @@ jobs:
       - name: Get current date
         id: DATE
         run: |
-          echo "Setting Date"
+          echo -n "Setting Date in "
           echo "DATE=$(date '+%Y%m%d-%H%M')" >> $GITHUB_OUTPUT
-          echo -e "\n$GITHUB_OUTPUT\n"
-          echo -e "Values: $(cat $GITHUB_OUTPUT)\n"
-          env
+          echo "$GITHUB_OUTPUT"
+          echo "Values: $(cat $GITHUB_OUTPUT)"
+      - name: Display Envars
+        run: env
 
   # Update Component Versions
   # Unneeded in main branch, as we want to capture the "natural" state of the repository without modifications. This step is more relevant for branches where active development is happening and versions may need to be updated to avoid conflicts or to reflect the current state of the codebase.
@@ -104,9 +105,6 @@ jobs:
           name: ${{ vars.COLLECTOR }}-m2-${{ needs.Date.outputs.Date }}.tgz.txt
           path: ${{ vars.COLLECTOR }}-m2-${{ needs.Date.outputs.Date }}.tgz.txt
           if-no-files-found: error
-
-      - name: Update dependency graph
-        uses: advanced-security/maven-dependency-submission-action@v5.0.0
 
       - name: Cache Maven repository
         uses: actions/cache@v5
@@ -320,6 +318,9 @@ jobs:
       #       | "\(.key): \(.value)"
       #     ' "$f" 2>/dev/null || echo "Could not parse severities from OSV JSON"
       #     echo '```' >> $GITHUB_STEP_SUMMARY
+
+      - name: Update dependency graph
+        uses: advanced-security/maven-dependency-submission-action@v5.0.0
 
   CollectXSD:
     needs: [ Date ]
