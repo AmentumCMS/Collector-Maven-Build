@@ -22,10 +22,10 @@ jobs:
       - name: Get current date
         id: DATE
         run: |
-          echo "Setting Date"
+          echo -n "Setting Date in "
           echo "DATE=$(date '+%Y%m%d-%H%M')" >> $GITHUB_OUTPUT
-          echo -e "\n$GITHUB_OUTPUT\n"
-          echo -e "Values: $(cat $GITHUB_OUTPUT)\n"
+          echo "$GITHUB_OUTPUT"
+          echo "Values: $(cat $GITHUB_OUTPUT)"
       - name: Display Envars
         run: env
 
@@ -125,12 +125,14 @@ jobs:
         with:
           name: ${{ vars.COLLECTOR }}-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.tgz
           path: ${{ vars.COLLECTOR }}-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.tgz*
+          if-no-files-found: error
 
       - name: Upload M2 ToC artifact
         uses: actions/upload-artifact@v7
         with:
           name: ${{ vars.COLLECTOR }}-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.tgz.txt
           path: ${{ vars.COLLECTOR }}-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.tgz.txt
+          if-no-files-found: error
 
       - name: Cache Maven repository
         uses: actions/cache@v5
@@ -413,7 +415,7 @@ jobs:
       - name: Make ISO
         run: |
           mkisofs -J -R -v -T -l \
-            -V '${{ vars.COLLECTOR }}-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}' \
+            -V '${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}' \
             -A '${{ vars.COLLECTOR }}-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}' \
             -o ${{ vars.COLLECTOR }}-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.iso \
             ${{ vars.COLLECTOR }}-*.*
@@ -435,9 +437,6 @@ jobs:
           name: ${{ vars.COLLECTOR }}-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.iso
           path: "*.iso*"
           if-no-files-found: error
-      # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
-      #- name: Update dependency graph
-      #  uses: advanced-security/maven-dependency-submission-action@571e99aab1055c2e71a1e2309b9691de18d6b7d6
 
   VirusScan:
     runs-on: ubuntu-latest
