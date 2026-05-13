@@ -19,63 +19,65 @@ import org.testcontainers.utility.DockerImageName;
 public class TestDemoApplication {
 
 	@Bean
-	@ServiceConnection(name = "symptoma/activemq")
+	@ServiceConnection(name = "activemq")
 	GenericContainer<?> activeMQContainer() {
-		return new GenericContainer<>(DockerImageName.parse("symptoma/activemq:latest")).withExposedPorts(61616);
+		return new GenericContainer<>(DockerImageName.parse("symptoma/activemq:5.16.0"))
+				.withExposedPorts(61616);
 	}
 
 	@Bean
 	@ServiceConnection
 	KafkaContainer kafkaContainer() {
-		return new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:latest"));
+		return new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.6.1"));
 	}
 
 	@Bean
 	@ServiceConnection
 	MariaDBContainer<?> mariaDbContainer() {
-		return new MariaDBContainer<>(DockerImageName.parse("mariadb:latest"));
+		return new MariaDBContainer<>(DockerImageName.parse("mariadb:11.4"));
 	}
 
 	@Bean
 	@ServiceConnection
 	MongoDBContainer mongoDbContainer() {
-		return new MongoDBContainer(DockerImageName.parse("mongo:latest"));
+		return new MongoDBContainer(DockerImageName.parse("mongo:7.0"));
 	}
 
 	@Bean
 	@ServiceConnection
 	MySQLContainer<?> mysqlContainer() {
-		return new MySQLContainer<>(DockerImageName.parse("mysql:latest"));
+		return new MySQLContainer<>(DockerImageName.parse("mysql:8.4"));
 	}
 
 	@Bean
 	@ServiceConnection
 	OracleContainer oracleFreeContainer() {
-		return new OracleContainer(DockerImageName.parse("gvenzl/oracle-free:latest"));
+		return new OracleContainer(DockerImageName.parse("gvenzl/oracle-free:23-slim"));
 	}
 
 	@Bean
 	@ServiceConnection
 	PostgreSQLContainer<?> postgresContainer() {
-		return new PostgreSQLContainer<>(DockerImageName.parse("postgres:latest"));
+		return new PostgreSQLContainer<>(DockerImageName.parse("postgres:16"));
 	}
 
 	@Bean
 	@ServiceConnection
 	PulsarContainer pulsarContainer() {
-		return new PulsarContainer(DockerImageName.parse("apachepulsar/pulsar:latest"));
+		return new PulsarContainer(DockerImageName.parse("apachepulsar/pulsar:3.3.0"));
 	}
 
 	@Bean
 	@ServiceConnection
 	RabbitMQContainer rabbitContainer() {
-		return new RabbitMQContainer(DockerImageName.parse("rabbitmq:latest"));
+		return new RabbitMQContainer(DockerImageName.parse("rabbitmq:3.13"));
 	}
 
 	@Bean
 	@ServiceConnection(name = "redis")
 	GenericContainer<?> redisContainer() {
-		return new GenericContainer<>(DockerImageName.parse("redis:latest")).withExposedPorts(6379);
+		return new GenericContainer<>(DockerImageName.parse("redis:7.4"))
+				.withExposedPorts(6379);
 	}
 
 	public static void main(String[] args) {
