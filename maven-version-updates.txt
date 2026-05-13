@@ -75,10 +75,6 @@
 [INFO]                                                         2.21.2 -> 2.21.3
 [INFO]   com.fasterxml.jackson.dataformat:jackson-dataformat-toml ...
 [INFO]                                                         2.21.2 -> 2.21.3
-[INFO]   com.fasterxml.jackson.dataformat:jackson-dataformat-xml ...
-[INFO]                                                         2.21.2 -> 2.21.3
-[INFO]   com.fasterxml.jackson.dataformat:jackson-dataformat-yaml ...
-[INFO]                                                         2.21.2 -> 2.21.3
 [INFO]   com.fasterxml.jackson.datatype:jackson-datatype-eclipse-collections ...
 [INFO]                                                         2.21.2 -> 2.21.3
 [INFO]   com.fasterxml.jackson.datatype:jackson-datatype-guava ...
@@ -1074,6 +1070,6 @@
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
 [INFO] ------------------------------------------------------------------------
-[INFO] Total time:  25.462 s
-[INFO] Finished at: 2026-05-13T21:59:30Z
+[INFO] Total time:  39.394 s
+[INFO] Finished at: 2026-05-13T22:14:26Z
 [INFO] ------------------------------------------------------------------------
