@@ -1027,17 +1027,38 @@
 	<build>
 		<pluginManagement>
 			<plugins>
-				<!-- Maven plugin dependency overrides. These are needed because dependencyManagement does not override plugin transitive dependencies. -->
+				<!-- Maven plugin dependency overrides. These are needed because dependencyManagement does
+				not override plugin transitive dependencies. -->
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-dependency-plugin</artifactId>
 					<version>${maven-dependency-plugin.version}</version>
 					<dependencies>
-						<dependency><groupId>org.apache.maven.shared</groupId><artifactId>maven-shared-utils</artifactId><version>${maven-shared-utils.version}</version></dependency>
-						<dependency><groupId>org.codehaus.plexus</groupId><artifactId>plexus-utils</artifactId><version>${plexus-utils.version}</version></dependency>
-						<dependency><groupId>org.codehaus.plexus</groupId><artifactId>plexus-archiver</artifactId><version>${plexus-archiver.version}</version></dependency>
-						<dependency><groupId>org.apache.commons</groupId><artifactId>commons-compress</artifactId><version>${commons-compress.version}</version></dependency>
-						<dependency><groupId>commons-io</groupId><artifactId>commons-io</artifactId><version>${commons-io.version}</version></dependency>
+						<dependency>
+							<groupId>org.apache.maven.shared</groupId>
+							<artifactId>maven-shared-utils</artifactId>
+							<version>${maven-shared-utils.version}</version>
+						</dependency>
+						<dependency>
+							<groupId>org.codehaus.plexus</groupId>
+							<artifactId>plexus-utils</artifactId>
+							<version>${plexus-utils.version}</version>
+						</dependency>
+						<dependency>
+							<groupId>org.codehaus.plexus</groupId>
+							<artifactId>plexus-archiver</artifactId>
+							<version>${plexus-archiver.version}</version>
+						</dependency>
+						<dependency>
+							<groupId>org.apache.commons</groupId>
+							<artifactId>commons-compress</artifactId>
+							<version>${commons-compress.version}</version>
+						</dependency>
+						<dependency>
+							<groupId>commons-io</groupId>
+							<artifactId>commons-io</artifactId>
+							<version>${commons-io.version}</version>
+						</dependency>
 					</dependencies>
 				</plugin>
 				<plugin>
@@ -1045,10 +1066,26 @@
 					<artifactId>maven-assembly-plugin</artifactId>
 					<version>${maven-assembly-plugin.version}</version>
 					<dependencies>
-						<dependency><groupId>org.codehaus.plexus</groupId><artifactId>plexus-archiver</artifactId><version>${plexus-archiver.version}</version></dependency>
-						<dependency><groupId>org.codehaus.plexus</groupId><artifactId>plexus-utils</artifactId><version>${plexus-utils.version}</version></dependency>
-						<dependency><groupId>org.apache.commons</groupId><artifactId>commons-compress</artifactId><version>${commons-compress.version}</version></dependency>
-						<dependency><groupId>commons-io</groupId><artifactId>commons-io</artifactId><version>${commons-io.version}</version></dependency>
+						<dependency>
+							<groupId>org.codehaus.plexus</groupId>
+							<artifactId>plexus-archiver</artifactId>
+							<version>${plexus-archiver.version}</version>
+						</dependency>
+						<dependency>
+							<groupId>org.codehaus.plexus</groupId>
+							<artifactId>plexus-utils</artifactId>
+							<version>${plexus-utils.version}</version>
+						</dependency>
+						<dependency>
+							<groupId>org.apache.commons</groupId>
+							<artifactId>commons-compress</artifactId>
+							<version>${commons-compress.version}</version>
+						</dependency>
+						<dependency>
+							<groupId>commons-io</groupId>
+							<artifactId>commons-io</artifactId>
+							<version>${commons-io.version}</version>
+						</dependency>
 					</dependencies>
 				</plugin>
 				<plugin>
@@ -1056,18 +1093,58 @@
 					<artifactId>maven-jar-plugin</artifactId>
 					<version>${maven-jar-plugin.version}</version>
 					<dependencies>
-						<dependency><groupId>org.codehaus.plexus</groupId><artifactId>plexus-archiver</artifactId><version>${plexus-archiver.version}</version></dependency>
-						<dependency><groupId>org.codehaus.plexus</groupId><artifactId>plexus-utils</artifactId><version>${plexus-utils.version}</version></dependency>
+						<dependency>
+							<groupId>org.codehaus.plexus</groupId>
+							<artifactId>plexus-archiver</artifactId>
+							<version>${plexus-archiver.version}</version>
+						</dependency>
+						<dependency>
+							<groupId>org.codehaus.plexus</groupId>
+							<artifactId>plexus-utils</artifactId>
+							<version>${plexus-utils.version}</version>
+						</dependency>
 					</dependencies>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-enforcer-plugin</artifactId>
+					<version>3.6.2</version>
+					<executions>
+						<execution>
+							<id>enforce-maven</id>
+							<goals>
+								<goal>enforce</goal>
+							</goals>
+							<configuration>
+								<rules>
+									<requireMavenVersion>
+										<version>3.6</version>
+									</requireMavenVersion>
+								</rules>
+							</configuration>
+						</execution>
+					</executions>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-shade-plugin</artifactId>
 					<version>${maven-shade-plugin.version}</version>
 					<dependencies>
-						<dependency><groupId>org.codehaus.plexus</groupId><artifactId>plexus-utils</artifactId><version>${plexus-utils.version}</version></dependency>
-						<dependency><groupId>org.codehaus.plexus</groupId><artifactId>plexus-archiver</artifactId><version>${plexus-archiver.version}</version></dependency>
-						<dependency><groupId>org.apache.commons</groupId><artifactId>commons-compress</artifactId><version>${commons-compress.version}</version></dependency>
+						<dependency>
+							<groupId>org.codehaus.plexus</groupId>
+							<artifactId>plexus-utils</artifactId>
+							<version>${plexus-utils.version}</version>
+						</dependency>
+						<dependency>
+							<groupId>org.codehaus.plexus</groupId>
+							<artifactId>plexus-archiver</artifactId>
+							<version>${plexus-archiver.version}</version>
+						</dependency>
+						<dependency>
+							<groupId>org.apache.commons</groupId>
+							<artifactId>commons-compress</artifactId>
+							<version>${commons-compress.version}</version>
+						</dependency>
 					</dependencies>
 				</plugin>
 				<plugin>
@@ -1075,14 +1152,46 @@
 					<artifactId>cyclonedx-maven-plugin</artifactId>
 					<version>${cyclonedx-maven-plugin.version}</version>
 					<dependencies>
-						<dependency><groupId>org.codehaus.plexus</groupId><artifactId>plexus-utils</artifactId><version>${plexus-utils.version}</version></dependency>
-						<dependency><groupId>org.apache.commons</groupId><artifactId>commons-compress</artifactId><version>${commons-compress.version}</version></dependency>
-						<dependency><groupId>com.fasterxml.jackson.core</groupId><artifactId>jackson-core</artifactId><version>${jackson.version}</version></dependency>
-						<dependency><groupId>com.fasterxml.jackson.core</groupId><artifactId>jackson-databind</artifactId><version>${jackson.version}</version></dependency>
-						<dependency><groupId>com.fasterxml.jackson.core</groupId><artifactId>jackson-annotations</artifactId><version>${jackson-annotations.version}</version></dependency>
-						<dependency><groupId>com.fasterxml.jackson.dataformat</groupId><artifactId>jackson-dataformat-xml</artifactId><version>${jackson.version}</version></dependency>
-						<dependency><groupId>com.fasterxml.jackson.dataformat</groupId><artifactId>jackson-dataformat-yaml</artifactId><version>${jackson.version}</version></dependency>
-						<dependency><groupId>org.yaml</groupId><artifactId>snakeyaml</artifactId><version>${snakeyaml.version}</version></dependency>
+						<dependency>
+							<groupId>org.codehaus.plexus</groupId>
+							<artifactId>plexus-utils</artifactId>
+							<version>${plexus-utils.version}</version>
+						</dependency>
+						<dependency>
+							<groupId>org.apache.commons</groupId>
+							<artifactId>commons-compress</artifactId>
+							<version>${commons-compress.version}</version>
+						</dependency>
+						<dependency>
+							<groupId>com.fasterxml.jackson.core</groupId>
+							<artifactId>jackson-core</artifactId>
+							<version>${jackson.version}</version>
+						</dependency>
+						<dependency>
+							<groupId>com.fasterxml.jackson.core</groupId>
+							<artifactId>jackson-databind</artifactId>
+							<version>${jackson.version}</version>
+						</dependency>
+						<dependency>
+							<groupId>com.fasterxml.jackson.core</groupId>
+							<artifactId>jackson-annotations</artifactId>
+							<version>${jackson-annotations.version}</version>
+						</dependency>
+						<dependency>
+							<groupId>com.fasterxml.jackson.dataformat</groupId>
+							<artifactId>jackson-dataformat-xml</artifactId>
+							<version>${jackson.version}</version>
+						</dependency>
+						<dependency>
+							<groupId>com.fasterxml.jackson.dataformat</groupId>
+							<artifactId>jackson-dataformat-yaml</artifactId>
+							<version>${jackson.version}</version>
+						</dependency>
+						<dependency>
+							<groupId>org.yaml</groupId>
+							<artifactId>snakeyaml</artifactId>
+							<version>${snakeyaml.version}</version>
+						</dependency>
 					</dependencies>
 				</plugin>
 				<plugin>
@@ -1090,8 +1199,16 @@
 					<artifactId>jib-maven-plugin</artifactId>
 					<version>3.5.1</version>
 					<dependencies>
-						<dependency><groupId>org.apache.httpcomponents</groupId><artifactId>httpclient</artifactId><version>${httpclient.version}</version></dependency>
-						<dependency><groupId>com.google.guava</groupId><artifactId>guava</artifactId><version>${guava.version}</version></dependency>
+						<dependency>
+							<groupId>org.apache.httpcomponents</groupId>
+							<artifactId>httpclient</artifactId>
+							<version>${httpclient.version}</version>
+						</dependency>
+						<dependency>
+							<groupId>com.google.guava</groupId>
+							<artifactId>guava</artifactId>
+							<version>${guava.version}</version>
+						</dependency>
 					</dependencies>
 				</plugin>
 				<plugin>
@@ -1099,8 +1216,16 @@
 					<artifactId>versions-maven-plugin</artifactId>
 					<version>2.19.1</version>
 					<dependencies>
-						<dependency><groupId>org.codehaus.plexus</groupId><artifactId>plexus-utils</artifactId><version>${plexus-utils.version}</version></dependency>
-						<dependency><groupId>commons-io</groupId><artifactId>commons-io</artifactId><version>${commons-io.version}</version></dependency>
+						<dependency>
+							<groupId>org.codehaus.plexus</groupId>
+							<artifactId>plexus-utils</artifactId>
+							<version>${plexus-utils.version}</version>
+						</dependency>
+						<dependency>
+							<groupId>commons-io</groupId>
+							<artifactId>commons-io</artifactId>
+							<version>${commons-io.version}</version>
+						</dependency>
 					</dependencies>
 				</plugin>
 			</plugins>
