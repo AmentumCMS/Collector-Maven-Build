@@ -5,15 +5,35 @@
 # https://containers.dev/guide/dependabot
 
 version: 2
+
 updates:
   - package-ecosystem: "devcontainers"
     directory: "/"
     schedule:
-      interval: weekly
+      interval: "weekly"
     target-branch: "develop"
+
   # Maintain dependencies for GitHub Actions
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "daily"
     target-branch: "develop"
+
+  # Maintain Maven dependencies
+  - package-ecosystem: "maven"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    target-branch: "develop"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "maven"
+    groups:
+      maven-patch-updates:
+        update-types:
+          - "patch"
+      maven-minor-updates:
+        update-types:
+          - "minor"
