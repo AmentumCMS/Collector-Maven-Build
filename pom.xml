@@ -32,6 +32,11 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>org.springframework.integration</groupId>
+			<artifactId>spring-integration-security</artifactId>
+		</dependency>
+		
+		<dependency>
 			<groupId>com.fasterxml.jackson.module</groupId>
 			<artifactId>jackson-module-jaxb-annotations</artifactId>
 			<version>2.15.3</version>
