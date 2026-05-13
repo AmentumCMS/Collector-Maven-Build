@@ -86,9 +86,22 @@ jobs:
             -DgenerateBackupPoms=false \
             -DignoredVersions='.*-M.*,.*-RC.*,.*-alpha.*,.*-beta.*,.*-SNAPSHOT'
 
-      - name: Build after version updates
+      - name: Advance all non-major stable dependency versions
         run: |
-          mvn --no-transfer-progress -s settings.xml -B clean verify
+          set -eux
+
+          mvn --no-transfer-progress -DskipTests=true -s settings.xml -B \
+            versions:use-latest-releases \
+            -DallowMajorUpdates=false \
+            -DallowMinorUpdates=true \
+            -DallowIncrementalUpdates=true \
+            -DallowSnapshots=false \
+            -DgenerateBackupPoms=false \
+            -DignoredVersions='.*-M.*,.*-RC.*,.*-alpha.*,.*-beta.*,.*-SNAPSHOT'
+
+      - name: Resolve/build after version updates
+        run: |
+          mvn --no-transfer-progress -DskipTests=true -s settings.xml -B clean package
 
       - name: Commit version updates
         run: |
