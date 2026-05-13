@@ -7,7 +7,7 @@
 		<parent>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-parent</artifactId>
-			<version>3.5.0</version>
+			<version>3.5.14</version>
 			<relativePath/> <!-- lookup parent from repository -->
 		</parent>
 
@@ -22,9 +22,9 @@
 		<java.version>21</java.version>
 
 		<!-- Spring Boot 3.5 compatible BOMs -->
-		<spring-cloud.version>2025.1.1</spring-cloud.version>
-		<spring-modulith.version>2.0.6</spring-modulith.version>
-		<spring-shell.version>4.0.2</spring-shell.version>
+		<spring-cloud.version>2025.0.2</spring-cloud.version>
+		<spring-modulith.version>1.4.11</spring-modulith.version>
+		<spring-shell.version>3.4.2</spring-shell.version>
 		
 		<!-- Encoding -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -223,7 +223,7 @@
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-gateway</artifactId>
-			<version>4.1.1</version>
+
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
@@ -288,7 +288,7 @@
 		<dependency>
 			<groupId>org.springframework.integration</groupId>
 			<artifactId>spring-integration-security</artifactId>
-			<version>6.2.5</version>
+			<version>6.2.11</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.integration</groupId>
