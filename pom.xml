@@ -25,10 +25,94 @@
 		<!-- Shared dependency versions -->
 		<activemq.classic.version>5.19.6</activemq.classic.version>
 
+		<!-- Security override versions for collected transitive build/runtime libraries -->
+		<snakeyaml.version>2.6</snakeyaml.version>
+		<xstream.version>1.4.21</xstream.version>
+		<maven.version>3.9.15</maven.version>
+		<plexus-utils.version>4.0.3</plexus-utils.version>
+		<plexus-archiver.version>4.11.0</plexus-archiver.version>
+		<commons-compress.version>1.28.0</commons-compress.version>
+		<dom4j.version>2.2.0</dom4j.version>
+		<httpclient.version>4.5.14</httpclient.version>
+		<netty.version>4.1.133.Final</netty.version>
+
 		<!-- Encoding -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<!--
+				These overrides are primarily for the collector payload. Several vulnerable
+				JARs are pulled transitively by Maven/build tooling dependencies that are
+				being collected as normal project dependencies. Keep this block near the
+				top so dependency:tree clearly shows the patched versions winning.
+			-->
+			<dependency>
+				<groupId>org.yaml</groupId>
+				<artifactId>snakeyaml</artifactId>
+				<version>${snakeyaml.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.thoughtworks.xstream</groupId>
+				<artifactId>xstream</artifactId>
+				<version>${xstream.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.maven</groupId>
+				<artifactId>maven-core</artifactId>
+				<version>${maven.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.maven</groupId>
+				<artifactId>maven-compat</artifactId>
+				<version>${maven.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.maven</groupId>
+				<artifactId>maven-artifact</artifactId>
+				<version>${maven.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.maven</groupId>
+				<artifactId>maven-plugin-api</artifactId>
+				<version>${maven.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.codehaus.plexus</groupId>
+				<artifactId>plexus-utils</artifactId>
+				<version>${plexus-utils.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.codehaus.plexus</groupId>
+				<artifactId>plexus-archiver</artifactId>
+				<version>${plexus-archiver.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-compress</artifactId>
+				<version>${commons-compress.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.dom4j</groupId>
+				<artifactId>dom4j</artifactId>
+				<version>${dom4j.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.httpcomponents</groupId>
+				<artifactId>httpclient</artifactId>
+				<version>${httpclient.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.netty</groupId>
+				<artifactId>netty-bom</artifactId>
+				<version>${netty.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<dependencies>
 		
@@ -583,12 +667,12 @@
 			<plugin>
 				<groupId>org.graalvm.buildtools</groupId>
 				<artifactId>native-maven-plugin</artifactId>
-				<version>0.10.0</version>
+				<version>0.10.1</version>
 			</plugin>
 			<plugin>
 				<groupId>com.google.cloud.tools</groupId>
 				<artifactId>jib-maven-plugin</artifactId>
-				<version>3.4.0</version>
+				<version>3.4.2</version>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.wagon</groupId>
