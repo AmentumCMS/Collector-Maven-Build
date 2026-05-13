@@ -23,7 +23,7 @@
 		<java.version>21</java.version>
 
 		<!-- Shared dependency versions -->
-		<activemq.version>5.19.6</activemq.version>
+		<activemq.classic.version>5.19.6</activemq.classic.version>
 
 		<!-- Encoding -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -181,17 +181,17 @@
 		<dependency>
 			<groupId>org.apache.activemq</groupId>
 			<artifactId>activemq-broker</artifactId>
-			<version>${activemq.version}</version>
+			<version>${activemq.classic.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.activemq</groupId>
 			<artifactId>activemq-client</artifactId>
-			<version>${activemq.version}</version>
+			<version>${activemq.classic.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.activemq</groupId>
 			<artifactId>activemq-openwire-legacy</artifactId>
-			<version>${activemq.version}</version>
+			<version>${activemq.classic.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.geronimo.specs</groupId>
@@ -201,12 +201,12 @@
 		<dependency>
 			<groupId>org.apache.activemq</groupId>
 			<artifactId>activemq-kahadb-store</artifactId>
-			<version>${activemq.version}</version>
+			<version>${activemq.classic.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.activemq</groupId>
 			<artifactId>activemq-pool</artifactId>
-			<version>${activemq.version}</version>
+			<version>${activemq.classic.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.geronimo.specs</groupId>
