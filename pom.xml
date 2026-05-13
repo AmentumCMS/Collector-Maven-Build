@@ -61,7 +61,7 @@
 		<jgit.version>6.10.1.202505221210-r</jgit.version>
 		<tomcat-embed-core.version>10.1.48</tomcat-embed-core.version>
 		<logback.version>1.5.18</logback.version>
-		<jackson.version>2.20.0</jackson.version>
+		<jackson.version>2.21.3</jackson.version>
 		<spring-security.version>6.5.6</spring-security.version>
 
 
