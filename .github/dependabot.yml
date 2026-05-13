@@ -37,4 +37,3 @@ updates:
       maven-minor-updates:
         update-types:
           - "minor"
-    target-branch: "develop"
