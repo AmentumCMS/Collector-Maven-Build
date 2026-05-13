@@ -126,7 +126,7 @@
 
 			<!-- ActiveMQ / Artemis CVE overrides -->
 			<dependency>
-				<groupId>org.apache.activemq</groupId>
+				<groupId>org.apache.artemis</groupId>
 				<artifactId>artemis-server</artifactId>
 				<version>${artemis.version}</version>
 			</dependency>
@@ -610,7 +610,7 @@
 
 		<!-- JMS Emulator packages -->
 		<dependency>
-			<groupId>org.apache.activemq</groupId>
+			<groupId>org.apache.artemis</groupId>
 			<artifactId>artemis-server</artifactId>
 			<version>${artemis.version}</version>
 		</dependency>
