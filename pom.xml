@@ -2,13 +2,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>3.5.0</version>
-		<relativePath /> <!-- lookup parent from repository -->
+		<relativePath />
 	</parent>
 
 	<groupId>com.amentumcms</groupId>
@@ -17,22 +18,16 @@
 
 	<name>maven-collector</name>
 	<description>maven-collector project for Spring Boot</description>
+
 	<properties>
-		<!-- Properites used by Maven plugins -->
 		<java.version>21</java.version>
 
-		<!-- Spring Boot 3.5 compatible BOMs -->
-		<spring-modulith.version>1.4.11</spring-modulith.version>
-		<spring-shell.version>3.4.2</spring-shell.version>
-		
+		<!-- Shared dependency versions -->
+		<activemq.version>5.19.6</activemq.version>
+
 		<!-- Encoding -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<!-- Versions 
-		<maven.dependency.plugin.version>3.1.0</maven.dependency.plugin.version>
-		<maven.resources.plugin.version>2.6</maven.resources.plugin.version>
-		<maven.exec.plugin.version>1.6.0</maven.exec.plugin.version>
-		<maven.assembly.plugin.version>3.1.0</maven.assembly.plugin.version>-->
 	</properties>
 
 	<dependencies>
@@ -40,6 +35,11 @@
 			<groupId>com.fasterxml.jackson.module</groupId>
 			<artifactId>jackson-module-jaxb-annotations</artifactId>
 			<version>2.15.3</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-activemq</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -60,6 +60,7 @@
 			<artifactId>jedis</artifactId>
 			<version>5.2.0</version>
 		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-amqp</artifactId>
@@ -71,6 +72,10 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jdbc</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -123,12 +128,10 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-pulsar</artifactId>
-			<version>4.0.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-pulsar-reactive</artifactId>
-			<version>4.0.0-M3</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -158,6 +161,7 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-websocket</artifactId>
 		</dependency>
+
 		<dependency>
 			<groupId>org.apache.camel.springboot</groupId>
 			<artifactId>camel-spring-boot-starter</artifactId>
@@ -167,6 +171,7 @@
 			<groupId>org.apache.kafka</groupId>
 			<artifactId>kafka-streams</artifactId>
 		</dependency>
+
 		<!-- JMS Emulator packages -->
 		<dependency>
 			<groupId>org.apache.activemq</groupId>
@@ -176,17 +181,17 @@
 		<dependency>
 			<groupId>org.apache.activemq</groupId>
 			<artifactId>activemq-broker</artifactId>
-			<version>5.18.3</version>
+			<version>${activemq.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.activemq</groupId>
 			<artifactId>activemq-client</artifactId>
-			<version>5.18.3</version>
+			<version>${activemq.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.activemq</groupId>
 			<artifactId>activemq-openwire-legacy</artifactId>
-			<version>5.18.3</version>
+			<version>${activemq.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.geronimo.specs</groupId>
@@ -196,16 +201,12 @@
 		<dependency>
 			<groupId>org.apache.activemq</groupId>
 			<artifactId>activemq-kahadb-store</artifactId>
-			<version>5.18.3</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-activemq</artifactId>
+			<version>${activemq.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.activemq</groupId>
 			<artifactId>activemq-pool</artifactId>
-			<version>5.18.3</version>
+			<version>${activemq.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.geronimo.specs</groupId>
@@ -213,6 +214,7 @@
 			<version>1.0.1</version>
 		</dependency>
 		<!-- END JMS Emulator packages -->
+
 		<dependency>
 			<groupId>org.flywaydb</groupId>
 			<artifactId>flyway-core</artifactId>
@@ -225,42 +227,7 @@
 			<groupId>org.flywaydb</groupId>
 			<artifactId>flyway-mysql</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-config-server</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-config</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-loadbalancer</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-vault-config</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-stream</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-stream-binder-kafka</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-stream-binder-kafka-streams</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-stream-binder-pulsar</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-stream-binder-rabbit</artifactId>
-		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.integration</groupId>
 			<artifactId>spring-integration-amqp</artifactId>
@@ -296,7 +263,6 @@
 		<dependency>
 			<groupId>org.springframework.integration</groupId>
 			<artifactId>spring-integration-security</artifactId>
-			<version>6.2.5</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.integration</groupId>
@@ -314,21 +280,10 @@
 			<groupId>org.springframework.integration</groupId>
 			<artifactId>spring-integration-ws</artifactId>
 		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.kafka</groupId>
 			<artifactId>spring-kafka</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.modulith</groupId>
-			<artifactId>spring-modulith-starter-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.modulith</groupId>
-			<artifactId>spring-modulith-starter-jdbc</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.modulith</groupId>
-			<artifactId>spring-modulith-starter-mongodb</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.security</groupId>
@@ -342,10 +297,7 @@
 			<groupId>org.springframework.session</groupId>
 			<artifactId>spring-session-data-redis</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework.shell</groupId>
-			<artifactId>spring-shell-starter</artifactId>
-		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
@@ -357,16 +309,6 @@
 			<artifactId>spring-boot-docker-compose</artifactId>
 			<scope>runtime</scope>
 			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.modulith</groupId>
-			<artifactId>spring-modulith-actuator</artifactId>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.modulith</groupId>
-			<artifactId>spring-modulith-observability</artifactId>
-			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -410,6 +352,7 @@
 			<artifactId>postgresql</artifactId>
 			<scope>runtime</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>org.jfree</groupId>
 			<artifactId>jfreechart</artifactId>
@@ -420,11 +363,13 @@
 			<artifactId>jcommon</artifactId>
 			<version>1.0.24</version>
 		</dependency>
+
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
 		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
@@ -435,15 +380,9 @@
 			<artifactId>spring-boot-testcontainers</artifactId>
 			<scope>test</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>org.springframework.amqp</groupId>
 			<artifactId>spring-rabbit-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-stream-test-binder</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -462,11 +401,6 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.modulith</groupId>
-			<artifactId>spring-modulith-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.springframework.restdocs</groupId>
 			<artifactId>spring-restdocs-mockmvc</artifactId>
 			<scope>test</scope>
@@ -481,23 +415,13 @@
 			<artifactId>reactor-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>org.testcontainers</groupId>
 			<artifactId>junit-jupiter</artifactId>
 			<version>1.21.4</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-core</artifactId>
-			<version>5.16.1</version>
-		</dependency>
-		<!-- <dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-bom</artifactId>
-			<version>5.16.1</version>
-			<type>POM</type>
-		</dependency> -->
 		<dependency>
 			<groupId>org.testcontainers</groupId>
 			<artifactId>kafka</artifactId>
@@ -552,6 +476,14 @@
 			<version>1.21.4</version>
 			<scope>test</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>5.16.1</version>
+		</dependency>
+
+		<!-- Maven / build tooling collected into the payload -->
 		<dependency>
 			<groupId>org.apache.maven.wagon</groupId>
 			<artifactId>wagon-file</artifactId>
@@ -580,16 +512,13 @@
 		<dependency>
 			<groupId>io.github.zlika</groupId>
 			<artifactId>reproducible-build-maven-plugin</artifactId>
-			<!-- Use the latest available in your Nexus mirror -->
 			<version>0.17</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.graalvm.buildtools</groupId>
 			<artifactId>native-maven-plugin</artifactId>
 			<version>0.10.1</version>
 		</dependency>
-
 		<dependency>
 			<groupId>com.google.cloud.tools</groupId>
 			<artifactId>jib-maven-plugin</artifactId>
@@ -600,6 +529,7 @@
 			<artifactId>maven-jlink-plugin</artifactId>
 			<version>3.2.0</version>
 		</dependency>
+
 		<dependency>
 			<groupId>net.sf.launch4j</groupId>
 			<artifactId>launch4j</artifactId>
@@ -610,6 +540,7 @@
 			<artifactId>launch4j-maven-plugin</artifactId>
 			<version>2.6.0</version>
 		</dependency>
+
 		<dependency>
 			<groupId>colt</groupId>
 			<artifactId>colt</artifactId>
@@ -631,6 +562,7 @@
 			<version>4.2.11</version>
 			<type>pom</type>
 		</dependency>
+
 		<dependency>
 			<groupId>org.jvnet.jaxb2.maven2</groupId>
 			<artifactId>maven-jaxb2-plugin</artifactId>
@@ -667,16 +599,6 @@
 			<version>2.3.2</version>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-jpa</artifactId>
-			<version>3.3.3</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-orm</artifactId>
-			<version>6.1.12</version>
-		</dependency>
-		<dependency>
 			<groupId>org.glassfish.jaxb</groupId>
 			<artifactId>jaxb-runtime</artifactId>
 			<version>2.3.3</version>
@@ -687,32 +609,6 @@
 			<version>2.3.0.1</version>
 		</dependency>
 	</dependencies>
-
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>org.springframework.cloud</groupId>
-				<artifactId>spring-cloud-dependencies</artifactId>
-				<version>${spring-cloud.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.shell</groupId>
-				<artifactId>spring-shell-dependencies</artifactId>
-				<version>${spring-shell.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.modulith</groupId>
-				<artifactId>spring-modulith-bom</artifactId>
-				<version>${spring-modulith.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
 
 	<build>
 		<plugins>
@@ -736,30 +632,6 @@
 				<artifactId>wagon-file</artifactId>
 				<version>3.5.3</version>
 			</plugin>
-			<!-- <plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-deploy-plugin</artifactId>
-				<version>3.1.2</version>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.plexus</groupId>
-				<artifactId>plexus-utils</artifactId>
-				<version>3.5.1</version>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>3.2.5</version>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-shade-plugin</artifactId>
-				<version>3.5.3</version>
-			</plugin> -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
@@ -812,57 +684,11 @@
 					</excludes>
 				</configuration>
 			</plugin>
-			<!-- <plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jlink-plugin</artifactId>
-				<version>3.2.0</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>jlink</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${project.build.directory}/runtime-image</outputDirectory>
-							<modulePaths>
-								<modulePath>${project.build.directory}/modules</modulePath>
-							</modulePaths>
-							<addModules>your.module.name</addModules>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin> -->
-			<!-- <plugin>
-				<groupId>com.akathist.maven.plugins.launch4j</groupId>
-				<artifactId>launch4j-maven-plugin</artifactId>
-				<version>3.50</version>
-				<executions>
-					<execution>
-						<id>default</id>
-						<phase>package</phase>
-						<goals>
-								<goal>launch4j</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<outfile>target/myapp.exe</outfile>
-					<jar>target/myapp.jar</jar>
-					<mainClassName>com.example.Main</mainClassName>
-					<headerType>gui</headerType>
-					<jre>
-						<minVersion>17</minVersion>
-					</jre>
-					<classpath>
-							<mainClass>com.example.Main</mainClass>
-					</classpath>
-				</configuration>
-			</plugin> -->
 
-			<!-- Download dependencies from eFoss put in target directory -->
+			<!-- Download dependencies from eFoss and put them in target directory -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
-				<!-- <version>${maven.dependency.plugin.version}</version> -->
 				<executions>
 					<execution>
 						<id>Collect Maven Dependencies</id>
@@ -889,12 +715,11 @@
 				</executions>
 			</plugin>
 
-			<!-- Generate SWBom -->
+			<!-- Generate SBOM -->
 			<plugin>
 				<groupId>org.cyclonedx</groupId>
 				<artifactId>cyclonedx-maven-plugin</artifactId>
 				<version>2.8.0</version>
-				<!-- <version>2.7.0</version> -->
 				<executions>
 					<execution>
 						<phase>package</phase>
@@ -919,11 +744,10 @@
 				</configuration>
 			</plugin>
 
-			<!-- Create ZIP of the Collection -->
+			<!-- Create ZIP of the collection -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
-				<!-- <version>${maven.assembly.plugin.version}</version> -->
 				<executions>
 					<execution>
 						<id>Package Plugins</id>
@@ -941,14 +765,12 @@
 				</executions>
 			</plugin>
 
-			<!-- Reproduciable build support -->
+			<!-- Reproducible build support -->
 			<plugin>
 				<groupId>io.github.zlika</groupId>
 				<artifactId>reproducible-build-maven-plugin</artifactId>
-				<!-- Use the latest available in your Nexus mirror -->
 				<version>0.17</version>
 				<executions>
-					<!-- Strip non-reproducible elements from the main JAR after package -->
 					<execution>
 						<id>strip-jar</id>
 						<phase>package</phase>
@@ -956,8 +778,6 @@
 							<goal>strip-jar</goal>
 						</goals>
 					</execution>
-
-					<!-- Strip again after assembly to normalize archive metadata -->
 					<execution>
 						<id>strip-archive</id>
 						<phase>pre-integration-test</phase>
@@ -967,9 +787,9 @@
 					</execution>
 				</executions>
 			</plugin>
-
 		</plugins>
 	</build>
+
 	<reporting>
 		<plugins>
 			<plugin>
