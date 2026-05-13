@@ -29,10 +29,10 @@ jobs:
       - name: Display Envars
         run: env
 
-# Update Component Versions
+  # Update Component Versions
   UpdateVers:
     runs-on: ubuntu-latest
-    needs: [ Date ]
+    needs: [Date]
     permissions:
       contents: write
       pull-requests: read
@@ -54,7 +54,7 @@ jobs:
           git config user.name "$(git log -n 1 --pretty=format:%an)"
           git config user.email "$(git log -n 1 --pretty=format:%ae)"
 
-      - name: Show available non-major Maven updates
+      - name: Show available non-major stable Maven updates
         run: |
           mvn --no-transfer-progress -DskipTests=true -s settings.xml -B \
             versions:display-parent-updates \
@@ -63,9 +63,10 @@ jobs:
             versions:display-plugin-updates \
             -DallowMajorUpdates=false \
             -DallowSnapshots=false \
+            -DignoredVersions='.*-M.*,.*-RC.*,.*-alpha.*,.*-beta.*,.*-SNAPSHOT' \
             | tee maven-version-updates.txt
 
-      - name: Advance non-major Maven parent and property versions
+      - name: Advance non-major stable Maven parent and property versions
         run: |
           set -eux
 
@@ -73,13 +74,16 @@ jobs:
             versions:update-parent \
             -DallowMajorUpdates=false \
             -DallowSnapshots=false \
-            -DgenerateBackupPoms=false
+            -DallowDowngrade=false \
+            -DgenerateBackupPoms=false \
+            -DignoredVersions='.*-M.*,.*-RC.*,.*-alpha.*,.*-beta.*,.*-SNAPSHOT'
 
           mvn --no-transfer-progress -DskipTests=true -s settings.xml -B \
             versions:update-properties \
             -DallowMajorUpdates=false \
             -DallowSnapshots=false \
-            -DgenerateBackupPoms=false
+            -DgenerateBackupPoms=false \
+            -DignoredVersions='.*-M.*,.*-RC.*,.*-alpha.*,.*-beta.*,.*-SNAPSHOT'
 
       - name: Build after version updates
         run: |
@@ -97,10 +101,10 @@ jobs:
           git commit -m "Update non-major Maven versions (${{ needs.Date.outputs.Date }})"
           git push
 
-# CollectM2 is the most time-consuming step, so we run it in parallel to the BOM collection and XSD collection steps. 
-# It also produces the most critical artifact (the .m2 repository) that we want to get scanned as soon as possible, so we prioritize its completion.
+  # CollectM2 is the most time-consuming step, so we run it in parallel to the BOM collection and XSD collection steps.
+  # It also produces the most critical artifact (the .m2 repository) that we want to get scanned as soon as possible, so we prioritize its completion.
   CollectM2:
-    needs: [ Date, UpdateVers ]
+    needs: [Date, UpdateVers]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -117,7 +121,7 @@ jobs:
           java-version: "21"
           distribution: "temurin"
           cache: maven
-          
+
       - name: Cache Maven repository
         uses: actions/cache@v5
         with:
@@ -179,7 +183,7 @@ jobs:
           if-no-files-found: error
 
   Code:
-    needs: [ Date ]
+    needs: [Date]
     runs-on: ubuntu-latest
     permissions:
       actions: read
@@ -211,7 +215,7 @@ jobs:
           if-no-files-found: error
 
   CollectBOM:
-    needs: [ Date, CollectM2 ]
+    needs: [Date, CollectM2]
     runs-on: ubuntu-latest
     permissions:
       actions: read
@@ -396,7 +400,7 @@ jobs:
           settings-file: settings.xml
 
   CollectXSD:
-    needs: [ Date ]
+    needs: [Date]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -415,6 +419,7 @@ jobs:
       - name: Zipup XSDs
         run: |
           cd maven.apache.org
+          ls -1Ssh xsd
           zip -r  ../${{ vars.COLLECTOR }}-xsd-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.zip xsd
 
       - name: Generate Artifact Hash
@@ -431,7 +436,7 @@ jobs:
 
   MakeISO:
     runs-on: ubuntu-latest
-    needs: [ Date, CollectM2, CollectBOM, CollectXSD, Code ]
+    needs: [Date, CollectM2, CollectBOM, CollectXSD, Code]
     env:
       GH_TOKEN: ${{ github.token }}
     permissions:
@@ -491,7 +496,7 @@ jobs:
 
   VirusScan:
     runs-on: ubuntu-latest
-    needs: [ Date, MakeISO ]
+    needs: [Date, MakeISO]
     permissions:
       contents: write
       pull-requests: read
@@ -541,7 +546,7 @@ jobs:
 
   Release:
     runs-on: ubuntu-latest
-    needs: [ Date, VirusScan ]
+    needs: [Date, VirusScan]
     env:
       GH_TOKEN: ${{ github.token }}
     permissions:
@@ -561,7 +566,7 @@ jobs:
 
   Sharepoint:
     runs-on: ubuntu-latest
-    needs: [ Date, VirusScan ]
+    needs: [Date, VirusScan]
     env:
       GH_TOKEN: ${{ github.token }}
     permissions:
