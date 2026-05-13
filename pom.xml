@@ -25,9 +25,9 @@
 		<!-- Shared dependency versions -->
 		<activemq.classic.version>5.19.6</activemq.classic.version>
 		<artemis.version>2.53.0</artemis.version>
-		<spring-framework.version>6.2.15</spring-framework.version>
-		<spring-cloud-config.version>4.3.0</spring-cloud-config.version>
-		<kafka.version>3.9.1</kafka.version>
+		<spring-framework.version>6.2.18</spring-framework.version>
+		<spring-cloud-config.version>4.3.3</spring-cloud-config.version>
+		<kafka.version>3.9.2</kafka.version>
 		<jsch.version>0.1.55</jsch.version>
 		<velocity.version>2.4.1</velocity.version>
 		<velocity-tools.version>3.1</velocity-tools.version>

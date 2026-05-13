@@ -14,16 +14,24 @@
 [INFO] 
 [INFO] The following version properties are referencing the newest available version:
 [INFO]   ${activemq.classic.version} .................................. 5.19.6
+[INFO]   ${artemis.version} ........................................... 2.53.0
 [INFO]   ${commons-compress.version} .................................. 1.28.0
 [INFO]   ${dom4j.version} .............................................. 2.2.0
 [INFO]   ${httpclient.version} ........................................ 4.5.14
+[INFO]   ${jsch.version} .............................................. 0.1.55
+[INFO]   ${maven-wagon.version} ........................................ 3.5.3
 [INFO]   ${maven.version} ............................................. 3.9.15
+[INFO]   ${netty.version} ....................................... 4.2.13.Final
 [INFO]   ${plexus-archiver.version} ................................... 4.11.0
 [INFO]   ${plexus-utils.version} ....................................... 4.0.3
 [INFO]   ${snakeyaml.version} ............................................ 2.6
+[INFO]   ${velocity-tools.version} ....................................... 3.1
+[INFO]   ${velocity.version} ........................................... 2.4.1
 [INFO]   ${xstream.version} ........................................... 1.4.21
 [INFO] The following version property updates are available:
-[INFO]   ${netty.version} ...................... 4.1.133.Final -> 4.2.13.Final
+[INFO]   ${kafka.version} ..................................... 3.9.1 -> 3.9.2
+[INFO]   ${spring-cloud-config.version} ....................... 4.3.0 -> 4.3.3
+[INFO]   ${spring-framework.version} ........................ 6.2.15 -> 6.2.18
 [INFO] 
 [INFO] 
 [INFO] --- versions:2.18.0:display-dependency-updates (default-cli) @ maven-collector ---
@@ -246,45 +254,6 @@
 [INFO]   io.micrometer:micrometer-tracing-reporter-wavefront ...
 [INFO]                                                      1.5.11 -> 1.7.0-RC1
 [INFO]   io.micrometer:micrometer-tracing-test ............ 1.5.11 -> 1.7.0-RC1
-[INFO]   io.netty:netty-all ..................... 4.1.133.Final -> 4.2.13.Final
-[INFO]   io.netty:netty-buffer .................. 4.1.133.Final -> 4.2.13.Final
-[INFO]   io.netty:netty-codec ................... 4.1.133.Final -> 4.2.13.Final
-[INFO]   io.netty:netty-codec-dns ............... 4.1.133.Final -> 4.2.13.Final
-[INFO]   io.netty:netty-codec-haproxy ........... 4.1.133.Final -> 4.2.13.Final
-[INFO]   io.netty:netty-codec-http .............. 4.1.133.Final -> 4.2.13.Final
-[INFO]   io.netty:netty-codec-http2 ............. 4.1.133.Final -> 4.2.13.Final
-[INFO]   io.netty:netty-codec-memcache .......... 4.1.133.Final -> 4.2.13.Final
-[INFO]   io.netty:netty-codec-mqtt .............. 4.1.133.Final -> 4.2.13.Final
-[INFO]   io.netty:netty-codec-redis ............. 4.1.133.Final -> 4.2.13.Final
-[INFO]   io.netty:netty-codec-smtp .............. 4.1.133.Final -> 4.2.13.Final
-[INFO]   io.netty:netty-codec-socks ............. 4.1.133.Final -> 4.2.13.Final
-[INFO]   io.netty:netty-codec-stomp ............. 4.1.133.Final -> 4.2.13.Final
-[INFO]   io.netty:netty-codec-xml ............... 4.1.133.Final -> 4.2.13.Final
-[INFO]   io.netty:netty-common .................. 4.1.133.Final -> 4.2.13.Final
-[INFO]   io.netty:netty-dev-tools ............... 4.1.133.Final -> 4.2.13.Final
-[INFO]   io.netty:netty-handler ................. 4.1.133.Final -> 4.2.13.Final
-[INFO]   io.netty:netty-handler-proxy ........... 4.1.133.Final -> 4.2.13.Final
-[INFO]   io.netty:netty-handler-ssl-ocsp ........ 4.1.133.Final -> 4.2.13.Final
-[INFO]   io.netty:netty-resolver ................ 4.1.133.Final -> 4.2.13.Final
-[INFO]   io.netty:netty-resolver-dns ............ 4.1.133.Final -> 4.2.13.Final
-[INFO]   io.netty:netty-resolver-dns-classes-macos ...
-[INFO]                                            4.1.133.Final -> 4.2.13.Final
-[INFO]   io.netty:netty-resolver-dns-native-macos ...
-[INFO]                                            4.1.133.Final -> 4.2.13.Final
-[INFO]   io.netty:netty-transport ............... 4.1.133.Final -> 4.2.13.Final
-[INFO]   io.netty:netty-transport-classes-epoll ...
-[INFO]                                            4.1.133.Final -> 4.2.13.Final
-[INFO]   io.netty:netty-transport-classes-kqueue ...
-[INFO]                                            4.1.133.Final -> 4.2.13.Final
-[INFO]   io.netty:netty-transport-native-epoll ...
-[INFO]                                            4.1.133.Final -> 4.2.13.Final
-[INFO]   io.netty:netty-transport-native-kqueue ...
-[INFO]                                            4.1.133.Final -> 4.2.13.Final
-[INFO]   io.netty:netty-transport-native-unix-common ...
-[INFO]                                            4.1.133.Final -> 4.2.13.Final
-[INFO]   io.netty:netty-transport-rxtx .......... 4.1.133.Final -> 4.2.13.Final
-[INFO]   io.netty:netty-transport-sctp .......... 4.1.133.Final -> 4.2.13.Final
-[INFO]   io.netty:netty-transport-udt ........... 4.1.133.Final -> 4.2.13.Final
 [INFO]   io.opentelemetry:opentelemetry-api .................. 1.49.0 -> 1.62.0
 [INFO]   io.opentelemetry:opentelemetry-context .............. 1.49.0 -> 1.62.0
 [INFO]   io.opentelemetry:opentelemetry-exporter-common ...... 1.49.0 -> 1.62.0
@@ -435,21 +404,16 @@
 [INFO]   org.apache.activemq:activemq-all ...................... 6.1.8 -> 6.2.5
 [INFO]   org.apache.activemq:activemq-amqp ..................... 6.1.8 -> 6.2.5
 [INFO]   org.apache.activemq:activemq-blueprint ................ 6.1.8 -> 6.2.5
-[INFO]   org.apache.activemq:activemq-broker ................... 6.1.8 -> 6.2.5
-[INFO]   org.apache.activemq:activemq-client ................... 6.1.8 -> 6.2.5
 [INFO]   org.apache.activemq:activemq-console .................. 6.1.8 -> 6.2.5
 [INFO]   org.apache.activemq:activemq-http ..................... 6.1.8 -> 6.2.5
 [INFO]   org.apache.activemq:activemq-jaas ..................... 6.1.8 -> 6.2.5
 [INFO]   org.apache.activemq:activemq-jdbc-store ............... 6.1.8 -> 6.2.5
 [INFO]   org.apache.activemq:activemq-jms-pool ................. 6.1.8 -> 6.2.5
-[INFO]   org.apache.activemq:activemq-kahadb-store ............. 6.1.8 -> 6.2.5
 [INFO]   org.apache.activemq:activemq-karaf .................... 6.1.8 -> 6.2.5
 [INFO]   org.apache.activemq:activemq-log4j-appender ........... 6.1.8 -> 6.2.5
 [INFO]   org.apache.activemq:activemq-mqtt ..................... 6.1.8 -> 6.2.5
 [INFO]   org.apache.activemq:activemq-openwire-generator ....... 6.1.8 -> 6.2.5
-[INFO]   org.apache.activemq:activemq-openwire-legacy .......... 6.1.8 -> 6.2.5
 [INFO]   org.apache.activemq:activemq-osgi ..................... 6.1.8 -> 6.2.5
-[INFO]   org.apache.activemq:activemq-pool ..................... 6.1.8 -> 6.2.5
 [INFO]   org.apache.activemq:activemq-ra ....................... 6.1.8 -> 6.2.5
 [INFO]   org.apache.activemq:activemq-rar ...................... 6.1.8 -> 6.2.5
 [INFO]   org.apache.activemq:activemq-run ...................... 6.1.8 -> 6.2.5
@@ -460,46 +424,6 @@
 [INFO]   org.apache.activemq:activemq-web ...................... 6.1.8 -> 6.2.5
 [INFO]   org.apache.activemq:activemq-web-console .............. 6.1.8 -> 6.2.5
 [INFO]   org.apache.activemq:activemq-web-demo ................. 6.1.8 -> 6.2.5
-[INFO]   org.apache.activemq:artemis-amqp-protocol ........... 2.40.0 -> 2.53.0
-[INFO]   org.apache.activemq:artemis-boot .................... 2.40.0 -> 2.53.0
-[INFO]   org.apache.activemq:artemis-cdi-client .............. 2.40.0 -> 2.53.0
-[INFO]   org.apache.activemq:artemis-cli ..................... 2.40.0 -> 2.53.0
-[INFO]   org.apache.activemq:artemis-commons ................. 2.40.0 -> 2.53.0
-[INFO]   org.apache.activemq:artemis-console ................. 2.40.0 -> 2.53.0
-[INFO]   org.apache.activemq:artemis-core-client ............. 2.40.0 -> 2.53.0
-[INFO]   org.apache.activemq:artemis-core-client-all ......... 2.40.0 -> 2.53.0
-[INFO]   org.apache.activemq:artemis-core-client-osgi ........ 2.40.0 -> 2.53.0
-[INFO]   org.apache.activemq:artemis-dto ..................... 2.40.0 -> 2.53.0
-[INFO]   org.apache.activemq:artemis-features ................ 2.40.0 -> 2.53.0
-[INFO]   org.apache.activemq:artemis-hornetq-protocol ........ 2.40.0 -> 2.53.0
-[INFO]   org.apache.activemq:artemis-hqclient-protocol ....... 2.40.0 -> 2.53.0
-[INFO]   org.apache.activemq:artemis-jakarta-cdi-client ...... 2.40.0 -> 2.53.0
-[INFO]   org.apache.activemq:artemis-jakarta-client .......... 2.40.0 -> 2.53.0
-[INFO]   org.apache.activemq:artemis-jakarta-client-all ...... 2.40.0 -> 2.53.0
-[INFO]   org.apache.activemq:artemis-jakarta-openwire-protocol ...
-[INFO]                                                         2.40.0 -> 2.53.0
-[INFO]   org.apache.activemq:artemis-jakarta-ra .............. 2.40.0 -> 2.53.0
-[INFO]   org.apache.activemq:artemis-jakarta-server .......... 2.40.0 -> 2.53.0
-[INFO]   org.apache.activemq:artemis-jakarta-service-extensions ...
-[INFO]                                                         2.40.0 -> 2.53.0
-[INFO]   org.apache.activemq:artemis-jdbc-store .............. 2.40.0 -> 2.53.0
-[INFO]   org.apache.activemq:artemis-jms-client .............. 2.40.0 -> 2.53.0
-[INFO]   org.apache.activemq:artemis-jms-client-all .......... 2.40.0 -> 2.53.0
-[INFO]   org.apache.activemq:artemis-jms-client-osgi ......... 2.40.0 -> 2.53.0
-[INFO]   org.apache.activemq:artemis-jms-server .............. 2.40.0 -> 2.53.0
-[INFO]   org.apache.activemq:artemis-journal ................. 2.40.0 -> 2.53.0
-[INFO]   org.apache.activemq:artemis-lockmanager-api ......... 2.40.0 -> 2.53.0
-[INFO]   org.apache.activemq:artemis-lockmanager-ri .......... 2.40.0 -> 2.53.0
-[INFO]   org.apache.activemq:artemis-mqtt-protocol ........... 2.40.0 -> 2.53.0
-[INFO]   org.apache.activemq:artemis-openwire-protocol ....... 2.40.0 -> 2.53.0
-[INFO]   org.apache.activemq:artemis-ra ...................... 2.40.0 -> 2.53.0
-[INFO]   org.apache.activemq:artemis-selector ................ 2.40.0 -> 2.53.0
-[INFO]   org.apache.activemq:artemis-server .................. 2.40.0 -> 2.53.0
-[INFO]   org.apache.activemq:artemis-server-osgi ............. 2.40.0 -> 2.53.0
-[INFO]   org.apache.activemq:artemis-service-extensions ...... 2.40.0 -> 2.53.0
-[INFO]   org.apache.activemq:artemis-stomp-protocol .......... 2.40.0 -> 2.53.0
-[INFO]   org.apache.activemq:artemis-web ..................... 2.40.0 -> 2.53.0
-[INFO]   org.apache.activemq:artemis-website ................. 2.40.0 -> 2.53.0
 [INFO]   org.apache.commons:commons-dbcp2 .................... 2.13.0 -> 2.14.0
 [INFO]   org.apache.commons:commons-lang3 .................... 3.17.0 -> 3.20.0
 [INFO]   org.apache.commons:commons-pool2 .................... 2.12.1 -> 2.13.1
@@ -547,6 +471,33 @@
 [INFO]   org.apache.httpcomponents.core5:httpcore5-h2 ..... 5.3.6 -> 5.5-alpha1
 [INFO]   org.apache.httpcomponents.core5:httpcore5-reactive ...
 [INFO]                                                      5.3.6 -> 5.5-alpha1
+[INFO]   org.apache.kafka:connect .............................. 3.9.1 -> 3.9.2
+[INFO]   org.apache.kafka:connect-api .......................... 3.9.1 -> 3.9.2
+[INFO]   org.apache.kafka:connect-basic-auth-extension ......... 3.9.1 -> 3.9.2
+[INFO]   org.apache.kafka:connect-file ......................... 3.9.1 -> 3.9.2
+[INFO]   org.apache.kafka:connect-json ......................... 3.9.1 -> 3.9.2
+[INFO]   org.apache.kafka:connect-mirror ....................... 3.9.1 -> 3.9.2
+[INFO]   org.apache.kafka:connect-mirror-client ................ 3.9.1 -> 3.9.2
+[INFO]   org.apache.kafka:connect-runtime ...................... 3.9.1 -> 3.9.2
+[INFO]   org.apache.kafka:connect-transforms ................... 3.9.1 -> 3.9.2
+[INFO]   org.apache.kafka:generator ............................ 3.9.1 -> 3.9.2
+[INFO]   org.apache.kafka:kafka-clients ........................ 3.9.1 -> 3.9.2
+[INFO]   org.apache.kafka:kafka-log4j-appender ................. 3.9.1 -> 3.9.2
+[INFO]   org.apache.kafka:kafka-metadata ....................... 3.9.1 -> 3.9.2
+[INFO]   org.apache.kafka:kafka-raft ........................... 3.9.1 -> 3.9.2
+[INFO]   org.apache.kafka:kafka-server ......................... 3.9.1 -> 3.9.2
+[INFO]   org.apache.kafka:kafka-server-common .................. 3.9.1 -> 3.9.2
+[INFO]   org.apache.kafka:kafka-shell .......................... 3.9.1 -> 3.9.2
+[INFO]   org.apache.kafka:kafka-storage ........................ 3.9.1 -> 3.9.2
+[INFO]   org.apache.kafka:kafka-storage-api .................... 3.9.1 -> 3.9.2
+[INFO]   org.apache.kafka:kafka-streams ........................ 3.9.1 -> 3.9.2
+[INFO]   org.apache.kafka:kafka-streams-scala_2.12 ............. 3.9.1 -> 3.9.2
+[INFO]   org.apache.kafka:kafka-streams-scala_2.13 ............. 3.9.1 -> 3.9.2
+[INFO]   org.apache.kafka:kafka-streams-test-utils ............. 3.9.1 -> 3.9.2
+[INFO]   org.apache.kafka:kafka-tools .......................... 3.9.1 -> 3.9.2
+[INFO]   org.apache.kafka:kafka_2.12 ........................... 3.9.1 -> 3.9.2
+[INFO]   org.apache.kafka:kafka_2.13 ........................... 3.9.1 -> 3.9.2
+[INFO]   org.apache.kafka:trogdor .............................. 3.9.1 -> 3.9.2
 [INFO]   org.apache.logging:logging-parent ................... 11.0.0 -> 11.3.0
 [INFO]   org.apache.logging.log4j:log4j-1.2-api .............. 2.24.3 -> 2.26.0
 [INFO]   org.apache.logging.log4j:log4j-api .................. 2.24.3 -> 2.26.0
@@ -1005,6 +956,31 @@
 [INFO]   org.slf4j:slf4j-nop ........................... 2.0.17 -> 2.1.0-alpha1
 [INFO]   org.slf4j:slf4j-reload4j ...................... 2.0.17 -> 2.1.0-alpha1
 [INFO]   org.slf4j:slf4j-simple ........................ 2.0.17 -> 2.1.0-alpha1
+[INFO]   org.springframework:spring-aop ...................... 6.2.15 -> 6.2.18
+[INFO]   org.springframework:spring-aspects .................. 6.2.15 -> 6.2.18
+[INFO]   org.springframework:spring-beans .................... 6.2.15 -> 6.2.18
+[INFO]   org.springframework:spring-context .................. 6.2.15 -> 6.2.18
+[INFO]   org.springframework:spring-context-indexer .......... 6.2.15 -> 6.2.18
+[INFO]   org.springframework:spring-context-support .......... 6.2.15 -> 6.2.18
+[INFO]   org.springframework:spring-core ..................... 6.2.15 -> 6.2.18
+[INFO]   org.springframework:spring-core-test ................ 6.2.15 -> 6.2.18
+[INFO]   org.springframework:spring-expression ............... 6.2.15 -> 6.2.18
+[INFO]   org.springframework:spring-instrument ............... 6.2.15 -> 6.2.18
+[INFO]   org.springframework:spring-jcl ...................... 6.2.15 -> 6.2.18
+[INFO]   org.springframework:spring-jdbc ..................... 6.2.15 -> 6.2.18
+[INFO]   org.springframework:spring-jms ...................... 6.2.15 -> 6.2.18
+[INFO]   org.springframework:spring-messaging ................ 6.2.15 -> 6.2.18
+[INFO]   org.springframework:spring-orm ...................... 6.2.15 -> 6.2.18
+[INFO]   org.springframework:spring-oxm ...................... 6.2.15 -> 6.2.18
+[INFO]   org.springframework:spring-r2dbc .................... 6.2.15 -> 6.2.18
+[INFO]   org.springframework:spring-test ..................... 6.2.15 -> 6.2.18
+[INFO]   org.springframework:spring-tx ....................... 6.2.15 -> 6.2.18
+[INFO]   org.springframework:spring-web ...................... 6.2.15 -> 6.2.18
+[INFO]   org.springframework:spring-webflux .................. 6.2.15 -> 6.2.18
+[INFO]   org.springframework:spring-webmvc ................... 6.2.15 -> 6.2.18
+[INFO]   org.springframework:spring-websocket ................ 6.2.15 -> 6.2.18
+[INFO]   org.springframework.cloud:spring-cloud-config-server ...
+[INFO]                                                           4.3.0 -> 4.3.3
 [INFO]   org.xerial:sqlite-jdbc .......................... 3.49.1.0 -> 3.53.1.0
 [INFO]   org.xmlunit:xmlunit-assertj ......................... 2.10.4 -> 2.11.0
 [INFO]   org.xmlunit:xmlunit-assertj3 ........................ 2.10.4 -> 2.11.0
@@ -1016,36 +992,20 @@
 [INFO]   redis.clients:jedis ................................... 6.0.0 -> 6.2.0
 [INFO] 
 [INFO] The following dependencies in Dependencies have newer versions:
-[INFO]   com.akathist.maven.plugins.launch4j:launch4j-maven-plugin ...
-[INFO]                                                           2.6.0 -> 2.7.0
-[INFO]   com.atlassian.bamboo:bamboo-specs .................. 10.0.1 -> 10.2.19
 [INFO]   com.fasterxml.jackson.module:jackson-module-jaxb-annotations ...
 [INFO]                                                         2.21.2 -> 2.21.3
-[INFO]   com.google.cloud.tools:jib-maven-plugin ............... 3.4.2 -> 3.5.1
 [INFO]   com.h2database:h2 ................................. 2.3.232 -> 2.4.240
 [INFO]   com.oracle.database.jdbc:ojdbc11 ......... 23.7.0.25.01 -> 23.26.2.0.0
 [INFO]   io.micrometer:micrometer-registry-prometheus ... 1.15.11 -> 1.17.0-RC1
 [INFO]   io.projectreactor:reactor-test ....................... 3.7.18 -> 3.8.5
 [INFO]   jakarta.activation:jakarta.activation-api .......... 2.1.4 -> 2.2.0-M2
 [INFO]   jakarta.xml.bind:jakarta.xml.bind-api .............. 4.0.4 -> 4.1.0-M1
-[INFO]   nl.tudelft.simulation:dsol ........................... 4.2.11 -> 4.3.2
-[INFO]   org.apache.activemq:artemis-server .................. 2.44.0 -> 2.53.0
-[INFO]   org.apache.camel.springboot:camel-spring-boot-starter ...
-[INFO]                                                         4.10.2 -> 4.20.0
-[INFO]   org.apache.maven.plugins:maven-jlink-plugin ........... 3.2.0 -> 3.3.0
-[INFO]   org.apache.maven.plugins:maven-shade-plugin ........... 3.5.3 -> 3.6.2
+[INFO]   org.apache.kafka:kafka-streams ........................ 3.9.1 -> 3.9.2
 [INFO]   org.flywaydb:flyway-core ........................... 11.7.2 -> 11.20.3
 [INFO]   org.flywaydb:flyway-database-oracle ................ 11.7.2 -> 11.20.3
 [INFO]   org.flywaydb:flyway-mysql .......................... 11.7.2 -> 11.20.3
 [INFO]   org.glassfish.jaxb:jaxb-runtime ....................... 4.0.6 -> 4.0.8
-[INFO]   org.graalvm.buildtools:native-maven-plugin .......... 0.10.1 -> 0.11.5
-[INFO]   org.mockito:mockito-core ............................ 5.16.1 -> 5.23.0
 [INFO]   org.postgresql:postgresql ......................... 42.7.10 -> 42.7.11
-[INFO]   org.redisson:redisson ............................... 3.45.1 -> 3.52.0
-[INFO]   org.redisson:redisson-spring-boot-starter ........... 3.45.1 -> 3.52.0
-[INFO]   org.springframework.integration:spring-integration-security ...
-[INFO]                                                          6.2.5 -> 6.2.11
-[INFO]   redis.clients:jedis ............................. 5.2.0 -> 5.3.0-beta1
 [INFO] 
 [INFO] No dependencies in pluginManagement of plugins have newer versions.
 [INFO] 
@@ -1055,8 +1015,7 @@
 [INFO] --- versions:2.18.0:display-plugin-updates (default-cli) @ maven-collector ---
 [INFO] 
 [INFO] The following plugin updates are available:
-[INFO]   com.google.cloud.tools:jib-maven-plugin ............ 3.4.2 -> 3.5.1
-[INFO]   org.graalvm.buildtools:native-maven-plugin ........ 0.10.1 -> 1.1.0
+[INFO]   org.graalvm.buildtools:native-maven-plugin ........ 0.11.5 -> 1.1.0
 [INFO]   org.sonarsource.scanner.maven:sonar-maven-plugin  5.5.0.6356 -> 5.6.0.6792
 [INFO] 
 [INFO] All plugins have a version specified.
@@ -1111,6 +1070,6 @@
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
 [INFO] ------------------------------------------------------------------------
-[INFO] Total time:  39.637 s
-[INFO] Finished at: 2026-05-13T20:21:29Z
+[INFO] Total time:  24.418 s
+[INFO] Finished at: 2026-05-13T20:46:28Z
 [INFO] ------------------------------------------------------------------------
