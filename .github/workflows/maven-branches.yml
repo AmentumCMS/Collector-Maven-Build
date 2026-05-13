@@ -111,7 +111,7 @@ jobs:
           fi
 
           git status --short
-          git add pom.xml maven-version-updates.txt
+          git add pom.xml **/pom.xml maven-version-updates.txt
           git commit -m "Update non-major Maven versions (${{ needs.Date.outputs.Date }})"
           git push
 
@@ -200,6 +200,7 @@ jobs:
     needs: [ Date ]
     runs-on: ubuntu-latest
     permissions:
+      actions: read
       contents: read
     steps:
       - name: Check out repository code

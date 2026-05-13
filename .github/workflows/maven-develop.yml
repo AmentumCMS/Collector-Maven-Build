@@ -54,7 +54,7 @@ jobs:
           git config user.name "$(git log -n 1 --pretty=format:%an)"
           git config user.email "$(git log -n 1 --pretty=format:%ae)"
 
-      - name: Show available non-major Maven updates
+      - name: Show available non-major stable Maven updates
         run: |
           mvn --no-transfer-progress -DskipTests=true -s settings.xml -B \
             versions:display-parent-updates \
@@ -63,9 +63,10 @@ jobs:
             versions:display-plugin-updates \
             -DallowMajorUpdates=false \
             -DallowSnapshots=false \
+            -DignoredVersions='.*-M.*,.*-RC.*,.*-alpha.*,.*-beta.*,.*-SNAPSHOT' \
             | tee maven-version-updates.txt
 
-      - name: Advance non-major Maven parent and property versions
+      - name: Advance non-major stable Maven parent and property versions
         run: |
           set -eux
 
@@ -73,17 +74,33 @@ jobs:
             versions:update-parent \
             -DallowMajorUpdates=false \
             -DallowSnapshots=false \
-            -DgenerateBackupPoms=false
+            -DallowDowngrade=false \
+            -DgenerateBackupPoms=false \
+            -DignoredVersions='.*-M.*,.*-RC.*,.*-alpha.*,.*-beta.*,.*-SNAPSHOT'
 
           mvn --no-transfer-progress -DskipTests=true -s settings.xml -B \
             versions:update-properties \
             -DallowMajorUpdates=false \
             -DallowSnapshots=false \
-            -DgenerateBackupPoms=false
+            -DgenerateBackupPoms=false \
+            -DignoredVersions='.*-M.*,.*-RC.*,.*-alpha.*,.*-beta.*,.*-SNAPSHOT'
 
-      - name: Build after version updates
+      - name: Advance all non-major stable dependency versions
         run: |
-          mvn --no-transfer-progress -s settings.xml -B clean verify
+          set -eux
+
+          mvn --no-transfer-progress -DskipTests=true -s settings.xml -B \
+            versions:use-latest-releases \
+            -DallowMajorUpdates=false \
+            -DallowMinorUpdates=true \
+            -DallowIncrementalUpdates=true \
+            -DallowSnapshots=false \
+            -DgenerateBackupPoms=false \
+            -DignoredVersions='.*-M.*,.*-RC.*,.*-alpha.*,.*-beta.*,.*-SNAPSHOT'
+
+      - name: Resolve/build after version updates
+        run: |
+          mvn --no-transfer-progress -DskipTests=true -s settings.xml -B clean package
 
       - name: Commit version updates
         run: |
