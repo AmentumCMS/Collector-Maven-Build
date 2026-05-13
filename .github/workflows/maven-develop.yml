@@ -54,11 +54,47 @@ jobs:
           git config user.name "$(git log -n 1 --pretty=format:%an)"
           git config user.email "$(git log -n 1 --pretty=format:%ae)"
 
-      - name: Advance Dependency versions
+      - name: Show available non-major Maven updates
         run: |
-          set +ex
-          mvn --no-transfer-progress -DskipTests=true -ssettings.xml -B versions:update-parent
-          git commit -am "Update versions (${{ needs.Date.outputs.Date }})"
+          mvn --no-transfer-progress -DskipTests=true -s settings.xml -B \
+            versions:display-parent-updates \
+            versions:display-property-updates \
+            versions:display-dependency-updates \
+            versions:display-plugin-updates \
+            -DallowMajorUpdates=false \
+            -DallowSnapshots=false \
+            | tee maven-version-updates.txt
+
+      - name: Advance non-major Maven parent and property versions
+        run: |
+          set -eux
+
+          mvn --no-transfer-progress -DskipTests=true -s settings.xml -B \
+            versions:update-parent \
+            -DallowMajorUpdates=false \
+            -DallowSnapshots=false \
+            -DgenerateBackupPoms=false
+
+          mvn --no-transfer-progress -DskipTests=true -s settings.xml -B \
+            versions:update-properties \
+            -DallowMajorUpdates=false \
+            -DallowSnapshots=false \
+            -DgenerateBackupPoms=false
+
+      - name: Build after version updates
+        run: |
+          mvn --no-transfer-progress -s settings.xml -B clean verify
+
+      - name: Commit version updates
+        run: |
+          if git diff --quiet; then
+            echo "No non-major Maven version updates found."
+            exit 0
+          fi
+
+          git status --short
+          git add pom.xml **/pom.xml maven-version-updates.txt
+          git commit -m "Update non-major Maven versions (${{ needs.Date.outputs.Date }})"
           git push
 
 # CollectM2 is the most time-consuming step, so we run it in parallel to the BOM collection and XSD collection steps. 
