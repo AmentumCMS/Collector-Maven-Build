@@ -76,14 +76,14 @@ jobs:
             -DallowSnapshots=false \
             -DallowDowngrade=false \
             -DgenerateBackupPoms=false \
-            -DignoredVersions='.*-M.*,.*-RC.*,.*-alpha.*,.*-beta.*,.*-SNAPSHOT'
+            -DignoredVersions='.*-M.*,.*-RC.*,.*-alpha*,.*-beta*,.*-SNAPSHOT'
 
           mvn --no-transfer-progress -DskipTests=true -s settings.xml -B \
             versions:update-properties \
             -DallowMajorUpdates=false \
             -DallowSnapshots=false \
             -DgenerateBackupPoms=false \
-            -DignoredVersions='.*-M.*,.*-RC.*,.*-alpha.*,.*-beta.*,.*-SNAPSHOT'
+            -DignoredVersions='.*-M.*,.*-RC.*,.*-alpha*,.*-beta*,.*-SNAPSHOT'
 
       - name: Advance all non-major stable dependency versions
         run: |
@@ -96,7 +96,7 @@ jobs:
             -DallowIncrementalUpdates=true \
             -DallowSnapshots=false \
             -DgenerateBackupPoms=false \
-            -DignoredVersions='.*-M.*,.*-RC.*,.*-alpha.*,.*-beta.*,.*-SNAPSHOT'
+            -DignoredVersions='.*-M.*,.*-RC.*,.*-alpha*,.*-beta*,.*-SNAPSHOT'
 
       - name: Resolve/build after version updates
         run: |
