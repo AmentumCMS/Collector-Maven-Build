@@ -124,6 +124,10 @@
 		<!-- spring-boot-starter-pulsar-reactive removed for Spring Boot 3.5.0 compatibility -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-rsocket</artifactId>
 		</dependency>
 		<dependency>
