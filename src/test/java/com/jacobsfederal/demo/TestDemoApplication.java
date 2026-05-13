@@ -1,6 +1,7 @@
 package com.amentumcms.demo;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.jms.activemq.ActiveMQConnectionDetails;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.context.annotation.Bean;
@@ -19,10 +20,29 @@ import org.testcontainers.utility.DockerImageName;
 public class TestDemoApplication {
 
 	@Bean
-	@ServiceConnection(name = "activemq")
 	GenericContainer<?> activeMQContainer() {
 		return new GenericContainer<>(DockerImageName.parse("symptoma/activemq:5.16.0"))
 				.withExposedPorts(61616);
+	}
+
+	@Bean
+	ActiveMQConnectionDetails activeMQConnectionDetails(GenericContainer<?> activeMQContainer) {
+		return new ActiveMQConnectionDetails() {
+			@Override
+			public String getBrokerUrl() {
+				return "tcp://" + activeMQContainer.getHost() + ":" + activeMQContainer.getMappedPort(61616);
+			}
+
+			@Override
+			public String getUser() {
+				return "admin";
+			}
+
+			@Override
+			public String getPassword() {
+				return "admin";
+			}
+		};
 	}
 
 	@Bean
@@ -83,5 +103,4 @@ public class TestDemoApplication {
 	public static void main(String[] args) {
 		SpringApplication.from(DemoApplication::main).with(TestDemoApplication.class).run(args);
 	}
-
 }
