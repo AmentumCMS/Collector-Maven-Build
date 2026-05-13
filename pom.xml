@@ -21,7 +21,7 @@
 
 	<properties>
 		<java.version>21</java.version>
-		<jetty9.version>9.4.57.v20241219</jetty9.version>
+		<jetty9.version>9.4.58.v20250814</jetty9.version>
 
 		<!-- Shared dependency versions -->
 		<activemq.classic.version>6.2.5</activemq.classic.version>
