@@ -21,9 +21,10 @@
 
 	<properties>
 		<java.version>21</java.version>
+		<jetty9.version>9.4.57.v20241219</jetty9.version>
 
 		<!-- Shared dependency versions -->
-		<activemq.classic.version>5.19.6</activemq.classic.version>
+		<activemq.classic.version>6.2.5</activemq.classic.version>
 		<artemis.version>2.53.0</artemis.version>
 		<spring-framework.version>6.2.18</spring-framework.version>
 		<spring-cloud-config.version>4.3.3</spring-cloud-config.version>
@@ -260,6 +261,43 @@
 				<version>${netty.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
+			</dependency>
+
+			<!-- Jetty 9.x CVE overrides for old transitive tooling dependencies -->
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-server</artifactId>
+				<version>${jetty9.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-http</artifactId>
+				<version>${jetty9.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-io</artifactId>
+				<version>${jetty9.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-util</artifactId>
+				<version>${jetty9.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-security</artifactId>
+				<version>${jetty9.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-servlet</artifactId>
+				<version>${jetty9.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-webapp</artifactId>
+				<version>${jetty9.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
