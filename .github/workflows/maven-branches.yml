@@ -145,9 +145,7 @@ jobs:
             maven-${{ runner.os }}-
 
       - name: Build once (populate ~/.m2 + generate BOM)
-        run: |
-          mvn -DskipTests=true --no-transfer-progress -B -s settings.xml \
-            package cyclonedx:makeAggregateBom
+        run: mvn -DskipTests=true --no-transfer-progress -B -s settings.xml clean package
 
       - name: Export Maven dependency tree (text + dot)
         run: |
