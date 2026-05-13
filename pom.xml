@@ -1038,6 +1038,7 @@
 						<dependency><groupId>org.codehaus.plexus</groupId><artifactId>plexus-archiver</artifactId><version>${plexus-archiver.version}</version></dependency>
 						<dependency><groupId>org.codehaus.plexus</groupId><artifactId>plexus-utils</artifactId><version>${plexus-utils.version}</version></dependency>
 						<dependency><groupId>org.apache.commons</groupId><artifactId>commons-compress</artifactId><version>${commons-compress.version}</version></dependency>
+						<dependency><groupId>commons-io</groupId><artifactId>commons-io</artifactId><version>${commons-io.version}</version></dependency>
 					</dependencies>
 				</plugin>
 				<plugin>
