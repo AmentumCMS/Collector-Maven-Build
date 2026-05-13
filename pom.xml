@@ -22,7 +22,6 @@
 		<java.version>21</java.version>
 
 		<!-- Spring Boot 3.5 compatible BOMs -->
-		<spring-cloud.version>2025.0.0</spring-cloud.version>
 		<spring-modulith.version>1.4.11</spring-modulith.version>
 		<spring-shell.version>3.4.2</spring-shell.version>
 		
@@ -41,10 +40,6 @@
 			<groupId>com.fasterxml.jackson.module</groupId>
 			<artifactId>jackson-module-jaxb-annotations</artifactId>
 			<version>2.15.3</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-activemq</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -237,10 +232,6 @@
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-config</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-gateway</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
