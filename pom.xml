@@ -24,6 +24,14 @@
 
 		<!-- Shared dependency versions -->
 		<activemq.classic.version>5.19.6</activemq.classic.version>
+		<artemis.version>2.53.0</artemis.version>
+		<spring-framework.version>6.2.15</spring-framework.version>
+		<spring-cloud-config.version>4.3.0</spring-cloud-config.version>
+		<kafka.version>3.9.1</kafka.version>
+		<jsch.version>0.1.55</jsch.version>
+		<velocity.version>2.4.1</velocity.version>
+		<velocity-tools.version>3.1</velocity-tools.version>
+		<maven-wagon.version>3.5.3</maven-wagon.version>
 
 		<!-- Security override versions for collected transitive build/runtime libraries -->
 		<snakeyaml.version>2.6</snakeyaml.version>
@@ -49,6 +57,96 @@
 				being collected as normal project dependencies. Keep this block near the
 				top so dependency:tree clearly shows the patched versions winning.
 			-->
+
+			<!-- Spring Framework CVE overrides -->
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-webmvc</artifactId>
+				<version>${spring-framework.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-web</artifactId>
+				<version>${spring-framework.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-core</artifactId>
+				<version>${spring-framework.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-context</artifactId>
+				<version>${spring-framework.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-beans</artifactId>
+				<version>${spring-framework.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-aop</artifactId>
+				<version>${spring-framework.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-expression</artifactId>
+				<version>${spring-framework.version}</version>
+			</dependency>
+
+			<!-- Spring Cloud Config Server CVE override -->
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-config-server</artifactId>
+				<version>${spring-cloud-config.version}</version>
+			</dependency>
+
+			<!-- ActiveMQ / Artemis CVE overrides -->
+			<dependency>
+				<groupId>org.apache.activemq</groupId>
+				<artifactId>artemis-server</artifactId>
+				<version>${artemis.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.activemq</groupId>
+				<artifactId>activemq-broker</artifactId>
+				<version>${activemq.classic.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.activemq</groupId>
+				<artifactId>activemq-client</artifactId>
+				<version>${activemq.classic.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.activemq</groupId>
+				<artifactId>activemq-openwire-legacy</artifactId>
+				<version>${activemq.classic.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.activemq</groupId>
+				<artifactId>activemq-kahadb-store</artifactId>
+				<version>${activemq.classic.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.activemq</groupId>
+				<artifactId>activemq-pool</artifactId>
+				<version>${activemq.classic.version}</version>
+			</dependency>
+
+			<!-- Kafka CVE overrides -->
+			<dependency>
+				<groupId>org.apache.kafka</groupId>
+				<artifactId>kafka-clients</artifactId>
+				<version>${kafka.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.kafka</groupId>
+				<artifactId>kafka-streams</artifactId>
+				<version>${kafka.version}</version>
+			</dependency>
+
+			<!-- Security override versions for collected transitive payloads -->
 			<dependency>
 				<groupId>org.yaml</groupId>
 				<artifactId>snakeyaml</artifactId>
@@ -59,6 +157,25 @@
 				<artifactId>xstream</artifactId>
 				<version>${xstream.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>com.jcraft</groupId>
+				<artifactId>jsch</artifactId>
+				<version>${jsch.version}</version>
+			</dependency>
+
+			<!-- Replace vulnerable Velocity 1.x with Velocity Engine 2.x where possible -->
+			<dependency>
+				<groupId>org.apache.velocity</groupId>
+				<artifactId>velocity-engine-core</artifactId>
+				<version>${velocity.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.velocity.tools</groupId>
+				<artifactId>velocity-tools-generic</artifactId>
+				<version>${velocity-tools.version}</version>
+			</dependency>
+
+			<!-- Maven / Plexus / Archiver CVE overrides -->
 			<dependency>
 				<groupId>org.apache.maven</groupId>
 				<artifactId>maven-core</artifactId>
@@ -104,6 +221,39 @@
 				<artifactId>httpclient</artifactId>
 				<version>${httpclient.version}</version>
 			</dependency>
+
+			<!-- Wagon dependency alignment -->
+			<dependency>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-file</artifactId>
+				<version>${maven-wagon.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-http</artifactId>
+				<version>${maven-wagon.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-http-shared</artifactId>
+				<version>${maven-wagon.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-ssh</artifactId>
+				<version>${maven-wagon.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-ssh-common</artifactId>
+				<version>${maven-wagon.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-provider-api</artifactId>
+				<version>${maven-wagon.version}</version>
+			</dependency>
+
 			<dependency>
 				<groupId>io.netty</groupId>
 				<artifactId>netty-bom</artifactId>
@@ -115,7 +265,7 @@
 	</dependencyManagement>
 
 	<dependencies>
-		
+
 		<dependency>
 			<groupId>com.fasterxml.jackson.module</groupId>
 			<artifactId>jackson-module-jaxb-annotations</artifactId>
@@ -254,13 +404,14 @@
 		<dependency>
 			<groupId>org.apache.kafka</groupId>
 			<artifactId>kafka-streams</artifactId>
+			<version>${kafka.version}</version>
 		</dependency>
 
 		<!-- JMS Emulator packages -->
 		<dependency>
 			<groupId>org.apache.activemq</groupId>
 			<artifactId>artemis-server</artifactId>
-			<version>2.53.0</version>
+			<version>${artemis.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.activemq</groupId>
@@ -572,22 +723,32 @@
 		<dependency>
 			<groupId>org.apache.maven.wagon</groupId>
 			<artifactId>wagon-file</artifactId>
-			<version>3.5.3</version>
+			<version>${maven-wagon.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.maven.wagon</groupId>
 			<artifactId>wagon-http</artifactId>
-			<version>3.5.3</version>
+			<version>${maven-wagon.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.maven.wagon</groupId>
 			<artifactId>wagon-ssh</artifactId>
-			<version>3.5.3</version>
+			<version>${maven-wagon.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.codehaus.mojo</groupId>
 			<artifactId>wagon-maven-plugin</artifactId>
 			<version>2.0.2</version>
+			<exclusions>
+				<exclusion>
+					<groupId>velocity</groupId>
+					<artifactId>velocity</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.velocity</groupId>
+					<artifactId>velocity</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.maven.plugins</groupId>
@@ -667,22 +828,22 @@
 			<plugin>
 				<groupId>org.graalvm.buildtools</groupId>
 				<artifactId>native-maven-plugin</artifactId>
-				<version>0.10.1</version>
+				<version>0.11.5</version>
 			</plugin>
 			<plugin>
 				<groupId>com.google.cloud.tools</groupId>
 				<artifactId>jib-maven-plugin</artifactId>
-				<version>3.4.2</version>
+				<version>3.5.1</version>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.wagon</groupId>
 				<artifactId>wagon-http</artifactId>
-				<version>3.5.3</version>
+				<version>${maven-wagon.version}</version>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.wagon</groupId>
 				<artifactId>wagon-file</artifactId>
-				<version>3.5.3</version>
+				<version>${maven-wagon.version}</version>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
