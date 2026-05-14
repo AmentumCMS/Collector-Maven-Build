@@ -37,6 +37,7 @@
 [INFO]   ${kafka.version} .............................................. 3.9.2
 [INFO]   ${logback.version} ........................................... 1.5.32
 [INFO]   ${maven-assembly-plugin.version} .............................. 3.8.0
+[INFO]   ${maven-clean-plugin.version} ................................. 3.5.0
 [INFO]   ${maven-compiler-plugin.version} ............................. 3.15.0
 [INFO]   ${maven-dependency-plugin.version} ........................... 3.10.0
 [INFO]   ${maven-enforcer-plugin.version} .............................. 3.6.2
@@ -61,8 +62,7 @@
 [INFO]   ${velocity.version} ........................................... 2.4.1
 [INFO]   ${xmlbeans.version} ........................................... 5.3.0
 [INFO]   ${xstream.version} ........................................... 1.4.21
-[INFO] The following version property updates are available:
-[INFO]   ${maven-clean-plugin.version} ........................ 3.4.1 -> 3.5.0
+[INFO] All version properties are referencing the newest version available.
 [INFO] 
 [INFO] 
 [INFO] --- versions:2.19.1:display-dependency-updates (default-cli) @ maven-collector ---
@@ -1007,7 +1007,7 @@
 [ERROR] Using the minimum version of Maven: 3.6.3
 [INFO] 
 [INFO] Require Maven 2.0 to use the following plugin updates:
-[INFO]   maven-clean-plugin ................................... 3.4.1 -> 2.2
+[INFO]   maven-clean-plugin ................................... 3.5.0 -> 2.2
 [INFO]   maven-compiler-plugin ............................. 3.15.0 -> 2.0.2
 [INFO]   maven-jar-plugin ..................................... 3.5.0 -> 2.1
 [INFO] 
@@ -1022,7 +1022,7 @@
 [INFO] 
 [INFO] Require Maven 2.0.6 to use the following plugin updates:
 [INFO]   maven-assembly-plugin ......................... 3.8.0 -> 2.2-beta-5
-[INFO]   maven-clean-plugin ................................... 3.4.1 -> 2.5
+[INFO]   maven-clean-plugin ................................... 3.5.0 -> 2.5
 [INFO]   maven-jar-plugin ..................................... 3.5.0 -> 2.5
 [INFO]   maven-resources-plugin ............................... 3.5.0 -> 2.6
 [INFO]   maven-shade-plugin ................................. 3.6.2 -> 1.7.1
@@ -1043,7 +1043,7 @@
 [INFO] 
 [INFO] Require Maven 2.2.1 to use the following plugin updates:
 [INFO]   maven-assembly-plugin ................................ 3.8.0 -> 2.6
-[INFO]   maven-clean-plugin ................................. 3.4.1 -> 2.6.1
+[INFO]   maven-clean-plugin ................................. 3.5.0 -> 2.6.1
 [INFO]   maven-compiler-plugin ............................... 3.15.0 -> 3.3
 [INFO]   maven-dependency-plugin ............................ 3.10.0 -> 2.10
 [INFO]   maven-enforcer-plugin ........................... 3.6.2 -> 3.0.0-M3
@@ -1053,7 +1053,7 @@
 [INFO] 
 [INFO] Require Maven 3.0 to use the following plugin updates:
 [INFO]   maven-assembly-plugin .............................. 3.8.0 -> 3.3.0
-[INFO]   maven-clean-plugin ................................. 3.4.1 -> 3.1.0
+[INFO]   maven-clean-plugin ................................. 3.5.0 -> 3.1.0
 [INFO]   maven-compiler-plugin ............................. 3.15.0 -> 3.8.1
 [INFO]   maven-dependency-plugin ........................... 3.10.0 -> 3.1.2
 [INFO]   maven-jar-plugin ................................... 3.5.0 -> 3.2.0
@@ -1077,7 +1077,7 @@
 [INFO] 
 [INFO] Require Maven 3.2.5 to use the following plugin updates:
 [INFO]   maven-assembly-plugin .............................. 3.8.0 -> 3.6.0
-[INFO]   maven-clean-plugin ................................. 3.4.1 -> 3.3.2
+[INFO]   maven-clean-plugin ................................. 3.5.0 -> 3.3.2
 [INFO]   maven-compiler-plugin ............................ 3.15.0 -> 3.12.1
 [INFO]   maven-dependency-plugin ........................... 3.10.0 -> 3.6.1
 [INFO]   maven-enforcer-plugin .............................. 3.6.2 -> 3.4.1
@@ -1089,7 +1089,7 @@
 [INFO] 
 [INFO] Require Maven 3.6.3 to use the following plugin updates:
 [INFO]   maven-assembly-plugin ....................................... 3.8.0
-[INFO]   maven-clean-plugin ................................. 3.4.1 -> 3.5.0
+[INFO]   maven-clean-plugin .......................................... 3.5.0
 [INFO]   maven-compiler-plugin ...................................... 3.15.0
 [INFO]   maven-dependency-plugin .................................... 3.10.0
 [INFO]   maven-enforcer-plugin ....................................... 3.6.2
@@ -1100,13 +1100,13 @@
 [INFO]   org.codehaus.mojo:versions-maven-plugin .......... 2.19.1 -> 2.21.0
 [INFO] 
 [INFO] Require Maven 4.0.0-beta-3 to use the following plugin updates:
-[INFO]   maven-clean-plugin .......................... 3.4.1 -> 4.0.0-beta-1
+[INFO]   maven-clean-plugin .......................... 3.5.0 -> 4.0.0-beta-1
 [INFO]   maven-compiler-plugin ...................... 3.15.0 -> 4.0.0-beta-1
 [INFO]   maven-jar-plugin ............................ 3.5.0 -> 4.0.0-beta-1
 [INFO]   maven-resources-plugin ...................... 3.5.0 -> 4.0.0-beta-1
 [INFO] 
 [INFO] Require Maven 4.0.0-rc-2 to use the following plugin updates:
-[INFO]   maven-clean-plugin .......................... 3.4.1 -> 4.0.0-beta-2
+[INFO]   maven-clean-plugin .......................... 3.5.0 -> 4.0.0-beta-2
 [INFO]   maven-compiler-plugin ...................... 3.15.0 -> 4.0.0-beta-2
 [INFO] 
 [INFO] Require Maven 4.0.0-rc-4 to use the following plugin updates:
@@ -1115,6 +1115,6 @@
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
 [INFO] ------------------------------------------------------------------------
-[INFO] Total time:  27.360 s
-[INFO] Finished at: 2026-05-14T13:53:19Z
+[INFO] Total time:  30.828 s
+[INFO] Finished at: 2026-05-14T14:10:09Z
 [INFO] ------------------------------------------------------------------------
