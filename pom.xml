@@ -206,6 +206,12 @@
 				<groupId>org.apache.velocity.tools</groupId>
 				<artifactId>velocity-tools-generic</artifactId>
 				<version>${velocity-tools.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>commons-beanutils</groupId>
+						<artifactId>commons-beanutils</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 
 			<!-- Maven / Plexus / Archiver CVE overrides -->
@@ -1133,11 +1139,23 @@
 			<groupId>net.sf.launch4j</groupId>
 			<artifactId>launch4j</artifactId>
 			<version>3.50</version>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-beanutils</groupId>
+					<artifactId>commons-beanutils</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.akathist.maven.plugins.launch4j</groupId>
 			<artifactId>launch4j-maven-plugin</artifactId>
 			<version>2.7.0</version>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-beanutils</groupId>
+					<artifactId>commons-beanutils</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<dependency>
@@ -1355,6 +1373,17 @@
 							<groupId>commons-beanutils</groupId>
 							<artifactId>commons-beanutils</artifactId>
 							<version>${commons-beanutils.version}</version>
+						</dependency>
+						<dependency>
+							<groupId>org.apache.velocity.tools</groupId>
+							<artifactId>velocity-tools-generic</artifactId>
+							<version>${velocity-tools.version}</version>
+							<exclusions>
+								<exclusion>
+									<groupId>commons-beanutils</groupId>
+									<artifactId>commons-beanutils</artifactId>
+								</exclusion>
+							</exclusions>
 						</dependency>
 					</dependencies>
 				</plugin>
