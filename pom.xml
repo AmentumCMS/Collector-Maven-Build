@@ -140,6 +140,12 @@
 				<groupId>org.apache.artemis</groupId>
 				<artifactId>artemis-server</artifactId>
 				<version>${artemis.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>commons-beanutils</groupId>
+						<artifactId>commons-beanutils</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.activemq</groupId>
@@ -429,6 +435,12 @@
 				<groupId>commons-validator</groupId>
 				<artifactId>commons-validator</artifactId>
 				<version>${commons-validator.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>commons-beanutils</groupId>
+						<artifactId>commons-beanutils</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>com.google.guava</groupId>
@@ -735,6 +747,12 @@
 			<groupId>org.apache.artemis</groupId>
 			<artifactId>artemis-server</artifactId>
 			<version>${artemis.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-beanutils</groupId>
+					<artifactId>commons-beanutils</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.activemq</groupId>
@@ -898,6 +916,12 @@
 			<groupId>commons-validator</groupId>
 			<artifactId>commons-validator</artifactId>
 			<version>${commons-validator.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-beanutils</groupId>
+					<artifactId>commons-beanutils</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<dependency>
@@ -1234,6 +1258,22 @@
 							<groupId>commons-io</groupId>
 							<artifactId>commons-io</artifactId>
 							<version>${commons-io.version}</version>
+						</dependency>
+						<dependency>
+							<groupId>commons-beanutils</groupId>
+							<artifactId>commons-beanutils</artifactId>
+							<version>${commons-beanutils.version}</version>
+						</dependency>
+						<dependency>
+							<groupId>org.apache.velocity.tools</groupId>
+							<artifactId>velocity-tools-generic</artifactId>
+							<version>3.1</version>
+							<exclusions>
+								<exclusion>
+									<groupId>commons-beanutils</groupId>
+									<artifactId>commons-beanutils</artifactId>
+								</exclusion>
+							</exclusions>
 						</dependency>
 					</dependencies>
 				</plugin>

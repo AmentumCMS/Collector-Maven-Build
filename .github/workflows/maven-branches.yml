@@ -172,13 +172,17 @@ jobs:
 
       - name: Export Maven dependency tree
         run: |
-          mvn -Dmaven.repo.local="${MAVEN_REPO}" \
+          TREE_MAVEN_REPO="${RUNNER_TEMP}/collector-deptree-m2/repository"
+          rm -rf "${TREE_MAVEN_REPO}"
+          mkdir -p "${TREE_MAVEN_REPO}"
+
+          mvn -Dmaven.repo.local="${TREE_MAVEN_REPO}" \
             -DskipTests=true --no-transfer-progress -B -s settings.xml \
             -DoutputType=text \
             -DoutputFile="${{ vars.COLLECTOR }}-deptree-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.txt" \
             dependency:tree
 
-          mvn -Dmaven.repo.local="${MAVEN_REPO}" \
+          mvn -Dmaven.repo.local="${TREE_MAVEN_REPO}" \
             -DskipTests=true --no-transfer-progress -B -s settings.xml \
             -DoutputType=dot \
             -DoutputFile="${{ vars.COLLECTOR }}-deptree-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.dot" \
