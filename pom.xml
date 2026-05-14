@@ -44,6 +44,11 @@
 		<dom4j.version>2.2.0</dom4j.version>
 		<httpclient.version>4.5.14</httpclient.version>
 		<netty.version>4.2.13.Final</netty.version>
+		<commons-lang3.version>3.18.0</commons-lang3.version>
+		<nimbus-jose-jwt.version>10.0.2</nimbus-jose-jwt.version>
+		<ant.version>1.10.11</ant.version>
+		<cyclonedx-core-java.version>11.0.1</cyclonedx-core-java.version>
+		<postgresql.version>42.7.11</postgresql.version>
 		<!-- Additional CVE override versions -->
 		<maven-dependency-plugin.version>3.10.0</maven-dependency-plugin.version>
 		<maven-assembly-plugin.version>3.8.0</maven-assembly-plugin.version>
@@ -55,7 +60,7 @@
 		<commons-beanutils.version>1.11.0</commons-beanutils.version>
 		<guava.version>33.6.0-jre</guava.version>
 		<jsoup.version>1.22.2</jsoup.version>
-		<bcprov.version>1.70</bcprov.version>
+		<bcprov.version>1.84</bcprov.version>
 		<json.version>20250517</json.version>
 		<xmlbeans.version>5.3.0</xmlbeans.version>
 		<jgit.version>6.10.1.202505221210-r</jgit.version>
@@ -321,6 +326,47 @@
 				<version>${jetty9.version}</version>
 			</dependency>
 			<!-- Additional CVE overrides for artifacts seen in Grype payload scans -->
+			<!-- Remaining Grype CVE overrides -->
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-lang3</artifactId>
+				<version>${commons-lang3.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.nimbusds</groupId>
+				<artifactId>nimbus-jose-jwt</artifactId>
+				<version>${nimbus-jose-jwt.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.ant</groupId>
+				<artifactId>ant</artifactId>
+				<version>${ant.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.postgresql</groupId>
+				<artifactId>postgresql</artifactId>
+				<version>${postgresql.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.bouncycastle</groupId>
+				<artifactId>bcprov-jdk18on</artifactId>
+				<version>${bcprov.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.bouncycastle</groupId>
+				<artifactId>bcpkix-jdk18on</artifactId>
+				<version>${bcprov.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.bouncycastle</groupId>
+				<artifactId>bcutil-jdk18on</artifactId>
+				<version>${bcprov.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.cyclonedx</groupId>
+				<artifactId>cyclonedx-core-java</artifactId>
+				<version>${cyclonedx-core-java.version}</version>
+			</dependency>
 			<dependency>
 				<groupId>org.springframework.cloud</groupId>
 				<artifactId>spring-cloud-gateway-server</artifactId>
@@ -1337,6 +1383,7 @@
 			</plugin>
 
 			<!-- Generate SBOM -->
+<!-- Generate SBOM -->
 			<plugin>
 				<groupId>org.cyclonedx</groupId>
 				<artifactId>cyclonedx-maven-plugin</artifactId>
@@ -1349,20 +1396,54 @@
 						</goals>
 					</execution>
 				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>org.cyclonedx</groupId>
+						<artifactId>cyclonedx-core-java</artifactId>
+						<version>${cyclonedx-core-java.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.codehaus.plexus</groupId>
+						<artifactId>plexus-utils</artifactId>
+						<version>${plexus-utils.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.commons</groupId>
+						<artifactId>commons-compress</artifactId>
+						<version>${commons-compress.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>com.fasterxml.jackson.core</groupId>
+						<artifactId>jackson-core</artifactId>
+						<version>${jackson.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>com.fasterxml.jackson.core</groupId>
+						<artifactId>jackson-databind</artifactId>
+						<version>${jackson.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>com.fasterxml.jackson.core</groupId>
+						<artifactId>jackson-annotations</artifactId>
+						<version>${jackson-annotations.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>com.fasterxml.jackson.dataformat</groupId>
+						<artifactId>jackson-dataformat-xml</artifactId>
+						<version>${jackson.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>com.fasterxml.jackson.dataformat</groupId>
+						<artifactId>jackson-dataformat-yaml</artifactId>
+						<version>${jackson.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.yaml</groupId>
+						<artifactId>snakeyaml</artifactId>
+						<version>${snakeyaml.version}</version>
+					</dependency>
+				</dependencies>
 				<configuration>
-					<projectType>library</projectType>
-					<schemaVersion>1.4</schemaVersion>
-					<includeBomSerialNumber>true</includeBomSerialNumber>
-					<includeCompileScope>true</includeCompileScope>
-					<includeProvidedScope>true</includeProvidedScope>
-					<includeRuntimeScope>true</includeRuntimeScope>
-					<includeSystemScope>true</includeSystemScope>
-					<includeTestScope>false</includeTestScope>
-					<includeLicenseText>false</includeLicenseText>
-					<outputReactorProjects>true</outputReactorProjects>
-					<outputFormat>all</outputFormat>
-					<outputName>bom</outputName>
-				</configuration>
 			</plugin>
 
 			<!-- Create ZIP of the collection -->
