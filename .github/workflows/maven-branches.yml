@@ -112,7 +112,7 @@ jobs:
       - name: Show diff after Maven update
         run: |
           git status --short
-          git diff -- pom.xml '**/pom.xml' || true
+          git diff -- pom.xml || true
 
       - name: Resolve/build after version updates
         run: |
@@ -126,7 +126,7 @@ jobs:
           fi
 
           git status --short
-          git add pom.xml '**/pom.xml' maven-version-updates.txt
+          git add pom.xml maven-version-updates.txt
           git commit -m "Update non-major Maven versions (${{ needs.Date.outputs.Date }})"
           git push
 
