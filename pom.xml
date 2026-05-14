@@ -44,9 +44,9 @@
 		<dom4j.version>2.2.0</dom4j.version>
 		<httpclient.version>4.5.14</httpclient.version>
 		<netty.version>4.2.13.Final</netty.version>
-		<commons-lang3.version>3.18.0</commons-lang3.version>
-		<nimbus-jose-jwt.version>10.0.2</nimbus-jose-jwt.version>
-		<ant.version>1.10.11</ant.version>
+		<commons-lang3.version>3.20.0</commons-lang3.version>
+		<nimbus-jose-jwt.version>10.9</nimbus-jose-jwt.version>
+		<ant.version>1.10.17</ant.version>
 		<cyclonedx-core-java.version>11.0.1</cyclonedx-core-java.version>
 		<postgresql.version>42.7.11</postgresql.version>
 		<!-- Additional CVE override versions -->
