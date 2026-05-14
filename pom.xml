@@ -53,6 +53,7 @@
 		<!-- Additional CVE override versions -->
 		<maven-dependency-plugin.version>3.10.0</maven-dependency-plugin.version>
 		<maven-assembly-plugin.version>3.8.0</maven-assembly-plugin.version>
+		<maven-clean-plugin.version>3.4.1</maven-clean-plugin.version>
 		<maven-enforcer-plugin.version>3.6.2</maven-enforcer-plugin.version>
 		<maven-resources-plugin.version>3.5.0</maven-resources-plugin.version>
 		<maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
@@ -401,6 +402,12 @@
 				<groupId>org.apache.maven.shared</groupId>
 				<artifactId>maven-shared-utils</artifactId>
 				<version>${maven-shared-utils.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>commons-io</groupId>
+						<artifactId>commons-io</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>commons-io</groupId>
@@ -624,10 +631,58 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-pulsar</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.pulsar</groupId>
+					<artifactId>bouncy-castle-bc</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.bouncycastle</groupId>
+					<artifactId>bcprov-jdk18on</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.bouncycastle</groupId>
+					<artifactId>bcpkix-jdk18on</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.bouncycastle</groupId>
+					<artifactId>bcutil-jdk18on</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-pulsar-reactive</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.pulsar</groupId>
+					<artifactId>bouncy-castle-bc</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.bouncycastle</groupId>
+					<artifactId>bcprov-jdk18on</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.bouncycastle</groupId>
+					<artifactId>bcpkix-jdk18on</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.bouncycastle</groupId>
+					<artifactId>bcutil-jdk18on</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcprov-jdk18on</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcpkix-jdk18on</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcutil-jdk18on</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -1135,6 +1190,12 @@
 							<groupId>org.apache.maven.shared</groupId>
 							<artifactId>maven-shared-utils</artifactId>
 							<version>${maven-shared-utils.version}</version>
+							<exclusions>
+								<exclusion>
+									<groupId>commons-io</groupId>
+									<artifactId>commons-io</artifactId>
+								</exclusion>
+							</exclusions>
 						</dependency>
 						<dependency>
 							<groupId>org.codehaus.plexus</groupId>
@@ -1187,6 +1248,18 @@
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-clean-plugin</artifactId>
+					<version>${maven-clean-plugin.version}</version>
+					<dependencies>
+						<dependency>
+							<groupId>org.codehaus.plexus</groupId>
+							<artifactId>plexus-utils</artifactId>
+							<version>${plexus-utils.version}</version>
+						</dependency>
+					</dependencies>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-jar-plugin</artifactId>
 					<version>${maven-jar-plugin.version}</version>
 					<dependencies>
@@ -1199,6 +1272,11 @@
 							<groupId>org.codehaus.plexus</groupId>
 							<artifactId>plexus-utils</artifactId>
 							<version>${plexus-utils.version}</version>
+						</dependency>
+						<dependency>
+							<groupId>commons-io</groupId>
+							<artifactId>commons-io</artifactId>
+							<version>${commons-io.version}</version>
 						</dependency>
 					</dependencies>
 				</plugin>
@@ -1225,9 +1303,25 @@
 					<version>${maven-compiler-plugin.version}</version>
 					<dependencies>
 						<dependency>
+							<groupId>org.apache.maven.shared</groupId>
+							<artifactId>maven-shared-utils</artifactId>
+							<version>${maven-shared-utils.version}</version>
+							<exclusions>
+								<exclusion>
+									<groupId>commons-io</groupId>
+									<artifactId>commons-io</artifactId>
+								</exclusion>
+							</exclusions>
+						</dependency>
+						<dependency>
 							<groupId>org.codehaus.plexus</groupId>
 							<artifactId>plexus-utils</artifactId>
 							<version>${plexus-utils.version}</version>
+						</dependency>
+						<dependency>
+							<groupId>commons-io</groupId>
+							<artifactId>commons-io</artifactId>
+							<version>${commons-io.version}</version>
 						</dependency>
 					</dependencies>
 				</plugin>
@@ -1235,6 +1329,34 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-site-plugin</artifactId>
 					<version>${maven-site-plugin.version}</version>
+					<dependencies>
+						<dependency>
+							<groupId>org.apache.maven.shared</groupId>
+							<artifactId>maven-shared-utils</artifactId>
+							<version>${maven-shared-utils.version}</version>
+							<exclusions>
+								<exclusion>
+									<groupId>commons-io</groupId>
+									<artifactId>commons-io</artifactId>
+								</exclusion>
+							</exclusions>
+						</dependency>
+						<dependency>
+							<groupId>org.codehaus.plexus</groupId>
+							<artifactId>plexus-utils</artifactId>
+							<version>${plexus-utils.version}</version>
+						</dependency>
+						<dependency>
+							<groupId>commons-io</groupId>
+							<artifactId>commons-io</artifactId>
+							<version>${commons-io.version}</version>
+						</dependency>
+						<dependency>
+							<groupId>commons-beanutils</groupId>
+							<artifactId>commons-beanutils</artifactId>
+							<version>${commons-beanutils.version}</version>
+						</dependency>
+					</dependencies>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
