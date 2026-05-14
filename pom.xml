@@ -1054,11 +1054,6 @@
 			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.maven.plugins</groupId>
-			<artifactId>maven-shade-plugin</artifactId>
-			<version>${maven-shade-plugin.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>io.github.zlika</groupId>
 			<artifactId>reproducible-build-maven-plugin</artifactId>
 			<version>0.17</version>
@@ -1079,22 +1074,6 @@
 			<artifactId>jib-maven-plugin</artifactId>
 			<version>3.5.1</version>
 		</dependency>
-		<dependency>
-			<groupId>org.apache.maven.plugins</groupId>
-			<artifactId>maven-jlink-plugin</artifactId>
-			<version>3.3.0</version>
-			<exclusions>
-				<exclusion>
-					<groupId>commons-io</groupId>
-					<artifactId>commons-io</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.codehaus.plexus</groupId>
-					<artifactId>plexus-utils</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-
 		<dependency>
 			<groupId>net.sf.launch4j</groupId>
 			<artifactId>launch4j</artifactId>
