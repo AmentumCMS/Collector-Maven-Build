@@ -38,16 +38,24 @@ jobs:
       pull-requests: read
     env:
       GH_TOKEN: ${{ github.token }}
+      MAVEN_REPO: ${{ github.workspace }}/.collector-m2/repository
     steps:
-      - name: Check out repository code
+      - name: Check out updated branch
         uses: actions/checkout@v6
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
 
       - name: Set up JDK
         uses: actions/setup-java@v5
         with:
           java-version: "21"
           distribution: "temurin"
-          cache: maven
+
+      - name: Prepare isolated Maven repository
+        run: |
+          rm -rf "${MAVEN_REPO}"
+          mkdir -p "${MAVEN_REPO}"
 
       - name: Set up git
         run: |
@@ -56,7 +64,8 @@ jobs:
 
       - name: Show available non-major stable Maven updates
         run: |
-          mvn --no-transfer-progress -DskipTests=true -s settings.xml -B \
+          mvn -Dmaven.repo.local="${MAVEN_REPO}" \
+            --no-transfer-progress -DskipTests=true -s settings.xml -B \
             versions:display-parent-updates \
             versions:display-property-updates \
             versions:display-dependency-updates \
@@ -66,41 +75,61 @@ jobs:
             -DignoredVersions='.*-M.*,.*-RC.*,.*-alpha.*,.*-beta.*,.*-SNAPSHOT' \
             | tee maven-version-updates.txt
 
-      - name: Advance non-major stable Maven parent and property versions
+      - name: Advance non-major Maven versions
         run: |
           set -eux
 
-          mvn --no-transfer-progress -DskipTests=true -s settings.xml -B \
+          COMMON_MVN_ARGS=(
+            --no-transfer-progress
+            -Dmaven.repo.local="${MAVEN_REPO}"
+            -DskipTests=true
+            -s settings.xml
+            -B
+          )
+
+          COMMON_UPDATE_ARGS=(
+            -DallowMajorUpdates=false
+            -DallowMinorUpdates=true
+            -DallowIncrementalUpdates=true
+            -DallowSnapshots=false
+            -DgenerateBackupPoms=false
+            -DignoredVersions='.*-M.*,.*-RC.*,.*-alpha.*,.*-beta.*,.*-SNAPSHOT'
+          )
+
+          mvn "${COMMON_MVN_ARGS[@]}" \
             versions:update-parent \
             -DallowMajorUpdates=false \
             -DallowSnapshots=false \
             -DallowDowngrade=false \
             -DgenerateBackupPoms=false \
-            -DignoredVersions='.*-M.*,.*-RC.*,.*-alpha*,.*-beta*,.*-SNAPSHOT'
+            -DignoredVersions='.*-M.*,.*-RC.*,.*-alpha.*,.*-beta.*,.*-SNAPSHOT'
 
-          mvn --no-transfer-progress -DskipTests=true -s settings.xml -B \
+          mvn "${COMMON_MVN_ARGS[@]}" \
             versions:update-properties \
-            -DallowMajorUpdates=false \
-            -DallowSnapshots=false \
-            -DgenerateBackupPoms=false \
-            -DignoredVersions='.*-M.*,.*-RC.*,.*-alpha*,.*-beta*,.*-SNAPSHOT'
+            "${COMMON_UPDATE_ARGS[@]}"
 
-      - name: Advance all non-major stable dependency versions
-        run: |
-          set -eux
+          mvn "${COMMON_MVN_ARGS[@]}" \
+            versions:update-properties \
+            -DincludePlugins=true \
+            "${COMMON_UPDATE_ARGS[@]}"
 
-          mvn --no-transfer-progress -DskipTests=true -s settings.xml -B \
+          mvn "${COMMON_MVN_ARGS[@]}" \
             versions:use-latest-releases \
-            -DallowMajorUpdates=false \
-            -DallowMinorUpdates=true \
-            -DallowIncrementalUpdates=true \
-            -DallowSnapshots=false \
-            -DgenerateBackupPoms=false \
-            -DignoredVersions='.*-M.*,.*-RC.*,.*-alpha*,.*-beta*,.*-SNAPSHOT'
+            "${COMMON_UPDATE_ARGS[@]}"
+
+          mvn "${COMMON_MVN_ARGS[@]}" \
+            versions:update-child-modules \
+            -DgenerateBackupPoms=false
+
+      - name: Show diff after Maven update
+        run: |
+          git status --short
+          git diff -- pom.xml || true
 
       - name: Resolve/build after version updates
         run: |
-          mvn --no-transfer-progress -DskipTests=true -s settings.xml -B clean package
+          mvn -Dmaven.repo.local="${MAVEN_REPO}" \
+            --no-transfer-progress -DskipTests=true -s settings.xml -B clean package
 
       - name: Commit version updates
         run: |
@@ -124,6 +153,7 @@ jobs:
       pull-requests: read
     env:
       GH_TOKEN: ${{ github.token }}
+      MAVEN_REPO: ${{ github.workspace }}/.collector-m2/repository
     steps:
       - name: Check out repository code
         uses: actions/checkout@v6
@@ -133,27 +163,27 @@ jobs:
         with:
           java-version: "21"
           distribution: "temurin"
-          cache: maven
-          
-      - name: Cache Maven repository
-        uses: actions/cache@v5
-        with:
-          path: ~/.m2/repository
-          key: maven-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            maven-${{ runner.os }}-
 
-      - name: Build once (populate ~/.m2 + generate BOM)
-        run: mvn -DskipTests=true --no-transfer-progress -B -s settings.xml clean package
+      - name: Prepare isolated Maven repository
+        run: |
+          rm -rf "${MAVEN_REPO}"
+          mkdir -p "${MAVEN_REPO}"
+
+      - name: Build once (populate isolated Maven repository)
+        run: |
+          mvn -Dmaven.repo.local="${MAVEN_REPO}" \
+            -DskipTests=true --no-transfer-progress -B -s settings.xml clean package
 
       - name: Export Maven dependency tree (text + dot)
         run: |
-          mvn -DskipTests=true --no-transfer-progress -B -s settings.xml \
+          mvn -Dmaven.repo.local="${MAVEN_REPO}" \
+            -DskipTests=true --no-transfer-progress -B -s settings.xml \
             -DoutputType=text \
             -DoutputFile="${{ vars.COLLECTOR }}-deptree-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.txt" \
             dependency:tree
 
-          mvn -DskipTests=true --no-transfer-progress -B -s settings.xml \
+          mvn -Dmaven.repo.local="${MAVEN_REPO}" \
+            -DskipTests=true --no-transfer-progress -B -s settings.xml \
             -DoutputType=dot \
             -DoutputFile="${{ vars.COLLECTOR }}-deptree-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.dot" \
             dependency:tree
@@ -167,11 +197,87 @@ jobs:
           path: |
             ${{ vars.COLLECTOR }}-deptree-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.txt
             ${{ vars.COLLECTOR }}-deptree-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.dot
+          if-no-files-found: error
 
-      - name: TARchive .m2 directory (collector payload)
+      - name: Install Syft
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b .
+          ./syft --version
+
+      - name: Generate SBOM for isolated Maven repository
+        run: |
+          ./syft dir:"${MAVEN_REPO}" \
+            -o cyclonedx-json \
+            > ${{ vars.COLLECTOR }}-m2-sbom-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.cyclonedx.json
+
+      - name: Upload Maven cache SBOM
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ vars.COLLECTOR }}-m2-sbom-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.cyclonedx.json
+          path: ${{ vars.COLLECTOR }}-m2-sbom-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.cyclonedx.json
+          if-no-files-found: error
+
+      - name: Install Grype
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh -s -- -b .
+          ./grype --version
+
+      - name: Grype scan Maven cache JSON
+        if: always()
+        run: |
+          set +e
+
+          ./grype dir:"${MAVEN_REPO}" \
+            -o json \
+            > ${{ vars.COLLECTOR }}-m2-grype-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.json
+
+          grype_exit=$?
+          echo "GRYPE_M2_JSON_EXIT=${grype_exit}" >> "$GITHUB_ENV"
+
+          # Do not fail here. This step is for artifact/report generation.
+          exit 0
+
+      - name: Upload Maven cache Grype JSON
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ vars.COLLECTOR }}-m2-grype-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.json
+          path: ${{ vars.COLLECTOR }}-m2-grype-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.json
+          if-no-files-found: error
+
+      - name: Generate Maven cache Grype proof report
+        if: always()
+        run: |
+          set +e
+
+          ./grype dir:"${MAVEN_REPO}" -o table \
+            > ${{ vars.COLLECTOR }}-m2-grype-report-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.txt
+
+          echo "## Grype Results (Isolated Maven Repository) ⚓" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          head -n 250 ${{ vars.COLLECTOR }}-m2-grype-report-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.txt >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+          total_lines=$(wc -l < ${{ vars.COLLECTOR }}-m2-grype-report-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.txt | tr -d ' ')
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "_Full Maven cache Grype report saved as artifact. Total lines: ${total_lines}_" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload Maven cache Grype proof report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ vars.COLLECTOR }}-m2-grype-report-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}
+          path: ${{ vars.COLLECTOR }}-m2-grype-report-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.txt
+          if-no-files-found: warn
+
+      - name: Enforce Maven cache Grype severity gate
+        run: |
+          ./grype dir:"${MAVEN_REPO}" --fail-on high -o table
+
+      - name: TARchive isolated Maven repository (collector payload)
         run: |
           tar -cvzf ${{ vars.COLLECTOR }}-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.tgz \
-            --exclude='_remote.repositories' -C ~/.m2 \
+            --exclude='_remote.repositories' -C "${MAVEN_REPO}/.." \
             repository \
             | tee ${{ vars.COLLECTOR }}-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.tgz.txt
 
@@ -194,14 +300,17 @@ jobs:
           if-no-files-found: error
 
   Code:
-    needs: [ Date ]
+    needs: [ Date, UpdateVers ]
     runs-on: ubuntu-latest
     permissions:
       actions: read
       contents: read
     steps:
-      - name: Check out repository code
+      - name: Check out updated branch
         uses: actions/checkout@v6
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
 
       - name: Setup Git
         run: |
@@ -226,7 +335,7 @@ jobs:
           if-no-files-found: error
 
   CollectBOM:
-    needs: [ Date, CollectM2 ]
+    needs: [ Date, UpdateVers, CollectM2 ]
     runs-on: ubuntu-latest
     permissions:
       actions: read
@@ -235,31 +344,35 @@ jobs:
       security-events: write
     env:
       GH_TOKEN: ${{ github.token }}
+      MAVEN_REPO: ${{ github.workspace }}/.collector-m2/repository
     steps:
-      - name: Check out repository code
+      - name: Check out updated branch
         uses: actions/checkout@v6
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
 
       - name: Set up JDK
         uses: actions/setup-java@v5
         with:
           java-version: "21"
           distribution: "temurin"
-          cache: maven
 
-      - name: Cache Maven repository
-        uses: actions/cache@v5
-        with:
-          path: ~/.m2/repository
-          key: maven-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            maven-${{ runner.os }}-
+      - name: Prepare isolated Maven repository
+        run: |
+          rm -rf "${MAVEN_REPO}"
+          mkdir -p "${MAVEN_REPO}"
 
       - name: Build with Maven
-        run: mvn -DskipTests=true -B --no-transfer-progress -s settings.xml
-          cyclonedx:makeAggregateBom
+        run: |
+          mvn -Dmaven.repo.local="${MAVEN_REPO}" \
+            -DskipTests=true -B --no-transfer-progress -s settings.xml \
+            cyclonedx:makeAggregateBom
 
       - name: Generate dependency graph
-        run: mvn com.github.ferstl:depgraph-maven-plugin:aggregate
+        run: |
+          mvn -Dmaven.repo.local="${MAVEN_REPO}" \
+            com.github.ferstl:depgraph-maven-plugin:aggregate
 
       - name: Create BoM ZIP
         run: |
@@ -278,10 +391,10 @@ jobs:
           path: ${{ vars.COLLECTOR }}-bom-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.zip
           if-no-files-found: error
 
-      - name: Generate SBOM (Syft) for ~/.m2/repository
+      - name: Generate SBOM (Syft) for isolated Maven repository
         uses: anchore/sbom-action@v0.24.0
         with:
-          path: ~/.m2/repository
+          path: ${{ env.MAVEN_REPO }}
           format: spdx-json
           output-file: ${{ vars.COLLECTOR }}-sbom-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.spdx.json
 
@@ -295,7 +408,7 @@ jobs:
       - name: Grype scan (SARIF)
         uses: anchore/scan-action@v7.4.0
         with:
-          path: ~/.m2/repository
+          path: ${{ env.MAVEN_REPO }}
           fail-build: false
           severity-cutoff: high
           output-format: sarif
@@ -317,7 +430,7 @@ jobs:
       - name: Grype scan (JSON)
         uses: anchore/scan-action@v7.4.0
         with:
-          path: ~/.m2/repository
+          path: ${{ env.MAVEN_REPO }}
           fail-build: false
           severity-cutoff: high
           output-format: json
@@ -338,9 +451,9 @@ jobs:
           ./grype --version
 
           # Table format is easiest to read in summary
-          ./grype ~/.m2/repository -o table > grype-report.txt
+          ./grype dir:"${MAVEN_REPO}" -o table > grype-report.txt
 
-          echo "## Grype Results (Maven ~/.m2) ⚓" >> $GITHUB_STEP_SUMMARY
+          echo "## Grype Results (Isolated Maven Repository) ⚓" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           # Avoid mega summaries; keep it readable
           head -n 250 grype-report.txt >> $GITHUB_STEP_SUMMARY

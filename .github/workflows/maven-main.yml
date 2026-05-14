@@ -43,6 +43,7 @@ jobs:
       pull-requests: read
     env:
       GH_TOKEN: ${{ github.token }}
+      MAVEN_REPO: ${{ github.workspace }}/.collector-m2/repository
     steps:
       - name: Check out repository code
         uses: actions/checkout@v6
@@ -52,29 +53,28 @@ jobs:
         with:
           java-version: "21"
           distribution: "temurin"
-          cache: maven
-          
-      - name: Cache Maven repository
-        uses: actions/cache@v5
-        with:
-          path: ~/.m2/repository
-          key: maven-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            maven-${{ runner.os }}-
 
-      - name: Build once (populate ~/.m2 + generate BOM)
+      - name: Prepare isolated Maven repository
         run: |
-          mvn -DskipTests=true --no-transfer-progress -B -s settings.xml \
+          rm -rf "${MAVEN_REPO}"
+          mkdir -p "${MAVEN_REPO}"
+
+      - name: Build once (populate isolated Maven repository + generate BOM)
+        run: |
+          mvn -Dmaven.repo.local="${MAVEN_REPO}" \
+            -DskipTests=true --no-transfer-progress -B -s settings.xml \
             package cyclonedx:makeAggregateBom
 
       - name: Export Maven dependency tree (text + dot)
         run: |
-          mvn -DskipTests=true --no-transfer-progress -B -s settings.xml \
+          mvn -Dmaven.repo.local="${MAVEN_REPO}" \
+            -DskipTests=true --no-transfer-progress -B -s settings.xml \
             -DoutputType=text \
             -DoutputFile="${{ vars.COLLECTOR }}-deptree-${{ needs.Date.outputs.Date }}.txt" \
             dependency:tree
 
-          mvn -DskipTests=true --no-transfer-progress -B -s settings.xml \
+          mvn -Dmaven.repo.local="${MAVEN_REPO}" \
+            -DskipTests=true --no-transfer-progress -B -s settings.xml \
             -DoutputType=dot \
             -DoutputFile="${{ vars.COLLECTOR }}-deptree-${{ needs.Date.outputs.Date }}.dot" \
             dependency:tree
@@ -89,10 +89,10 @@ jobs:
             ${{ vars.COLLECTOR }}-deptree-${{ needs.Date.outputs.Date }}.txt
             ${{ vars.COLLECTOR }}-deptree-${{ needs.Date.outputs.Date }}.dot
 
-      - name: TARchive .m2 directory (collector payload)
+      - name: TARchive isolated Maven repository (collector payload)
         run: |
           tar -cvzf ${{ vars.COLLECTOR }}-m2-${{ needs.Date.outputs.Date }}.tgz \
-            --exclude='_remote.repositories' -C ~/.m2 \
+            --exclude='_remote.repositories' -C "${MAVEN_REPO}/.." \
             repository \
             | tee ${{ vars.COLLECTOR }}-m2-${{ needs.Date.outputs.Date }}.tgz.txt
 
@@ -155,6 +155,7 @@ jobs:
       security-events: write
     env:
       GH_TOKEN: ${{ github.token }}
+      MAVEN_REPO: ${{ github.workspace }}/.collector-m2/repository
     steps:
       - name: Check out repository code
         uses: actions/checkout@v6
@@ -164,22 +165,22 @@ jobs:
         with:
           java-version: "21"
           distribution: "temurin"
-          cache: maven
 
-      - name: Cache Maven repository
-        uses: actions/cache@v5
-        with:
-          path: ~/.m2/repository
-          key: maven-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            maven-${{ runner.os }}-
+      - name: Prepare isolated Maven repository
+        run: |
+          rm -rf "${MAVEN_REPO}"
+          mkdir -p "${MAVEN_REPO}"
 
       - name: Build with Maven
-        run: mvn -DskipTests=true -B --no-transfer-progress -s settings.xml
-          cyclonedx:makeAggregateBom
+        run: |
+          mvn -Dmaven.repo.local="${MAVEN_REPO}" \
+            -DskipTests=true -B --no-transfer-progress -s settings.xml \
+            cyclonedx:makeAggregateBom
 
       - name: Generate dependency graph
-        run: mvn com.github.ferstl:depgraph-maven-plugin:aggregate
+        run: |
+          mvn -Dmaven.repo.local="${MAVEN_REPO}" \
+            com.github.ferstl:depgraph-maven-plugin:aggregate
 
       - name: Create BoM ZIP
         run: |
@@ -198,10 +199,10 @@ jobs:
           path: ${{ vars.COLLECTOR }}-bom-${{ needs.Date.outputs.Date }}.zip
           if-no-files-found: error
 
-      - name: Generate SBOM (Syft) for ~/.m2/repository
+      - name: Generate SBOM (Syft) for isolated Maven repository
         uses: anchore/sbom-action@v0.24.0
         with:
-          path: ~/.m2/repository
+          path: ${{ env.MAVEN_REPO }}
           format: spdx-json
           output-file: ${{ vars.COLLECTOR }}-sbom-${{ needs.Date.outputs.Date }}.spdx.json
 
@@ -215,7 +216,7 @@ jobs:
       - name: Grype scan (SARIF)
         uses: anchore/scan-action@v7.4.0
         with:
-          path: ~/.m2/repository
+          path: ${{ env.MAVEN_REPO }}
           fail-build: false
           severity-cutoff: high
           output-format: sarif
@@ -237,7 +238,7 @@ jobs:
       - name: Grype scan (JSON)
         uses: anchore/scan-action@v7.4.0
         with:
-          path: ~/.m2/repository
+          path: ${{ env.MAVEN_REPO }}
           fail-build: false
           severity-cutoff: high
           output-format: json
@@ -258,9 +259,9 @@ jobs:
           ./grype --version
 
           # Table format is easiest to read in summary
-          ./grype ~/.m2/repository -o table > grype-report.txt
+          ./grype dir:"${MAVEN_REPO}" -o table > grype-report.txt
 
-          echo "## Grype Results (Maven ~/.m2) ⚓" >> $GITHUB_STEP_SUMMARY
+          echo "## Grype Results (Isolated Maven Repository) ⚓" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           # Avoid mega summaries; keep it readable
           head -n 250 grype-report.txt >> $GITHUB_STEP_SUMMARY
