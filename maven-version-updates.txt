@@ -14,11 +14,13 @@
 [INFO] 
 [INFO] The following version properties are referencing the newest available version:
 [INFO]   ${activemq.classic.version} ................................... 6.2.5
+[INFO]   ${ant.version} .............................................. 1.10.17
 [INFO]   ${artemis.version} ........................................... 2.53.0
 [INFO]   ${bcprov.version} .............................................. 1.84
 [INFO]   ${commons-beanutils.version} ................................. 1.11.0
 [INFO]   ${commons-compress.version} .................................. 1.28.0
 [INFO]   ${commons-io.version} ........................................ 2.22.0
+[INFO]   ${commons-lang3.version} ..................................... 3.20.0
 [INFO]   ${cyclonedx-core-java.version} ............................... 11.0.1
 [INFO]   ${cyclonedx-maven-plugin.version} ............................. 2.9.1
 [INFO]   ${dom4j.version} .............................................. 2.2.0
@@ -41,6 +43,7 @@
 [INFO]   ${maven-wagon.version} ........................................ 3.5.3
 [INFO]   ${maven.version} ............................................. 3.9.15
 [INFO]   ${netty.version} ....................................... 4.2.13.Final
+[INFO]   ${nimbus-jose-jwt.version} ..................................... 10.9
 [INFO]   ${plexus-archiver.version} ................................... 4.11.0
 [INFO]   ${plexus-utils.version} ....................................... 4.0.3
 [INFO]   ${postgresql.version} ....................................... 42.7.11
@@ -53,10 +56,7 @@
 [INFO]   ${velocity.version} ........................................... 2.4.1
 [INFO]   ${xmlbeans.version} ........................................... 5.3.0
 [INFO]   ${xstream.version} ........................................... 1.4.21
-[INFO] The following version property updates are available:
-[INFO]   ${ant.version} ................................... 1.10.11 -> 1.10.17
-[INFO]   ${commons-lang3.version} ........................... 3.18.0 -> 3.20.0
-[INFO]   ${nimbus-jose-jwt.version} ........................... 10.0.2 -> 10.9
+[INFO] All version properties are referencing the newest version available.
 [INFO] 
 [INFO] 
 [INFO] --- versions:2.19.1:display-dependency-updates (default-cli) @ maven-collector ---
@@ -196,7 +196,6 @@
 [INFO]   com.hazelcast:hazelcast-spring ........................ 5.5.0 -> 5.7.0
 [INFO]   com.jayway.jsonpath:json-path ........................ 2.9.0 -> 2.10.0
 [INFO]   com.jayway.jsonpath:json-path-assert ................. 2.9.0 -> 2.10.0
-[INFO]   com.nimbusds:nimbus-jose-jwt .......................... 10.0.2 -> 10.9
 [INFO]   com.oracle.database.ha:ons ............... 23.7.0.25.01 -> 23.26.2.0.0
 [INFO]   com.oracle.database.ha:simplefan ......... 23.7.0.25.01 -> 23.26.2.0.0
 [INFO]   com.oracle.database.jdbc:ojdbc11 ......... 23.7.0.25.01 -> 23.26.2.0.0
@@ -449,9 +448,7 @@
 [INFO]   org.apache.activemq:activemq-web ...................... 6.1.8 -> 6.2.5
 [INFO]   org.apache.activemq:activemq-web-console .............. 6.1.8 -> 6.2.5
 [INFO]   org.apache.activemq:activemq-web-demo ................. 6.1.8 -> 6.2.5
-[INFO]   org.apache.ant:ant ................................ 1.10.11 -> 1.10.17
 [INFO]   org.apache.commons:commons-dbcp2 .................... 2.13.0 -> 2.14.0
-[INFO]   org.apache.commons:commons-lang3 .................... 3.18.0 -> 3.20.0
 [INFO]   org.apache.commons:commons-pool2 .................... 2.12.1 -> 2.13.1
 [INFO]   org.apache.derby:derby ........................ 10.16.1.1 -> 10.17.1.0
 [INFO]   org.apache.derby:derbyclient .................. 10.16.1.1 -> 10.17.1.0
@@ -1079,6 +1076,6 @@
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
 [INFO] ------------------------------------------------------------------------
-[INFO] Total time:  36.493 s
-[INFO] Finished at: 2026-05-14T00:41:40Z
+[INFO] Total time:  12.137 s
+[INFO] Finished at: 2026-05-14T00:54:58Z
 [INFO] ------------------------------------------------------------------------
