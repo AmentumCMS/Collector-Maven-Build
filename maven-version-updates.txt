@@ -37,6 +37,7 @@
 [INFO]   ${logback.version} ........................................... 1.5.32
 [INFO]   ${maven-assembly-plugin.version} .............................. 3.8.0
 [INFO]   ${maven-dependency-plugin.version} ........................... 3.10.0
+[INFO]   ${maven-enforcer-plugin.version} .............................. 3.6.2
 [INFO]   ${maven-jar-plugin.version} ................................... 3.5.0
 [INFO]   ${maven-shade-plugin.version} ................................. 3.6.2
 [INFO]   ${maven-shared-utils.version} ................................. 3.4.2
@@ -56,7 +57,8 @@
 [INFO]   ${velocity.version} ........................................... 2.4.1
 [INFO]   ${xmlbeans.version} ........................................... 5.3.0
 [INFO]   ${xstream.version} ........................................... 1.4.21
-[INFO] All version properties are referencing the newest version available.
+[INFO] The following version property updates are available:
+[INFO]   ${maven-site-plugin.version} ....................... 3.12.1 -> 3.21.0
 [INFO] 
 [INFO] 
 [INFO] --- versions:2.19.1:display-dependency-updates (default-cli) @ maven-collector ---
@@ -1005,6 +1007,9 @@
 [INFO] Require Maven 2.0 to use the following plugin updates:
 [INFO]   maven-jar-plugin ..................................... 3.5.0 -> 2.1
 [INFO] 
+[INFO] Require Maven 2.0.2 to use the following plugin updates:
+[INFO]   maven-site-plugin ............................ 3.12.1 -> 2.0-beta-7
+[INFO] 
 [INFO] Require Maven 2.0.3 to use the following plugin updates:
 [INFO]   maven-dependency-plugin ............................. 3.10.0 -> 2.2
 [INFO] 
@@ -1015,6 +1020,7 @@
 [INFO]   maven-assembly-plugin ......................... 3.8.0 -> 2.2-beta-5
 [INFO]   maven-jar-plugin ..................................... 3.5.0 -> 2.5
 [INFO]   maven-shade-plugin ................................. 3.6.2 -> 1.7.1
+[INFO]   maven-site-plugin ................................. 3.12.1 -> 2.0.1
 [INFO] 
 [INFO] Require Maven 2.0.9 to use the following plugin updates:
 [INFO]   maven-dependency-plugin ............................. 3.10.0 -> 2.8
@@ -1022,21 +1028,30 @@
 [INFO] Require Maven 2.0.11 to use the following plugin updates:
 [INFO]   maven-assembly-plugin ................................ 3.8.0 -> 2.2
 [INFO] 
+[INFO] Require Maven 2.1.0 to use the following plugin updates:
+[INFO]   maven-site-plugin ................................. 3.12.1 -> 2.1.1
+[INFO] 
+[INFO] Require Maven 2.2.0 to use the following plugin updates:
+[INFO]   maven-site-plugin ................................... 3.12.1 -> 3.0
+[INFO] 
 [INFO] Require Maven 2.2.1 to use the following plugin updates:
 [INFO]   maven-assembly-plugin ................................ 3.8.0 -> 2.6
 [INFO]   maven-dependency-plugin ............................ 3.10.0 -> 2.10
-[INFO]   maven-enforcer-plugin ........................... 3.6.3 -> 3.0.0-M3
+[INFO]   maven-enforcer-plugin ........................... 3.6.2 -> 3.0.0-M3
 [INFO]   maven-jar-plugin ..................................... 3.5.0 -> 2.6
+[INFO]   maven-site-plugin ................................. 3.12.1 -> 3.7.1
 [INFO] 
 [INFO] Require Maven 3.0 to use the following plugin updates:
 [INFO]   maven-assembly-plugin .............................. 3.8.0 -> 3.3.0
 [INFO]   maven-dependency-plugin ........................... 3.10.0 -> 3.1.2
 [INFO]   maven-jar-plugin ................................... 3.5.0 -> 3.2.0
 [INFO]   maven-shade-plugin ................................. 3.6.2 -> 3.2.4
+[INFO]   maven-site-plugin ................................. 3.12.1 -> 3.9.0
 [INFO]   org.asciidoctor:asciidoctor-maven-plugin ........... 2.2.1 -> 1.5.6
 [INFO]   org.cyclonedx:cyclonedx-maven-plugin ............... 2.9.1 -> 1.4.1
 [INFO] 
 [INFO] Require Maven 3.0.5 to use the following plugin updates:
+[INFO]   maven-site-plugin ................................ 3.12.1 -> 3.11.0
 [INFO]   org.asciidoctor:asciidoctor-maven-plugin ........... 2.2.1 -> 2.2.6
 [INFO] 
 [INFO] Require Maven 3.1.0 to use the following plugin updates:
@@ -1045,23 +1060,25 @@
 [INFO] 
 [INFO] Require Maven 3.1.1 to use the following plugin updates:
 [INFO]   maven-dependency-plugin ........................... 3.10.0 -> 3.3.0
-[INFO]   maven-enforcer-plugin .............................. 3.6.3 -> 3.0.0
+[INFO]   maven-enforcer-plugin .............................. 3.6.2 -> 3.0.0
 [INFO]   maven-shade-plugin ................................. 3.6.2 -> 3.4.1
 [INFO] 
 [INFO] Require Maven 3.2.5 to use the following plugin updates:
 [INFO]   maven-assembly-plugin .............................. 3.8.0 -> 3.6.0
 [INFO]   maven-dependency-plugin ........................... 3.10.0 -> 3.6.1
-[INFO]   maven-enforcer-plugin .............................. 3.6.3 -> 3.4.1
+[INFO]   maven-enforcer-plugin .............................. 3.6.2 -> 3.4.1
 [INFO]   maven-jar-plugin ................................... 3.5.0 -> 3.3.0
 [INFO]   maven-shade-plugin ................................. 3.6.2 -> 3.5.1
+[INFO]   maven-site-plugin ............................. 3.12.1 -> 4.0.0-M14
 [INFO]   org.codehaus.mojo:versions-maven-plugin .......... 2.19.1 -> 2.16.2
 [INFO] 
 [INFO] Require Maven 3.6.3 to use the following plugin updates:
 [INFO]   maven-assembly-plugin ....................................... 3.8.0
 [INFO]   maven-dependency-plugin .................................... 3.10.0
-[INFO]   maven-enforcer-plugin .............................. 3.6.3 -> 3.6.2
+[INFO]   maven-enforcer-plugin ....................................... 3.6.2
 [INFO]   maven-jar-plugin ............................................ 3.5.0
 [INFO]   maven-shade-plugin .......................................... 3.6.2
+[INFO]   maven-site-plugin ............................. 3.12.1 -> 4.0.0-M16
 [INFO]   org.codehaus.mojo:versions-maven-plugin .......... 2.19.1 -> 2.21.0
 [INFO] 
 [INFO] Require Maven 3.8.5 to use the following plugin updates:
@@ -1076,6 +1093,6 @@
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
 [INFO] ------------------------------------------------------------------------
-[INFO] Total time:  12.137 s
-[INFO] Finished at: 2026-05-14T00:54:58Z
+[INFO] Total time:  38.970 s
+[INFO] Finished at: 2026-05-14T03:42:42Z
 [INFO] ------------------------------------------------------------------------
