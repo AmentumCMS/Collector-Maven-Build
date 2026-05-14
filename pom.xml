@@ -1066,7 +1066,7 @@
 		<dependency>
 			<groupId>org.graalvm.buildtools</groupId>
 			<artifactId>native-maven-plugin</artifactId>
-			<version>0.11.5</version>
+			<version>1.1.0</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.cyclonedx</groupId>
@@ -1385,161 +1385,9 @@
 
 		<plugins>
 			<plugin>
-				<groupId>org.graalvm.buildtools</groupId>
-				<artifactId>native-maven-plugin</artifactId>
-				<version>1.1.0</version>
-			</plugin>
-			<plugin>
-				<groupId>com.google.cloud.tools</groupId>
-				<artifactId>jib-maven-plugin</artifactId>
-				<version>3.5.1</version>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.wagon</groupId>
-				<artifactId>wagon-http</artifactId>
-				<version>${maven-wagon.version}</version>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.wagon</groupId>
-				<artifactId>wagon-file</artifactId>
-				<version>${maven-wagon.version}</version>
-			</plugin>
-			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
 				<version>${maven-jar-plugin.version}</version>
-			</plugin>
-			<plugin>
-				<groupId>org.sonarsource.scanner.maven</groupId>
-				<artifactId>sonar-maven-plugin</artifactId>
-				<version>5.6.0.6792</version>
-			</plugin>
-			<plugin>
-				<groupId>org.asciidoctor</groupId>
-				<artifactId>asciidoctor-maven-plugin</artifactId>
-				<version>2.2.1</version>
-				<executions>
-					<execution>
-						<id>generate-docs</id>
-						<phase>prepare-package</phase>
-						<goals>
-							<goal>process-asciidoc</goal>
-						</goals>
-						<configuration>
-							<backend>html</backend>
-							<doctype>book</doctype>
-						</configuration>
-					</execution>
-				</executions>
-				<dependencies>
-					<dependency>
-						<groupId>org.apache.maven</groupId>
-						<artifactId>maven-core</artifactId>
-						<version>${maven.version}</version>
-					</dependency>
-					<dependency>
-						<groupId>io.netty</groupId>
-						<artifactId>netty-codec-http</artifactId>
-						<version>${netty.version}</version>
-					</dependency>
-					<dependency>
-						<groupId>io.netty</groupId>
-						<artifactId>netty-codec</artifactId>
-						<version>${netty.version}</version>
-					</dependency>
-					<dependency>
-						<groupId>io.netty</groupId>
-						<artifactId>netty-handler</artifactId>
-						<version>${netty.version}</version>
-					</dependency>
-					<dependency>
-						<groupId>io.netty</groupId>
-						<artifactId>netty-common</artifactId>
-						<version>${netty.version}</version>
-					</dependency>
-					<dependency>
-						<groupId>org.springframework.restdocs</groupId>
-						<artifactId>spring-restdocs-asciidoctor</artifactId>
-						<version>${spring-restdocs.version}</version>
-					</dependency>
-				</dependencies>
-			</plugin>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-				<configuration>
-					<excludes>
-						<exclude>
-							<groupId>org.projectlombok</groupId>
-							<artifactId>lombok</artifactId>
-						</exclude>
-					</excludes>
-				</configuration>
-			</plugin>
-
-			<!-- Download dependencies from eFoss and put them in target directory -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<version>${maven-dependency-plugin.version}</version>
-				<executions>
-					<execution>
-						<id>Collect Maven Dependencies</id>
-						<phase>initialize</phase>
-						<goals>
-							<goal>copy-dependencies</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${project.build.directory}</outputDirectory>
-							<stripVersion>false</stripVersion>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-
-			<!-- Create ZIP of the collection -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<version>${maven-assembly-plugin.version}</version>
-				<executions>
-					<execution>
-						<id>Package Plugins</id>
-						<phase>package</phase>
-						<goals>
-							<goal>single</goal>
-						</goals>
-						<configuration>
-							<appendAssemblyId>false</appendAssemblyId>
-							<descriptors>
-								<descriptor>${basedir}/package-plugins.xml</descriptor>
-							</descriptors>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-
-			<!-- Reproducible build support -->
-			<plugin>
-				<groupId>io.github.zlika</groupId>
-				<artifactId>reproducible-build-maven-plugin</artifactId>
-				<version>0.17</version>
-				<executions>
-					<execution>
-						<id>strip-jar</id>
-						<phase>package</phase>
-						<goals>
-							<goal>strip-jar</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>strip-archive</id>
-						<phase>pre-integration-test</phase>
-						<goals>
-							<goal>strip-jar</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 		</plugins>
 	</build>
