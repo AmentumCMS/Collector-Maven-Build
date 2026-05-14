@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 
@@ -21,9 +21,10 @@
 
 	<properties>
 		<java.version>21</java.version>
+		<jetty9.version>9.4.58.v20250814</jetty9.version>
 
 		<!-- Shared dependency versions -->
-		<activemq.classic.version>5.19.6</activemq.classic.version>
+		<activemq.classic.version>6.2.5</activemq.classic.version>
 		<artemis.version>2.53.0</artemis.version>
 		<spring-framework.version>6.2.18</spring-framework.version>
 		<spring-cloud-config.version>4.3.3</spring-cloud-config.version>
@@ -43,19 +44,34 @@
 		<dom4j.version>2.2.0</dom4j.version>
 		<httpclient.version>4.5.14</httpclient.version>
 		<netty.version>4.2.13.Final</netty.version>
-
-		<!-- Additional CVE override versions for whole ~/.m2 repository scanning -->
-		<commons-io.version>2.21.0</commons-io.version>
+		<commons-lang3.version>3.20.0</commons-lang3.version>
+		<nimbus-jose-jwt.version>10.9</nimbus-jose-jwt.version>
+		<ant.version>1.10.17</ant.version>
+		<cyclonedx-core-java.version>11.0.1</cyclonedx-core-java.version>
+		<postgresql.version>42.7.11</postgresql.version>
+		<!-- Additional CVE override versions -->
+		<maven-dependency-plugin.version>3.10.0</maven-dependency-plugin.version>
+		<maven-assembly-plugin.version>3.8.0</maven-assembly-plugin.version>
+		<maven-enforcer-plugin.version>3.6.2</maven-enforcer-plugin.version>
+		<maven-jar-plugin.version>3.5.0</maven-jar-plugin.version>
+		<maven-shade-plugin.version>3.6.2</maven-shade-plugin.version>
+		<maven-site-plugin.version>3.12.1</maven-site-plugin.version>
+		<cyclonedx-maven-plugin.version>2.9.1</cyclonedx-maven-plugin.version>
 		<maven-shared-utils.version>3.4.2</maven-shared-utils.version>
-		<jetty.version>9.4.57.v20241219</jetty.version>
-		<jsoup.version>1.21.2</jsoup.version>
-		<bcprov.version>1.81</bcprov.version>
-		<guava.version>33.5.0-jre</guava.version>
+		<commons-io.version>2.22.0</commons-io.version>
+		<commons-beanutils.version>1.11.0</commons-beanutils.version>
+		<guava.version>33.6.0-jre</guava.version>
+		<jsoup.version>1.22.2</jsoup.version>
+		<bcprov.version>1.84</bcprov.version>
 		<json.version>20250517</json.version>
 		<xmlbeans.version>5.3.0</xmlbeans.version>
-		<jgit.version>7.4.0.202509020913-r</jgit.version>
-		<commons-beanutils.version>1.11.0</commons-beanutils.version>
-		<lz4.version>1.8.1</lz4.version>
+		<jgit.version>6.10.1.202505221210-r</jgit.version>
+		<tomcat-embed-core.version>10.1.55</tomcat-embed-core.version>
+		<logback.version>1.5.32</logback.version>
+		<jackson.version>2.21.3</jackson.version>
+		<jackson-annotations.version>2.21</jackson-annotations.version>
+		<spring-security.version>6.5.10</spring-security.version>
+
 
 		<!-- Encoding -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -117,7 +133,7 @@
 
 			<!-- ActiveMQ / Artemis CVE overrides -->
 			<dependency>
-				<groupId>org.apache.activemq</groupId>
+				<groupId>org.apache.artemis</groupId>
 				<artifactId>artemis-server</artifactId>
 				<version>${artemis.version}</version>
 			</dependency>
@@ -235,73 +251,6 @@
 				<version>${httpclient.version}</version>
 			</dependency>
 
-			<!-- Extra CVE overrides visible in full ~/.m2 scans -->
-			<dependency>
-				<groupId>commons-io</groupId>
-				<artifactId>commons-io</artifactId>
-				<version>${commons-io.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.maven.shared</groupId>
-				<artifactId>maven-shared-utils</artifactId>
-				<version>${maven-shared-utils.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.eclipse.jetty</groupId>
-				<artifactId>jetty-server</artifactId>
-				<version>${jetty.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.eclipse.jetty</groupId>
-				<artifactId>jetty-http</artifactId>
-				<version>${jetty.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.jsoup</groupId>
-				<artifactId>jsoup</artifactId>
-				<version>${jsoup.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.bouncycastle</groupId>
-				<artifactId>bcprov-jdk15on</artifactId>
-				<version>1.70</version>
-			</dependency>
-			<dependency>
-				<groupId>org.bouncycastle</groupId>
-				<artifactId>bcprov-jdk18on</artifactId>
-				<version>${bcprov.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.google.guava</groupId>
-				<artifactId>guava</artifactId>
-				<version>${guava.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.json</groupId>
-				<artifactId>json</artifactId>
-				<version>${json.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.xmlbeans</groupId>
-				<artifactId>xmlbeans</artifactId>
-				<version>${xmlbeans.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.eclipse.jgit</groupId>
-				<artifactId>org.eclipse.jgit</artifactId>
-				<version>${jgit.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>commons-beanutils</groupId>
-				<artifactId>commons-beanutils</artifactId>
-				<version>${commons-beanutils.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.lz4</groupId>
-				<artifactId>lz4-java</artifactId>
-				<version>${lz4.version}</version>
-			</dependency>
-
 			<!-- Wagon dependency alignment -->
 			<dependency>
 				<groupId>org.apache.maven.wagon</groupId>
@@ -341,6 +290,226 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
+
+			<!-- Jetty 9.x CVE overrides for old transitive tooling dependencies -->
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-server</artifactId>
+				<version>${jetty9.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-http</artifactId>
+				<version>${jetty9.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-io</artifactId>
+				<version>${jetty9.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-util</artifactId>
+				<version>${jetty9.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-security</artifactId>
+				<version>${jetty9.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-servlet</artifactId>
+				<version>${jetty9.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-webapp</artifactId>
+				<version>${jetty9.version}</version>
+			</dependency>
+			<!-- Additional CVE overrides for artifacts seen in Grype payload scans -->
+			<!-- Remaining Grype CVE overrides -->
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-lang3</artifactId>
+				<version>${commons-lang3.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.nimbusds</groupId>
+				<artifactId>nimbus-jose-jwt</artifactId>
+				<version>${nimbus-jose-jwt.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.ant</groupId>
+				<artifactId>ant</artifactId>
+				<version>${ant.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.postgresql</groupId>
+				<artifactId>postgresql</artifactId>
+				<version>${postgresql.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.bouncycastle</groupId>
+				<artifactId>bcprov-jdk18on</artifactId>
+				<version>${bcprov.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.bouncycastle</groupId>
+				<artifactId>bcpkix-jdk18on</artifactId>
+				<version>${bcprov.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.bouncycastle</groupId>
+				<artifactId>bcutil-jdk18on</artifactId>
+				<version>${bcprov.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.cyclonedx</groupId>
+				<artifactId>cyclonedx-core-java</artifactId>
+				<version>${cyclonedx-core-java.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-gateway-server</artifactId>
+				<version>${spring-cloud-config.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-function-context</artifactId>
+				<version>${spring-cloud-config.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot</artifactId>
+				<version>${project.parent.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.security</groupId>
+				<artifactId>spring-security-core</artifactId>
+				<version>${spring-security.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.kafka</groupId>
+				<artifactId>kafka_2.13</artifactId>
+				<version>${kafka.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.maven.shared</groupId>
+				<artifactId>maven-shared-utils</artifactId>
+				<version>${maven-shared-utils.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-io</groupId>
+				<artifactId>commons-io</artifactId>
+				<version>${commons-io.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-beanutils</groupId>
+				<artifactId>commons-beanutils</artifactId>
+				<version>${commons-beanutils.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.google.guava</groupId>
+				<artifactId>guava</artifactId>
+				<version>${guava.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jsoup</groupId>
+				<artifactId>jsoup</artifactId>
+				<version>${jsoup.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.bouncycastle</groupId>
+				<artifactId>bcprov-jdk15on</artifactId>
+				<version>${bcprov.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.json</groupId>
+				<artifactId>json</artifactId>
+				<version>${json.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.xmlbeans</groupId>
+				<artifactId>xmlbeans</artifactId>
+				<version>${xmlbeans.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jgit</groupId>
+				<artifactId>org.eclipse.jgit</artifactId>
+				<version>${jgit.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.tomcat.embed</groupId>
+				<artifactId>tomcat-embed-core</artifactId>
+				<version>${tomcat-embed-core.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>ch.qos.logback</groupId>
+				<artifactId>logback-classic</artifactId>
+				<version>${logback.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>ch.qos.logback</groupId>
+				<artifactId>logback-core</artifactId>
+				<version>${logback.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-core</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-databind</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-annotations</artifactId>
+				<version>${jackson-annotations.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.dataformat</groupId>
+				<artifactId>jackson-dataformat-xml</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.dataformat</groupId>
+				<artifactId>jackson-dataformat-yaml</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.netty</groupId>
+				<artifactId>netty-common</artifactId>
+				<version>${netty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.netty</groupId>
+				<artifactId>netty-codec</artifactId>
+				<version>${netty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.netty</groupId>
+				<artifactId>netty-codec-http</artifactId>
+				<version>${netty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.netty</groupId>
+				<artifactId>netty-handler</artifactId>
+				<version>${netty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.netty</groupId>
+				<artifactId>netty-buffer</artifactId>
+				<version>${netty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.netty</groupId>
+				<artifactId>netty-transport</artifactId>
+				<version>${netty.version}</version>
+			</dependency>
+
 		</dependencies>
 	</dependencyManagement>
 
@@ -489,7 +658,7 @@
 
 		<!-- JMS Emulator packages -->
 		<dependency>
-			<groupId>org.apache.activemq</groupId>
+			<groupId>org.apache.artemis</groupId>
 			<artifactId>artemis-server</artifactId>
 			<version>${artemis.version}</version>
 		</dependency>
@@ -833,7 +1002,7 @@
 		<dependency>
 			<groupId>org.apache.maven.plugins</groupId>
 			<artifactId>maven-shade-plugin</artifactId>
-			<version>3.6.2</version>
+			<version>${maven-shade-plugin.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.github.zlika</groupId>
@@ -901,121 +1070,220 @@
 			<groupId>jakarta.activation</groupId>
 			<artifactId>jakarta.activation-api</artifactId>
 		</dependency>
-
-		<!--
-			Force patched artifacts into the collected dependency set.
-			This matters because the CI scan is targeting ~/.m2/repository, not only target/bom.json.
-			dependencyManagement selects versions, but direct dependencies make Maven actually resolve them.
-		-->
-		<dependency>
-			<groupId>org.yaml</groupId>
-			<artifactId>snakeyaml</artifactId>
-			<version>${snakeyaml.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.thoughtworks.xstream</groupId>
-			<artifactId>xstream</artifactId>
-			<version>${xstream.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.maven</groupId>
-			<artifactId>maven-core</artifactId>
-			<version>${maven.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.maven</groupId>
-			<artifactId>maven-compat</artifactId>
-			<version>${maven.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.codehaus.plexus</groupId>
-			<artifactId>plexus-utils</artifactId>
-			<version>${plexus-utils.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.codehaus.plexus</groupId>
-			<artifactId>plexus-archiver</artifactId>
-			<version>${plexus-archiver.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-compress</artifactId>
-			<version>${commons-compress.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>${commons-io.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.maven.shared</groupId>
-			<artifactId>maven-shared-utils</artifactId>
-			<version>${maven-shared-utils.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.dom4j</groupId>
-			<artifactId>dom4j</artifactId>
-			<version>${dom4j.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
-			<version>${httpclient.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.velocity</groupId>
-			<artifactId>velocity-engine-core</artifactId>
-			<version>${velocity.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.velocity.tools</groupId>
-			<artifactId>velocity-tools-generic</artifactId>
-			<version>${velocity-tools.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.jsoup</groupId>
-			<artifactId>jsoup</artifactId>
-			<version>${jsoup.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-			<version>${guava.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.json</groupId>
-			<artifactId>json</artifactId>
-			<version>${json.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.xmlbeans</groupId>
-			<artifactId>xmlbeans</artifactId>
-			<version>${xmlbeans.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jgit</groupId>
-			<artifactId>org.eclipse.jgit</artifactId>
-			<version>${jgit.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-beanutils</groupId>
-			<artifactId>commons-beanutils</artifactId>
-			<version>${commons-beanutils.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.lz4</groupId>
-			<artifactId>lz4-java</artifactId>
-			<version>${lz4.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.bouncycastle</groupId>
-			<artifactId>bcprov-jdk18on</artifactId>
-			<version>${bcprov.version}</version>
-		</dependency>
-
 	</dependencies>
 
 	<build>
+		<pluginManagement>
+			<plugins>
+				<!-- Maven plugin dependency overrides. These are needed because dependencyManagement does
+				not override plugin transitive dependencies. -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-dependency-plugin</artifactId>
+					<version>${maven-dependency-plugin.version}</version>
+					<dependencies>
+						<dependency>
+							<groupId>org.apache.maven.shared</groupId>
+							<artifactId>maven-shared-utils</artifactId>
+							<version>${maven-shared-utils.version}</version>
+						</dependency>
+						<dependency>
+							<groupId>org.codehaus.plexus</groupId>
+							<artifactId>plexus-utils</artifactId>
+							<version>${plexus-utils.version}</version>
+						</dependency>
+						<dependency>
+							<groupId>org.codehaus.plexus</groupId>
+							<artifactId>plexus-archiver</artifactId>
+							<version>${plexus-archiver.version}</version>
+						</dependency>
+						<dependency>
+							<groupId>org.apache.commons</groupId>
+							<artifactId>commons-compress</artifactId>
+							<version>${commons-compress.version}</version>
+						</dependency>
+						<dependency>
+							<groupId>commons-io</groupId>
+							<artifactId>commons-io</artifactId>
+							<version>${commons-io.version}</version>
+						</dependency>
+					</dependencies>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-assembly-plugin</artifactId>
+					<version>${maven-assembly-plugin.version}</version>
+					<dependencies>
+						<dependency>
+							<groupId>org.codehaus.plexus</groupId>
+							<artifactId>plexus-archiver</artifactId>
+							<version>${plexus-archiver.version}</version>
+						</dependency>
+						<dependency>
+							<groupId>org.codehaus.plexus</groupId>
+							<artifactId>plexus-utils</artifactId>
+							<version>${plexus-utils.version}</version>
+						</dependency>
+						<dependency>
+							<groupId>org.apache.commons</groupId>
+							<artifactId>commons-compress</artifactId>
+							<version>${commons-compress.version}</version>
+						</dependency>
+						<dependency>
+							<groupId>commons-io</groupId>
+							<artifactId>commons-io</artifactId>
+							<version>${commons-io.version}</version>
+						</dependency>
+					</dependencies>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jar-plugin</artifactId>
+					<version>${maven-jar-plugin.version}</version>
+					<dependencies>
+						<dependency>
+							<groupId>org.codehaus.plexus</groupId>
+							<artifactId>plexus-archiver</artifactId>
+							<version>${plexus-archiver.version}</version>
+						</dependency>
+						<dependency>
+							<groupId>org.codehaus.plexus</groupId>
+							<artifactId>plexus-utils</artifactId>
+							<version>${plexus-utils.version}</version>
+						</dependency>
+					</dependencies>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-site-plugin</artifactId>
+					<version>${maven-site-plugin.version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-enforcer-plugin</artifactId>
+					<version>${maven-enforcer-plugin.version}</version>
+					<executions>
+						<execution>
+							<id>enforce-maven</id>
+							<goals>
+								<goal>enforce</goal>
+							</goals>
+							<configuration>
+								<rules>
+									<requireMavenVersion>
+										<version>3.6.3</version>
+									</requireMavenVersion>
+								</rules>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-shade-plugin</artifactId>
+					<version>${maven-shade-plugin.version}</version>
+					<dependencies>
+						<dependency>
+							<groupId>org.codehaus.plexus</groupId>
+							<artifactId>plexus-utils</artifactId>
+							<version>${plexus-utils.version}</version>
+						</dependency>
+						<dependency>
+							<groupId>org.codehaus.plexus</groupId>
+							<artifactId>plexus-archiver</artifactId>
+							<version>${plexus-archiver.version}</version>
+						</dependency>
+						<dependency>
+							<groupId>org.apache.commons</groupId>
+							<artifactId>commons-compress</artifactId>
+							<version>${commons-compress.version}</version>
+						</dependency>
+					</dependencies>
+				</plugin>
+				<plugin>
+					<groupId>org.cyclonedx</groupId>
+					<artifactId>cyclonedx-maven-plugin</artifactId>
+					<version>${cyclonedx-maven-plugin.version}</version>
+					<dependencies>
+						<dependency>
+							<groupId>org.codehaus.plexus</groupId>
+							<artifactId>plexus-utils</artifactId>
+							<version>${plexus-utils.version}</version>
+						</dependency>
+						<dependency>
+							<groupId>org.apache.commons</groupId>
+							<artifactId>commons-compress</artifactId>
+							<version>${commons-compress.version}</version>
+						</dependency>
+						<dependency>
+							<groupId>com.fasterxml.jackson.core</groupId>
+							<artifactId>jackson-core</artifactId>
+							<version>${jackson.version}</version>
+						</dependency>
+						<dependency>
+							<groupId>com.fasterxml.jackson.core</groupId>
+							<artifactId>jackson-databind</artifactId>
+							<version>${jackson.version}</version>
+						</dependency>
+						<dependency>
+							<groupId>com.fasterxml.jackson.core</groupId>
+							<artifactId>jackson-annotations</artifactId>
+							<version>${jackson-annotations.version}</version>
+						</dependency>
+						<dependency>
+							<groupId>com.fasterxml.jackson.dataformat</groupId>
+							<artifactId>jackson-dataformat-xml</artifactId>
+							<version>${jackson.version}</version>
+						</dependency>
+						<dependency>
+							<groupId>com.fasterxml.jackson.dataformat</groupId>
+							<artifactId>jackson-dataformat-yaml</artifactId>
+							<version>${jackson.version}</version>
+						</dependency>
+						<dependency>
+							<groupId>org.yaml</groupId>
+							<artifactId>snakeyaml</artifactId>
+							<version>${snakeyaml.version}</version>
+						</dependency>
+					</dependencies>
+				</plugin>
+				<plugin>
+					<groupId>com.google.cloud.tools</groupId>
+					<artifactId>jib-maven-plugin</artifactId>
+					<version>3.5.1</version>
+					<dependencies>
+						<dependency>
+							<groupId>org.apache.httpcomponents</groupId>
+							<artifactId>httpclient</artifactId>
+							<version>${httpclient.version}</version>
+						</dependency>
+						<dependency>
+							<groupId>com.google.guava</groupId>
+							<artifactId>guava</artifactId>
+							<version>${guava.version}</version>
+						</dependency>
+					</dependencies>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>versions-maven-plugin</artifactId>
+					<version>2.19.1</version>
+					<dependencies>
+						<dependency>
+							<groupId>org.codehaus.plexus</groupId>
+							<artifactId>plexus-utils</artifactId>
+							<version>${plexus-utils.version}</version>
+						</dependency>
+						<dependency>
+							<groupId>commons-io</groupId>
+							<artifactId>commons-io</artifactId>
+							<version>${commons-io.version}</version>
+						</dependency>
+					</dependencies>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+
 		<plugins>
 			<plugin>
 				<groupId>org.graalvm.buildtools</groupId>
@@ -1040,17 +1308,12 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
-				<version>3.4.1</version>
+				<version>${maven-jar-plugin.version}</version>
 			</plugin>
 			<plugin>
 				<groupId>org.sonarsource.scanner.maven</groupId>
 				<artifactId>sonar-maven-plugin</artifactId>
 				<version>5.5.0.6356</version>
-			</plugin>
-			<plugin>
-				<groupId>com.checkmarx.maven</groupId>
-				<artifactId>checkmarx-maven-plugin</artifactId>
-				<version>2022.2.3</version>
 			</plugin>
 			<plugin>
 				<groupId>org.asciidoctor</groupId>
@@ -1070,6 +1333,11 @@
 					</execution>
 				</executions>
 				<dependencies>
+					<dependency>
+						<groupId>org.apache.maven</groupId>
+						<artifactId>maven-core</artifactId>
+						<version>${maven.version}</version>
+					</dependency>
 					<dependency>
 						<groupId>org.springframework.restdocs</groupId>
 						<artifactId>spring-restdocs-asciidoctor</artifactId>
@@ -1094,7 +1362,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
-				<version>3.10.0</version>
+				<version>${maven-dependency-plugin.version}</version>
 				<executions>
 					<execution>
 						<id>Collect Maven Dependencies</id>
@@ -1107,25 +1375,15 @@
 							<stripVersion>false</stripVersion>
 						</configuration>
 					</execution>
-					<execution>
-						<id>prepare for offline Maven Dependencies</id>
-						<phase>initialize</phase>
-						<goals>
-							<goal>go-offline</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${project.build.directory}</outputDirectory>
-							<stripVersion>false</stripVersion>
-						</configuration>
-					</execution>
 				</executions>
 			</plugin>
 
 			<!-- Generate SBOM -->
+			<!-- Generate SBOM -->
 			<plugin>
 				<groupId>org.cyclonedx</groupId>
 				<artifactId>cyclonedx-maven-plugin</artifactId>
-				<version>2.8.0</version>
+				<version>${cyclonedx-maven-plugin.version}</version>
 				<executions>
 					<execution>
 						<phase>package</phase>
@@ -1134,6 +1392,53 @@
 						</goals>
 					</execution>
 				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>org.cyclonedx</groupId>
+						<artifactId>cyclonedx-core-java</artifactId>
+						<version>${cyclonedx-core-java.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.codehaus.plexus</groupId>
+						<artifactId>plexus-utils</artifactId>
+						<version>${plexus-utils.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.commons</groupId>
+						<artifactId>commons-compress</artifactId>
+						<version>${commons-compress.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>com.fasterxml.jackson.core</groupId>
+						<artifactId>jackson-core</artifactId>
+						<version>${jackson.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>com.fasterxml.jackson.core</groupId>
+						<artifactId>jackson-databind</artifactId>
+						<version>${jackson.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>com.fasterxml.jackson.core</groupId>
+						<artifactId>jackson-annotations</artifactId>
+						<version>${jackson-annotations.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>com.fasterxml.jackson.dataformat</groupId>
+						<artifactId>jackson-dataformat-xml</artifactId>
+						<version>${jackson.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>com.fasterxml.jackson.dataformat</groupId>
+						<artifactId>jackson-dataformat-yaml</artifactId>
+						<version>${jackson.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.yaml</groupId>
+						<artifactId>snakeyaml</artifactId>
+						<version>${snakeyaml.version}</version>
+					</dependency>
+				</dependencies>
 				<configuration>
 					<projectType>library</projectType>
 					<schemaVersion>1.4</schemaVersion>
@@ -1154,7 +1459,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
-				<version>3.7.1</version>
+				<version>${maven-assembly-plugin.version}</version>
 				<executions>
 					<execution>
 						<id>Package Plugins</id>
@@ -1196,23 +1501,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
-	<reporting>
-		<plugins>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>versions-maven-plugin</artifactId>
-				<version>2.16.2</version>
-				<reportSets>
-					<reportSet>
-						<reports>
-							<report>dependency-updates-report</report>
-							<report>plugin-updates-report</report>
-							<report>property-updates-report</report>
-						</reports>
-					</reportSet>
-				</reportSets>
-			</plugin>
-		</plugins>
-	</reporting>
 </project>
