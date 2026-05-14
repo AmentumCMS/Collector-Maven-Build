@@ -112,7 +112,7 @@ jobs:
       - name: Show diff after Maven update
         run: |
           git status --short
-          git diff -- pom.xml || true
+          git diff -- pom.xml '**/pom.xml' || true
 
       - name: Resolve/build after version updates
         run: |
@@ -126,7 +126,7 @@ jobs:
           fi
 
           git status --short
-          git add pom.xml maven-version-updates.txt
+          git add pom.xml '**/pom.xml' maven-version-updates.txt
           git commit -m "Update non-major Maven versions (${{ needs.Date.outputs.Date }})"
           git push
 
@@ -186,6 +186,81 @@ jobs:
             ${{ vars.COLLECTOR }}-deptree-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.txt
             ${{ vars.COLLECTOR }}-deptree-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.dot
           if-no-files-found: error
+
+      - name: Install Syft
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b .
+          ./syft --version
+
+      - name: Generate SBOM for Maven cache
+        run: |
+          ./syft dir:~/.m2/repository \
+            -o cyclonedx-json \
+            > ${{ vars.COLLECTOR }}-m2-sbom-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.cyclonedx.json
+
+      - name: Upload Maven cache SBOM
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ vars.COLLECTOR }}-m2-sbom-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.cyclonedx.json
+          path: ${{ vars.COLLECTOR }}-m2-sbom-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.cyclonedx.json
+          if-no-files-found: error
+
+      - name: Install Grype
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh -s -- -b .
+          ./grype --version
+
+      - name: Grype scan Maven cache JSON
+        if: always()
+        run: |
+          set +e
+
+          ./grype dir:~/.m2/repository \
+            -o json \
+            > ${{ vars.COLLECTOR }}-m2-grype-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.json
+
+          grype_exit=$?
+          echo "GRYPE_M2_JSON_EXIT=${grype_exit}" >> "$GITHUB_ENV"
+
+          # Do not fail here. This step is for artifact/report generation.
+          exit 0
+
+      - name: Upload Maven cache Grype JSON
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ vars.COLLECTOR }}-m2-grype-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.json
+          path: ${{ vars.COLLECTOR }}-m2-grype-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.json
+          if-no-files-found: error
+
+      - name: Generate Maven cache Grype proof report
+        if: always()
+        run: |
+          set +e
+
+          ./grype dir:~/.m2/repository -o table \
+            > ${{ vars.COLLECTOR }}-m2-grype-report-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.txt
+
+          echo "## Grype Results (Packaged Maven ~/.m2 Repository) ⚓" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          head -n 250 ${{ vars.COLLECTOR }}-m2-grype-report-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.txt >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+          total_lines=$(wc -l < ${{ vars.COLLECTOR }}-m2-grype-report-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.txt | tr -d ' ')
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "_Full Maven cache Grype report saved as artifact. Total lines: ${total_lines}_" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload Maven cache Grype proof report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ vars.COLLECTOR }}-m2-grype-report-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}
+          path: ${{ vars.COLLECTOR }}-m2-grype-report-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.txt
+          if-no-files-found: warn
+
+      - name: Enforce Maven cache Grype severity gate
+        run: |
+          ./grype dir:~/.m2/repository --fail-on high -o table
 
       - name: TARchive .m2 directory
         run: |
@@ -254,7 +329,6 @@ jobs:
       actions: read
       contents: write
       pull-requests: read
-      security-events: write
     env:
       GH_TOKEN: ${{ github.token }}
     steps:
@@ -307,103 +381,6 @@ jobs:
           name: ${{ vars.COLLECTOR }}-bom-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.zip
           path: ${{ vars.COLLECTOR }}-bom-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.zip
           if-no-files-found: error
-
-      - name: Install Grype
-        run: |
-          curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh -s -- -b .
-          ./grype --version
-
-      - name: Grype scan CycloneDX BOM JSON
-        if: always()
-        run: |
-          set +e
-
-          ./grype sbom:target/bom.json \
-            -o json \
-            > ${{ vars.COLLECTOR }}-grype-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.json
-
-          grype_exit=$?
-          echo "GRYPE_JSON_EXIT=${grype_exit}" >> "$GITHUB_ENV"
-
-          # Do not fail here. This step is for artifact/report generation.
-          exit 0
-
-      - name: Upload Grype JSON
-        if: always()
-        uses: actions/upload-artifact@v7
-        with:
-          name: ${{ vars.COLLECTOR }}-grype-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.json
-          path: ${{ vars.COLLECTOR }}-grype-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.json
-          if-no-files-found: error
-
-      - name: Generate Grype Proof Report
-        if: always()
-        run: |
-          set +e
-
-          ./grype sbom:target/bom.json -o table > grype-report.txt
-
-          echo "## Grype Results (CycloneDX Maven BOM) ⚓" >> "$GITHUB_STEP_SUMMARY"
-          echo '```' >> "$GITHUB_STEP_SUMMARY"
-          head -n 250 grype-report.txt >> "$GITHUB_STEP_SUMMARY"
-          echo '```' >> "$GITHUB_STEP_SUMMARY"
-
-          total_lines=$(wc -l < grype-report.txt | tr -d ' ')
-          echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "_Grype report saved as artifact. Total lines: ${total_lines}_" >> "$GITHUB_STEP_SUMMARY"
-
-      - name: Upload Grype Evidence
-        if: always()
-        uses: actions/upload-artifact@v7
-        with:
-          name: evidence-grype-report-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}
-          path: grype-report.txt
-          if-no-files-found: warn
-
-      - name: Enforce Grype severity gate
-        run: |
-          ./grype sbom:target/bom.json --fail-on high -o table
-
-      - name: Grype scan CycloneDX BOM JSON
-        if: always()
-        run: |
-          ./grype sbom:target/bom.json \
-            --fail-on high \
-            -o json \
-            > ${{ vars.COLLECTOR }}-grype-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.json
-        continue-on-error: true
-
-      - name: Upload Grype JSON
-        if: always()
-        uses: actions/upload-artifact@v7
-        with:
-          name: ${{ vars.COLLECTOR }}-grype-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.json
-          path: ${{ vars.COLLECTOR }}-grype-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.json
-          if-no-files-found: error
-
-      - name: Generate Grype Proof Report
-        if: always()
-        run: |
-          set +e
-
-          ./grype sbom:target/bom.json -o table > grype-report.txt
-
-          echo "## Grype Results (CycloneDX Maven BOM) ⚓" >> "$GITHUB_STEP_SUMMARY"
-          echo '```' >> "$GITHUB_STEP_SUMMARY"
-          head -n 250 grype-report.txt >> "$GITHUB_STEP_SUMMARY"
-          echo '```' >> "$GITHUB_STEP_SUMMARY"
-
-          total_lines=$(wc -l < grype-report.txt | tr -d ' ')
-          echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "_Grype report saved as artifact. Total lines: ${total_lines}_" >> "$GITHUB_STEP_SUMMARY"
-
-      - name: Upload Grype Evidence
-        if: always()
-        uses: actions/upload-artifact@v7
-        with:
-          name: evidence-grype-report-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}
-          path: grype-report.txt
-          if-no-files-found: warn
 
       - name: Update dependency graph
         uses: advanced-security/maven-dependency-submission-action@v5.0.0
