@@ -313,27 +313,56 @@ jobs:
           curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh -s -- -b .
           ./grype --version
 
-      - name: Grype scan CycloneDX BOM SARIF
+      - name: Grype scan CycloneDX BOM JSON
+        if: always()
         run: |
-          ./grype sbom:target/bom.json \
-            --fail-on high \
-            -o sarif \
-            > ${{ vars.COLLECTOR }}-grype-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.sarif
-        continue-on-error: true
+          set +e
 
-      - name: Upload Grype SARIF
+          ./grype sbom:target/bom.json \
+            -o json \
+            > ${{ vars.COLLECTOR }}-grype-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.json
+
+          grype_exit=$?
+          echo "GRYPE_JSON_EXIT=${grype_exit}" >> "$GITHUB_ENV"
+
+          # Do not fail here. This step is for artifact/report generation.
+          exit 0
+
+      - name: Upload Grype JSON
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: ${{ vars.COLLECTOR }}-grype-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.sarif
-          path: ${{ vars.COLLECTOR }}-grype-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.sarif
+          name: ${{ vars.COLLECTOR }}-grype-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.json
+          path: ${{ vars.COLLECTOR }}-grype-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.json
           if-no-files-found: error
 
-      - name: Upload SARIF to GitHub Code Scanning
+      - name: Generate Grype Proof Report
         if: always()
-        uses: github/codeql-action/upload-sarif@v4
+        run: |
+          set +e
+
+          ./grype sbom:target/bom.json -o table > grype-report.txt
+
+          echo "## Grype Results (CycloneDX Maven BOM) ⚓" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          head -n 250 grype-report.txt >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+          total_lines=$(wc -l < grype-report.txt | tr -d ' ')
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "_Grype report saved as artifact. Total lines: ${total_lines}_" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload Grype Evidence
+        if: always()
+        uses: actions/upload-artifact@v7
         with:
-          sarif_file: ${{ vars.COLLECTOR }}-grype-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.sarif
+          name: evidence-grype-report-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}
+          path: grype-report.txt
+          if-no-files-found: warn
+
+      - name: Enforce Grype severity gate
+        run: |
+          ./grype sbom:target/bom.json --fail-on high -o table
 
       - name: Grype scan CycloneDX BOM JSON
         if: always()
