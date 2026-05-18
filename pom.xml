@@ -9,7 +9,7 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>3.5.14</version>
-		<relativePath />
+		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 
 	<groupId>com.amentumcms</groupId>
@@ -75,7 +75,6 @@
 		<jackson.version>2.21.3</jackson.version>
 		<jackson-annotations.version>2.21</jackson-annotations.version>
 		<spring-security.version>6.5.10</spring-security.version>
-
 
 		<!-- Encoding -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
