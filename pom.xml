@@ -37,7 +37,7 @@
 		<!-- Security override versions for collected transitive build/runtime libraries -->
 		<snakeyaml.version>2.6</snakeyaml.version>
 		<xstream.version>1.4.21</xstream.version>
-		<maven.version>3.9.15</maven.version>
+		<maven.version>3.9.16</maven.version>
 		<plexus-utils.version>4.0.3</plexus-utils.version>
 		<plexus-archiver.version>4.11.0</plexus-archiver.version>
 		<commons-compress.version>1.28.0</commons-compress.version>
@@ -54,7 +54,7 @@
 		<maven-dependency-plugin.version>3.10.0</maven-dependency-plugin.version>
 		<maven-assembly-plugin.version>3.8.0</maven-assembly-plugin.version>
 		<maven-clean-plugin.version>3.5.0</maven-clean-plugin.version>
-		<maven-enforcer-plugin.version>3.6.2</maven-enforcer-plugin.version>
+		<maven-enforcer-plugin.version>3.6.3</maven-enforcer-plugin.version>
 		<maven-resources-plugin.version>3.5.0</maven-resources-plugin.version>
 		<maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
 		<maven-jar-plugin.version>3.5.0</maven-jar-plugin.version>
