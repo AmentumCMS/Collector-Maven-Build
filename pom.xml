@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 
@@ -21,6 +21,7 @@
 
 	<properties>
 		<java.version>21</java.version>
+		<project.build.outputTimestamp>${COMMIT_DATE}</project.build.outputTimestamp>
 		<jetty9.version>9.4.58.v20250814</jetty9.version>
 
 		<!-- Shared dependency versions -->
@@ -1425,6 +1426,31 @@
 							</exclusions>
 						</dependency>
 					</dependencies>
+				</plugin>
+				<plugin>
+					<groupId>io.github.zlika</groupId>
+					<artifactId>reproducible-build-maven-plugin</artifactId>
+					<!-- Use the latest available in your Nexus mirror -->
+					<version>0.17</version>
+					<executions>
+						<!-- Strip non-reproducible elements from the main JAR after package -->
+						<execution>
+							<id>strip-jar</id>
+							<phase>package</phase>
+							<goals>
+								<goal>strip-jar</goal>
+							</goals>
+						</execution>
+						<!-- If you build ZIP/TAR via assembly, strip again after assembly to normalize archive
+						metadata -->
+						<execution>
+							<id>strip-archive</id>
+							<phase>pre-integration-test</phase>
+							<goals>
+								<goal>strip-jar</goal>
+							</goals>
+						</execution>
+					</executions>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>

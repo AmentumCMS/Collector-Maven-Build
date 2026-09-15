@@ -1,11 +1,3 @@
-# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-maven
-
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
 name: Maven Collector - Develop
 run-name: ${{ github.actor }} is Collecting Maven-ness (Develop) 🚀
 on:
@@ -13,19 +5,22 @@ on:
     branches:
       - develop
   workflow_dispatch:
+
 jobs:
   Date:
     runs-on: ubuntu-latest
     outputs:
-      Date: ${{ steps.date.outputs.date }}
+      Date: ${{ steps.DATE.outputs.DATE }}
     steps:
       - name: Get current date
         id: DATE
         run: |
           echo -n "Setting Date in "
-          echo "DATE=$(date '+%Y%m%d-%H%M')" >> $GITHUB_OUTPUT
+          echo "DATE=$(date '+%Y%m%d-%H%M')" >> "$GITHUB_OUTPUT"
+          echo "COMMIT_DATE=$(git show -s --format=%cI)" >> "$GITHUB_OUTPUT"
           echo "$GITHUB_OUTPUT"
-          echo "Values: $(cat $GITHUB_OUTPUT)"
+          echo "Values: $(cat "$GITHUB_OUTPUT")"
+
       - name: Display Envars
         run: env
 
@@ -40,8 +35,8 @@ jobs:
       GH_TOKEN: ${{ github.token }}
       MAVEN_REPO: ${{ github.workspace }}/.collector-m2/repository
     steps:
-      - name: Check out updated branch
-        uses: actions/checkout@v6
+      - name: Check out repository code
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.ref_name }}
           fetch-depth: 0
@@ -128,7 +123,7 @@ jobs:
 
       - name: Resolve/build after version updates
         run: |
-          mvn -Dmaven.repo.local="${MAVEN_REPO}" \
+          mvn -Dmaven.repo.local="${MAVEN_REPO}" -Dreproducible-build=true \
             --no-transfer-progress -DskipTests=true -s settings.xml -B clean package
 
       - name: Commit version updates
@@ -155,8 +150,11 @@ jobs:
       GH_TOKEN: ${{ github.token }}
       MAVEN_REPO: ${{ github.workspace }}/.collector-m2/repository
     steps:
-      - name: Check out repository code
-        uses: actions/checkout@v6
+      - name: Check out updated branch
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
 
       - name: Set up JDK
         uses: actions/setup-java@v5
@@ -169,20 +167,24 @@ jobs:
           rm -rf "${MAVEN_REPO}"
           mkdir -p "${MAVEN_REPO}"
 
-      - name: Build once (populate isolated Maven repository)
+      - name: Build once and populate isolated Maven repository
         run: |
           mvn -Dmaven.repo.local="${MAVEN_REPO}" \
             -DskipTests=true --no-transfer-progress -B -s settings.xml clean package
 
-      - name: Export Maven dependency tree (text + dot)
+      - name: Export Maven dependency tree
         run: |
-          mvn -Dmaven.repo.local="${MAVEN_REPO}" \
+          TREE_MAVEN_REPO="${RUNNER_TEMP}/collector-deptree-m2/repository"
+          rm -rf "${TREE_MAVEN_REPO}"
+          mkdir -p "${TREE_MAVEN_REPO}"
+
+          mvn -Dmaven.repo.local="${TREE_MAVEN_REPO}" -Dreproducible-build=true \
             -DskipTests=true --no-transfer-progress -B -s settings.xml \
             -DoutputType=text \
             -DoutputFile="${{ vars.COLLECTOR }}-deptree-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.txt" \
             dependency:tree
 
-          mvn -Dmaven.repo.local="${MAVEN_REPO}" \
+          mvn -Dmaven.repo.local="${TREE_MAVEN_REPO}" -Dreproducible-build=true \
             -DskipTests=true --no-transfer-progress -B -s settings.xml \
             -DoutputType=dot \
             -DoutputFile="${{ vars.COLLECTOR }}-deptree-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.dot" \
@@ -274,14 +276,14 @@ jobs:
         run: |
           ./grype dir:"${MAVEN_REPO}" --fail-on high -o table
 
-      - name: TARchive isolated Maven repository (collector payload)
+      - name: TARchive isolated Maven repository
         run: |
           tar -cvzf ${{ vars.COLLECTOR }}-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.tgz \
             --exclude='_remote.repositories' -C "${MAVEN_REPO}/.." \
             repository \
             | tee ${{ vars.COLLECTOR }}-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.tgz.txt
 
-      - name: List Files for Debug
+      - name: List files for debug
         run: |
           ls -lAh ${{ github.workspace }}
 
@@ -307,7 +309,7 @@ jobs:
       contents: read
     steps:
       - name: Check out updated branch
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.ref_name }}
           fetch-depth: 0
@@ -341,13 +343,12 @@ jobs:
       actions: read
       contents: write
       pull-requests: read
-      security-events: write
     env:
       GH_TOKEN: ${{ github.token }}
       MAVEN_REPO: ${{ github.workspace }}/.collector-m2/repository
     steps:
       - name: Check out updated branch
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.ref_name }}
           fetch-depth: 0
@@ -363,23 +364,26 @@ jobs:
           rm -rf "${MAVEN_REPO}"
           mkdir -p "${MAVEN_REPO}"
 
-      - name: Build with Maven
+      - name: Build with Maven and generate CycloneDX BOM
         run: |
-          mvn -Dmaven.repo.local="${MAVEN_REPO}" \
+          mvn -Dmaven.repo.local="${MAVEN_REPO}" -Dreproducible-build=true \
             -DskipTests=true -B --no-transfer-progress -s settings.xml \
-            cyclonedx:makeAggregateBom
+            clean package cyclonedx:makeAggregateBom
 
       - name: Generate dependency graph
         run: |
-          mvn -Dmaven.repo.local="${MAVEN_REPO}" \
+          mvn -Dmaven.repo.local="${MAVEN_REPO}" -Dreproducible-build=true \
+            -DskipTests=true -B --no-transfer-progress -s settings.xml \
             com.github.ferstl:depgraph-maven-plugin:aggregate
 
-      - name: Create BoM ZIP
+      - name: Create BOM ZIP
         run: |
           echo -e "\nTarget Directory Listing"
           ls -lAh target/*
+
           echo -e "\nTree of Target directory"
-          tree target
+          tree target || true
+
           echo -e "\nZipping BOMs"
           zip -jD ${{ vars.COLLECTOR }}-bom-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.zip \
             target/bom.*
@@ -543,9 +547,9 @@ jobs:
       - name: Zipup XSDs
         run: |
           cd maven.apache.org
-          zip -r  ../${{ vars.COLLECTOR }}-xsd-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.zip xsd
+          zip -r ../${{ vars.COLLECTOR }}-xsd-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.zip xsd
 
-      - name: Generate Artifact Hash
+      - name: Generate XSD artifact hash
         run: |
           sha256sum -b ${{ vars.COLLECTOR }}-xsd-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.zip \
           | tee ${{ vars.COLLECTOR }}-xsd-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.zip.sha
@@ -554,7 +558,9 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: ${{ vars.COLLECTOR }}-xsd-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.zip
-          path: ${{ vars.COLLECTOR }}-xsd-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.zip
+          path: |
+            ${{ vars.COLLECTOR }}-xsd-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.zip
+            ${{ vars.COLLECTOR }}-xsd-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.zip.sha
           if-no-files-found: error
 
   MakeISO:
@@ -576,12 +582,12 @@ jobs:
         with:
           merge-multiple: true
 
-      - name: Generate Artifact Hash
+      - name: Generate artifact manifest hash
         run: |
           sha256sum -b ${{ vars.COLLECTOR }}-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}* \
           | tee ${{ vars.COLLECTOR }}-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.sha
 
-      - name: Upload Artifact sha artifact
+      - name: Upload artifact manifest hash
         uses: actions/upload-artifact@v7
         with:
           name: ${{ vars.COLLECTOR }}-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.sha
@@ -599,7 +605,7 @@ jobs:
             -o ${{ vars.COLLECTOR }}-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.iso \
             ${{ vars.COLLECTOR }}-*.*
 
-      - name: Implant MD5 sum into iso
+      - name: Implant MD5 sum into ISO
         run: implantisomd5 ${{ vars.COLLECTOR }}-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.iso
 
       - name: Generate ISO Hash
@@ -610,7 +616,7 @@ jobs:
       - name: Show ISO & Hash
         run: ls -1Ssh *.iso*
 
-      - name: Upload iso artifact
+      - name: Upload ISO artifact
         uses: actions/upload-artifact@v7
         with:
           name: ${{ vars.COLLECTOR }}-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.iso
@@ -676,8 +682,11 @@ jobs:
       contents: write
       pull-requests: read
     steps:
-      - name: Check out repository code
-        uses: actions/checkout@v6
+      - name: Check out updated branch
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
 
       - name: Download Artifacts
         uses: actions/download-artifact@v8
@@ -696,8 +705,11 @@ jobs:
       contents: write
       pull-requests: read
     steps:
-      - name: Check out repository code
-        uses: actions/checkout@v6
+      - name: Check out updated branch
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
 
       - name: Download Artifacts
         uses: actions/download-artifact@v8

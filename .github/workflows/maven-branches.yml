@@ -1,6 +1,5 @@
 name: Maven Collector - Other Branch
 run-name: ${{ github.actor }} is Collecting Maven-ness (${{ github.ref_name }})🚀
-
 on:
   push:
     branches-ignore:
@@ -19,12 +18,14 @@ jobs:
         run: |
           echo -n "Setting Date in "
           echo "DATE=$(date '+%Y%m%d-%H%M')" >> "$GITHUB_OUTPUT"
+          echo "COMMIT_DATE=$(git show -s --format=%cI)" >> "$GITHUB_OUTPUT"
           echo "$GITHUB_OUTPUT"
           echo "Values: $(cat "$GITHUB_OUTPUT")"
 
       - name: Display Envars
         run: env
 
+# Update Component Versions
   UpdateVers:
     runs-on: ubuntu-latest
     needs: [ Date ]
@@ -36,7 +37,7 @@ jobs:
       MAVEN_REPO: ${{ github.workspace }}/.collector-m2/repository
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.ref_name }}
           fetch-depth: 0
@@ -123,7 +124,7 @@ jobs:
 
       - name: Resolve/build after version updates
         run: |
-          mvn -Dmaven.repo.local="${MAVEN_REPO}" \
+          mvn -Dmaven.repo.local="${MAVEN_REPO}" -Dreproducible-build=true \
             --no-transfer-progress -DskipTests=true -s settings.xml -B clean package
 
       - name: Commit version updates
@@ -138,6 +139,8 @@ jobs:
           git commit -m "Update non-major Maven versions (${{ needs.Date.outputs.Date }})"
           git push
 
+# CollectM2 is the most time-consuming step, so we run it in parallel to the BOM collection and XSD collection steps. 
+# It also produces the most critical artifact (the .m2 repository) that we want to get scanned as soon as possible, so we prioritize its completion.
   CollectM2:
     needs: [ Date, UpdateVers ]
     runs-on: ubuntu-latest
@@ -149,7 +152,7 @@ jobs:
       MAVEN_REPO: ${{ github.workspace }}/.collector-m2/repository
     steps:
       - name: Check out updated branch
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.ref_name }}
           fetch-depth: 0
@@ -176,13 +179,13 @@ jobs:
           rm -rf "${TREE_MAVEN_REPO}"
           mkdir -p "${TREE_MAVEN_REPO}"
 
-          mvn -Dmaven.repo.local="${TREE_MAVEN_REPO}" \
+          mvn -Dmaven.repo.local="${TREE_MAVEN_REPO}" -Dreproducible-build=true \
             -DskipTests=true --no-transfer-progress -B -s settings.xml \
             -DoutputType=text \
             -DoutputFile="${{ vars.COLLECTOR }}-deptree-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.txt" \
             dependency:tree
 
-          mvn -Dmaven.repo.local="${TREE_MAVEN_REPO}" \
+          mvn -Dmaven.repo.local="${TREE_MAVEN_REPO}" -Dreproducible-build=true \
             -DskipTests=true --no-transfer-progress -B -s settings.xml \
             -DoutputType=dot \
             -DoutputFile="${{ vars.COLLECTOR }}-deptree-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.dot" \
@@ -307,7 +310,7 @@ jobs:
       contents: read
     steps:
       - name: Check out updated branch
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.ref_name }}
           fetch-depth: 0
@@ -346,7 +349,7 @@ jobs:
       MAVEN_REPO: ${{ github.workspace }}/.collector-m2/repository
     steps:
       - name: Check out updated branch
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.ref_name }}
           fetch-depth: 0
@@ -364,13 +367,13 @@ jobs:
 
       - name: Build with Maven and generate CycloneDX BOM
         run: |
-          mvn -Dmaven.repo.local="${MAVEN_REPO}" \
+          mvn -Dmaven.repo.local="${MAVEN_REPO}" -Dreproducible-build=true \
             -DskipTests=true -B --no-transfer-progress -s settings.xml \
             clean package cyclonedx:makeAggregateBom
 
       - name: Generate dependency graph
         run: |
-          mvn -Dmaven.repo.local="${MAVEN_REPO}" \
+          mvn -Dmaven.repo.local="${MAVEN_REPO}" -Dreproducible-build=true \
             -DskipTests=true -B --no-transfer-progress -s settings.xml \
             com.github.ferstl:depgraph-maven-plugin:aggregate
 
@@ -392,6 +395,132 @@ jobs:
           name: ${{ vars.COLLECTOR }}-bom-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.zip
           path: ${{ vars.COLLECTOR }}-bom-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.zip
           if-no-files-found: error
+
+      - name: Generate SBOM (Syft) for isolated Maven repository
+        uses: anchore/sbom-action@v0.24.0
+        with:
+          path: ${{ env.MAVEN_REPO }}
+          format: spdx-json
+          output-file: ${{ vars.COLLECTOR }}-sbom-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.spdx.json
+
+      - name: Upload SBOM (Syft)
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ vars.COLLECTOR }}-sbom-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.spdx.json
+          path: ${{ vars.COLLECTOR }}-sbom-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.spdx.json
+          if-no-files-found: error
+
+      - name: Grype scan (SARIF)
+        uses: anchore/scan-action@v7.4.0
+        with:
+          path: ${{ env.MAVEN_REPO }}
+          fail-build: false
+          severity-cutoff: high
+          output-format: sarif
+          output-file: ${{ vars.COLLECTOR }}-grype-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.sarif
+
+      - name: Upload Grype SARIF
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ vars.COLLECTOR }}-grype-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.sarif
+          path: ${{ vars.COLLECTOR }}-grype-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.sarif
+          if-no-files-found: error
+
+      - name: Upload SARIF to GitHub Code Scanning
+        if: always()
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: ${{ vars.COLLECTOR }}-grype-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.sarif
+
+      - name: Grype scan (JSON)
+        uses: anchore/scan-action@v7.4.0
+        with:
+          path: ${{ env.MAVEN_REPO }}
+          fail-build: false
+          severity-cutoff: high
+          output-format: json
+          output-file: ${{ vars.COLLECTOR }}-grype-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.json
+
+      - name: Upload Grype JSON
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ vars.COLLECTOR }}-grype-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.json
+          path: ${{ vars.COLLECTOR }}-grype-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.json
+
+      # Human-friendly "proof" report into Step Summary (like your container workflow)
+      - name: Generate Grype Proof Report
+        if: always()
+        run: |
+          set +e
+          curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh -s -- -b .
+          ./grype --version
+
+          # Table format is easiest to read in summary
+          ./grype dir:"${MAVEN_REPO}" -o table > grype-report.txt
+
+          echo "## Grype Results (Isolated Maven Repository) ⚓" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          # Avoid mega summaries; keep it readable
+          head -n 250 grype-report.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+          total_lines=$(wc -l < grype-report.txt | tr -d ' ')
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "_Grype report saved as artifact. Total lines: ${total_lines}_" >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload Grype Evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: evidence-grype-report-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}
+          path: grype-report.txt
+
+      # OSV scanning + Summary
+      # - name: OSV scan
+      #   id: osv
+      #   uses: google/osv-scanner-action@v2.3.5
+      #   with:
+      #     scan-args: >-
+      #       --format=json \
+      #       --output=${{ vars.COLLECTOR }}-osv-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.json
+
+      # - name: Upload OSV JSON
+      #   if: always()
+      #   uses: actions/upload-artifact@v7
+      #   with:
+      #     name: ${{ vars.COLLECTOR }}-osv-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.json
+      #     path: ${{ vars.COLLECTOR }}-osv-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.json
+
+      # - name: Publish OSV Summary
+      #   if: always()
+      #   run: |
+      #     set +e
+      #     f="${{ vars.COLLECTOR }}-osv-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.json"
+      #     if [ ! -f "$f" ]; then
+      #       echo "OSV output file not found: $f"
+      #       exit 0
+      #     fi
+
+      #     echo "## OSV Results (Project / ecosystem scan) 🛡️" >> $GITHUB_STEP_SUMMARY
+
+      #     # Count severities (OSV schema can vary; try best-effort)
+      #     echo "" >> $GITHUB_STEP_SUMMARY
+      #     echo "**Severity counts (best-effort):**" >> $GITHUB_STEP_SUMMARY
+      #     echo '```' >> $GITHUB_STEP_SUMMARY
+      #     jq -r '
+      #       def sev(x):
+      #         (x // "" | ascii_upcase);
+      #       [
+      #         .. | objects | .severity? // empty
+      #       ] | flatten
+      #       | map(sev(.))
+      #       | reduce .[] as $s ({}; .[$s] = (.[$s] // 0) + 1)
+      #       | to_entries
+      #       | sort_by(.key)
+      #       | .[]
+      #       | "\(.key): \(.value)"
+      #     ' "$f" 2>/dev/null || echo "Could not parse severities from OSV JSON"
+      #     echo '```' >> $GITHUB_STEP_SUMMARY
 
       - name: Update dependency graph
         uses: advanced-security/maven-dependency-submission-action@v5.0.0
@@ -478,15 +607,14 @@ jobs:
             ${{ vars.COLLECTOR }}-*.*
 
       - name: Implant MD5 sum into ISO
-        run: |
-          implantisomd5 ${{ vars.COLLECTOR }}-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.iso
+        run: implantisomd5 ${{ vars.COLLECTOR }}-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.iso
 
       - name: Generate ISO Hash
         run: |
           sha256sum -b ${{ vars.COLLECTOR }}-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.iso \
           | tee ${{ vars.COLLECTOR }}-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.iso.sha
 
-      - name: Show ISO and hash
+      - name: Show ISO & Hash
         run: ls -1Ssh *.iso*
 
       - name: Upload ISO artifact
@@ -507,7 +635,12 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           pattern: "*.iso"
-          merge-multiple: true
+
+      # - name: Download TGZ artifacts
+      #   uses: actions/download-artifact@v8
+      #   with:
+      #     merge-multiple: true
+      #     pattern: "*-${{ needs.Date.outputs.Date }}.tgz"
 
       - name: List files to scan
         run: |
@@ -551,7 +684,7 @@ jobs:
       pull-requests: read
     steps:
       - name: Check out updated branch
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.ref_name }}
           fetch-depth: 0
@@ -574,7 +707,7 @@ jobs:
       pull-requests: read
     steps:
       - name: Check out updated branch
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.ref_name }}
           fetch-depth: 0
