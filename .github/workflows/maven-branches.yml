@@ -99,7 +99,9 @@ jobs:
             -Dreproducible-build=true \
             -Dproject.build.outputTimestamp=${{ needs.Date.outputs.CommitDate }} \
             --no-transfer-progress -B -s settings.xml \
-            cyclonedx:makeAggregateBom
+            cyclonedx:makeAggregateBom \
+            clean package
+          sha256sum target/*.jar
 
       - name: Export Maven dependency tree (text + dot)
         run: |
