@@ -101,7 +101,7 @@ jobs:
             --no-transfer-progress -B -s settings.xml \
             cyclonedx:makeAggregateBom \
             clean package
-          sha256sum target/${{ vars.COLLECTOR }}*.jar
+          sha256sum target/${{ vars.COLLECTOR }}*
 
       - name: Export Maven dependency tree (text + dot)
         run: |
