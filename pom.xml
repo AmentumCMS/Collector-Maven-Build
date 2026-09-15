@@ -8,7 +8,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.5.14</version>
+		<version>3.5.16</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 
@@ -25,10 +25,10 @@
 		<jetty9.version>9.4.58.v20250814</jetty9.version>
 
 		<!-- Shared dependency versions -->
-		<activemq.classic.version>6.2.5</activemq.classic.version>
-		<artemis.version>2.53.0</artemis.version>
-		<spring-framework.version>6.2.18</spring-framework.version>
-		<spring-cloud-config.version>4.3.3</spring-cloud-config.version>
+		<activemq.classic.version>6.3.2</activemq.classic.version>
+		<artemis.version>2.57.0</artemis.version>
+		<spring-framework.version>6.2.19</spring-framework.version>
+		<spring-cloud-config.version>4.3.4</spring-cloud-config.version>
 		<kafka.version>3.9.2</kafka.version>
 		<jsch.version>0.1.55</jsch.version>
 		<velocity.version>2.4.1</velocity.version>
@@ -36,46 +36,46 @@
 		<maven-wagon.version>3.5.3</maven-wagon.version>
 
 		<!-- Security override versions for collected transitive build/runtime libraries -->
-		<snakeyaml.version>2.6</snakeyaml.version>
+		<snakeyaml.version>2.7</snakeyaml.version>
 		<xstream.version>1.4.21</xstream.version>
-		<maven.version>3.9.16</maven.version>
-		<plexus-utils.version>4.0.3</plexus-utils.version>
-		<plexus-archiver.version>4.11.0</plexus-archiver.version>
+		<maven.version>3.10.0-rc-1</maven.version>
+		<plexus-utils.version>4.1.0</plexus-utils.version>
+		<plexus-archiver.version>4.14.0</plexus-archiver.version>
 		<commons-compress.version>1.28.0</commons-compress.version>
 		<dom4j.version>2.2.0</dom4j.version>
 		<httpclient.version>4.5.14</httpclient.version>
-		<netty.version>4.2.13.Final</netty.version>
+		<netty.version>4.2.18.Final</netty.version>
 		<commons-lang3.version>3.20.0</commons-lang3.version>
-		<nimbus-jose-jwt.version>10.9</nimbus-jose-jwt.version>
-		<ant.version>1.10.17</ant.version>
+		<nimbus-jose-jwt.version>10.9.1</nimbus-jose-jwt.version>
+		<ant.version>1.10.18</ant.version>
 		<cyclonedx-core-java.version>11.0.1</cyclonedx-core-java.version>
-		<postgresql.version>42.7.11</postgresql.version>
-		<commons-validator.version>1.10.1</commons-validator.version>
+		<postgresql.version>42.7.13</postgresql.version>
+		<commons-validator.version>1.11.0</commons-validator.version>
 		<!-- Additional CVE override versions -->
-		<maven-dependency-plugin.version>3.10.0</maven-dependency-plugin.version>
+		<maven-dependency-plugin.version>3.11.0</maven-dependency-plugin.version>
 		<maven-assembly-plugin.version>3.8.0</maven-assembly-plugin.version>
 		<maven-clean-plugin.version>3.5.0</maven-clean-plugin.version>
 		<maven-enforcer-plugin.version>3.6.3</maven-enforcer-plugin.version>
 		<maven-resources-plugin.version>3.5.0</maven-resources-plugin.version>
-		<maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
-		<maven-jar-plugin.version>3.5.0</maven-jar-plugin.version>
+		<maven-compiler-plugin.version>3.16.0</maven-compiler-plugin.version>
+		<maven-jar-plugin.version>3.5.1</maven-jar-plugin.version>
 		<maven-shade-plugin.version>3.6.2</maven-shade-plugin.version>
-		<maven-site-plugin.version>3.21.0</maven-site-plugin.version>
-		<cyclonedx-maven-plugin.version>2.9.1</cyclonedx-maven-plugin.version>
+		<maven-site-plugin.version>3.22.0</maven-site-plugin.version>
+		<cyclonedx-maven-plugin.version>2.9.3</cyclonedx-maven-plugin.version>
 		<maven-shared-utils.version>3.4.2</maven-shared-utils.version>
 		<commons-io.version>2.22.0</commons-io.version>
 		<commons-beanutils.version>1.11.0</commons-beanutils.version>
-		<guava.version>33.6.0-jre</guava.version>
-		<jsoup.version>1.22.2</jsoup.version>
-		<bcprov.version>1.84</bcprov.version>
+		<guava.version>33.7.1-jre</guava.version>
+		<jsoup.version>1.23.2</jsoup.version>
+		<bcprov.version>1.86</bcprov.version>
 		<json.version>20250517</json.version>
-		<xmlbeans.version>5.3.0</xmlbeans.version>
+		<xmlbeans.version>5.4.0</xmlbeans.version>
 		<jgit.version>6.10.1.202505221210-r</jgit.version>
-		<tomcat-embed-core.version>10.1.55</tomcat-embed-core.version>
-		<logback.version>1.5.32</logback.version>
-		<jackson.version>2.21.3</jackson.version>
-		<jackson-annotations.version>2.21</jackson-annotations.version>
-		<spring-security.version>6.5.10</spring-security.version>
+		<tomcat-embed-core.version>10.1.60</tomcat-embed-core.version>
+		<logback.version>1.6.3</logback.version>
+		<jackson.version>2.22.2</jackson.version>
+		<jackson-annotations.version>2.22</jackson-annotations.version>
+		<spring-security.version>6.5.11</spring-security.version>
 
 		<!-- Encoding -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -734,7 +734,7 @@
 		<dependency>
 			<groupId>org.apache.camel.springboot</groupId>
 			<artifactId>camel-spring-boot-starter</artifactId>
-			<version>4.20.0</version>
+			<version>4.22.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.kafka</groupId>
@@ -896,7 +896,7 @@
 		<dependency>
 			<groupId>com.atlassian.bamboo</groupId>
 			<artifactId>bamboo-specs</artifactId>
-			<version>10.2.19</version>
+			<version>10.2.23</version>
 			<exclusions>
 				<exclusion>
 					<groupId>commons-validator</groupId>
@@ -1011,7 +1011,7 @@
 		<dependency>
 			<groupId>org.apache.zookeeper</groupId>
 			<artifactId>zookeeper</artifactId>
-			<version>3.9.5</version>
+			<version>3.9.6</version>
 			<scope>test</scope>
 			<exclusions>
 				<exclusion>
@@ -1146,7 +1146,7 @@
 		<dependency>
 			<groupId>org.graalvm.buildtools</groupId>
 			<artifactId>native-maven-plugin</artifactId>
-			<version>1.1.0</version>
+			<version>1.1.13</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.cyclonedx</groupId>
@@ -1157,7 +1157,7 @@
 		<dependency>
 			<groupId>com.google.cloud.tools</groupId>
 			<artifactId>jib-maven-plugin</artifactId>
-			<version>3.5.1</version>
+			<version>3.5.2</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.launch4j</groupId>
