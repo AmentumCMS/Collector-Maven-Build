@@ -19,12 +19,14 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       Date: ${{ steps.date.outputs.date }}
+      CommitDate: ${{ steps.date.outputs.COMMIT_DATE }}
     steps:
       - name: Get current date
         id: DATE
         run: |
           echo -n "Setting Date in "
           echo "DATE=$(date '+%Y%m%d-%H%M')" >> $GITHUB_OUTPUT
+          echo "COMMIT_DATE=$(git show -s --format=%cI)" >> $GITHUB_OUTPUT
           echo "$GITHUB_OUTPUT"
           echo "Values: $(cat $GITHUB_OUTPUT)"
       - name: Display Envars
@@ -93,17 +95,26 @@ jobs:
 
       - name: Build once (populate ~/.m2 + generate BOM)
         run: |
-          mvn -DskipTests=true --no-transfer-progress -B -s settings.xml \
-            package cyclonedx:makeAggregateBom
+          mvn -DskipTests=true \
+            -Dreproducible-build=true \
+            -Dproject.build.outputTimestamp=${{ needs.Date.outputs.CommitDate }} \
+            --no-transfer-progress -B -s settings.xml \
+            cyclonedx:makeAggregateBom
 
       - name: Export Maven dependency tree (text + dot)
         run: |
-          mvn -DskipTests=true --no-transfer-progress -B -s settings.xml \
+          mvn -DskipTests=true \
+            -Dreproducible-build=true \
+            -Dproject.build.outputTimestamp=${{ needs.Date.outputs.CommitDate }} \
+            --no-transfer-progress -B -s settings.xml \
             -DoutputType=text \
             -DoutputFile="${{ vars.COLLECTOR }}-deptree-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.txt" \
             dependency:tree
 
-          mvn -DskipTests=true --no-transfer-progress -B -s settings.xml \
+          mvn -DskipTests=true \
+            -Dreproducible-build=true \
+            -Dproject.build.outputTimestamp=${{ needs.Date.outputs.CommitDate }} \
+            --no-transfer-progress -B -s settings.xml \
             -DoutputType=dot \
             -DoutputFile="${{ vars.COLLECTOR }}-deptree-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.dot" \
             dependency:tree
@@ -120,10 +131,16 @@ jobs:
 
       - name: TARchive .m2 directory (collector payload)
         run: |
-          tar -cvzf ${{ vars.COLLECTOR }}-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.tgz \
+          tar -cvz \
+            --sort=name \
+            --mtime="${{ needs.Date.outputs.CommitDate }}" \
+            --owner=0 \
+            --group=0 \
+            --numeric-owner \
             --exclude='_remote.repositories' -C ~/.m2 \
+            -f ${{ vars.COLLECTOR }}-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.tgz \
             repository \
-            | tee ${{ vars.COLLECTOR }}-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.tgz.txt
+          | tee ${{ vars.COLLECTOR }}-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.tgz.txt
 
       - name: List Files for Debug
         run: |
@@ -147,6 +164,7 @@ jobs:
     needs: [ Date ]
     runs-on: ubuntu-latest
     permissions:
+      actions: read
       contents: read
     steps:
       - name: Check out repository code

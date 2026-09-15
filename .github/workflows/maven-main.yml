@@ -20,12 +20,14 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       Date: ${{ steps.date.outputs.date }}
+      CommitDate: ${{ steps.date.outputs.COMMIT_DATE }}
     steps:
       - name: Get current date
         id: DATE
         run: |
           echo -n "Setting Date in "
           echo "DATE=$(date '+%Y%m%d-%H%M')" >> $GITHUB_OUTPUT
+          echo "COMMIT_DATE=$(git show -s --format=%cI)" >> $GITHUB_OUTPUT
           echo "$GITHUB_OUTPUT"
           echo "Values: $(cat $GITHUB_OUTPUT)"
       - name: Display Envars
@@ -33,8 +35,8 @@ jobs:
 
   # Update Component Versions
   # Unneeded in main branch, as we want to capture the "natural" state of the repository without modifications. This step is more relevant for branches where active development is happening and versions may need to be updated to avoid conflicts or to reflect the current state of the codebase.
-  # CollectM2 is the most time-consuming step, so we run it in parallel to the BOM collection and XSD collection steps. 
-  # It also produces the most critical artifact (the .m2 repository) that we want to get scanned as soon as possible, so we prioritize its completion.
+# CollectM2 is the most time-consuming step, so we run it in parallel to the BOM collection and XSD collection steps. 
+# It also produces the most critical artifact (the .m2 repository) that we want to get scanned as soon as possible, so we prioritize its completion.
   CollectM2:
     needs: [ Date ]
     runs-on: ubuntu-latest
@@ -64,17 +66,26 @@ jobs:
 
       - name: Build once (populate ~/.m2 + generate BOM)
         run: |
-          mvn -DskipTests=true --no-transfer-progress -B -s settings.xml \
+          mvn -DskipTests=true \
+            -Dreproducible-build=true \
+            -Dproject.build.outputTimestamp=${{ needs.Date.outputs.CommitDate }} \
+            --no-transfer-progress -B -s settings.xml \
             package cyclonedx:makeAggregateBom
 
       - name: Export Maven dependency tree (text + dot)
         run: |
-          mvn -DskipTests=true --no-transfer-progress -B -s settings.xml \
+          mvn -DskipTests=true \
+            -Dreproducible-build=true \
+            -Dproject.build.outputTimestamp=${{ needs.Date.outputs.CommitDate }} \
+            --no-transfer-progress -B -s settings.xml \
             -DoutputType=text \
             -DoutputFile="${{ vars.COLLECTOR }}-deptree-${{ needs.Date.outputs.Date }}.txt" \
             dependency:tree
 
-          mvn -DskipTests=true --no-transfer-progress -B -s settings.xml \
+          mvn -DskipTests=true \
+            -Dreproducible-build=true \
+            -Dproject.build.outputTimestamp=${{ needs.Date.outputs.CommitDate }} \
+            --no-transfer-progress -B -s settings.xml \
             -DoutputType=dot \
             -DoutputFile="${{ vars.COLLECTOR }}-deptree-${{ needs.Date.outputs.Date }}.dot" \
             dependency:tree
@@ -91,10 +102,16 @@ jobs:
 
       - name: TARchive .m2 directory (collector payload)
         run: |
-          tar -cvzf ${{ vars.COLLECTOR }}-m2-${{ needs.Date.outputs.Date }}.tgz \
+          tar -cvz \
+            --sort=name \
+            --mtime="${{ needs.Date.outputs.CommitDate }}" \
+            --owner=0 \
+            --group=0 \
+            --numeric-owner \
             --exclude='_remote.repositories' -C ~/.m2 \
+            -f ${{ vars.COLLECTOR }}-m2-${{ needs.Date.outputs.Date }}.tgz \
             repository \
-            | tee ${{ vars.COLLECTOR }}-m2-${{ needs.Date.outputs.Date }}.tgz.txt
+          | tee ${{ vars.COLLECTOR }}-m2-${{ needs.Date.outputs.Date }}.tgz.txt
 
       - name: List Files for Debug
         run: |
@@ -118,6 +135,7 @@ jobs:
     needs: [ Date ]
     runs-on: ubuntu-latest
     permissions:
+      actions: read
       contents: read
     steps:
       - name: Check out repository code

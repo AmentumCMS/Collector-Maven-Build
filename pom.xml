@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>4.1.0-RC1</version>
+		<version>4.2.0-M1</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 
@@ -19,7 +19,8 @@
 	<description>maven-collector project for Spring Boot</description>
 	<properties>
 		<!-- Properites used by Maven plugins -->
-		<java.version>17</java.version>
+		<java.version>21</java.version>
+		<project.build.outputTimestamp>${COMMIT_DATE}</project.build.outputTimestamp>
 		<spring-cloud.version>2023.0.0</spring-cloud.version>
 		<spring-modulith.version>1.1.2</spring-modulith.version>
 		<spring-shell.version>3.2.0</spring-shell.version>
