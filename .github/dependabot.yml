@@ -5,12 +5,14 @@
 # https://containers.dev/guide/dependabot
 
 version: 2
+
 updates:
   - package-ecosystem: "devcontainers"
     directory: "/"
     schedule:
-      interval: weekly
+      interval: "weekly"
     target-branch: "develop"
+
   # Maintain dependencies for GitHub Actions
   - package-ecosystem: "github-actions"
     directory: "/"
