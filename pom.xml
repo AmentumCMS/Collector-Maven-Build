@@ -21,9 +21,9 @@
 		<!-- Properites used by Maven plugins -->
 		<java.version>21</java.version>
 		<project.build.outputTimestamp>${COMMIT_DATE}</project.build.outputTimestamp>
-		<spring-cloud.version>2023.0.0</spring-cloud.version>
-		<spring-modulith.version>1.1.2</spring-modulith.version>
-		<spring-shell.version>3.2.0</spring-shell.version>
+		<spring-cloud.version>2025.0.0</spring-cloud.version>
+		<spring-modulith.version>2.0.6</spring-modulith.version>
+		<spring-shell.version>4.0.2</spring-shell.version>
 		<!-- Encoding -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -38,7 +38,7 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.module</groupId>
 			<artifactId>jackson-module-jaxb-annotations</artifactId>
-			<version>2.15.3</version>
+			<version>2.22.3</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -51,17 +51,17 @@
 		<dependency>
 			<groupId>org.redisson</groupId>
 			<artifactId>redisson-spring-boot-starter</artifactId>
-			<version>3.45.1</version>
+			<version>4.8.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.redisson</groupId>
 			<artifactId>redisson</artifactId>
-			<version>3.45.1</version>
+			<version>4.8.0</version>
 		</dependency>
 		<dependency>
 			<groupId>redis.clients</groupId>
 			<artifactId>jedis</artifactId>
-			<version>5.2.0</version>
+			<version>8.1.0-beta1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -126,7 +126,7 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-pulsar</artifactId>
-			<version>4.0.0</version>
+			<version>4.2.0-M2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -164,7 +164,7 @@
 		<dependency>
 			<groupId>org.apache.camel.springboot</groupId>
 			<artifactId>camel-spring-boot-starter</artifactId>
-			<version>4.10.2</version>
+			<version>4.22.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.kafka</groupId>
@@ -174,22 +174,22 @@
 		<dependency>
 			<groupId>org.apache.activemq</groupId>
 			<artifactId>artemis-server</artifactId>
-			<version>2.44.0</version>
+			<version>2.57.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.activemq</groupId>
 			<artifactId>activemq-broker</artifactId>
-			<version>5.18.3</version>
+			<version>6.3.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.activemq</groupId>
 			<artifactId>activemq-client</artifactId>
-			<version>5.18.3</version>
+			<version>6.3.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.activemq</groupId>
 			<artifactId>activemq-openwire-legacy</artifactId>
-			<version>5.18.3</version>
+			<version>6.3.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.geronimo.specs</groupId>
@@ -199,12 +199,12 @@
 		<dependency>
 			<groupId>org.apache.activemq</groupId>
 			<artifactId>activemq-kahadb-store</artifactId>
-			<version>5.18.3</version>
+			<version>6.3.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.activemq</groupId>
 			<artifactId>activemq-pool</artifactId>
-			<version>5.18.3</version>
+			<version>6.3.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.geronimo.specs</groupId>
@@ -299,7 +299,7 @@
 		<dependency>
 			<groupId>org.springframework.integration</groupId>
 			<artifactId>spring-integration-security</artifactId>
-			<version>6.2.5</version>
+			<version>6.2.11</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.integration</groupId>
@@ -380,7 +380,7 @@
 		<dependency>
 			<groupId>com.atlassian.bamboo</groupId>
 			<artifactId>bamboo-specs</artifactId>
-			<version>10.0.1</version>
+			<version>13.0.0-rc2</version>
 		</dependency>
 
 		<dependency>
@@ -493,7 +493,7 @@
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
-			<version>5.16.1</version>
+			<version>5.24.0</version>
 		</dependency>
 		<!-- <dependency>
 			<groupId>org.mockito</groupId>
@@ -573,12 +573,12 @@
 		<dependency>
 			<groupId>org.codehaus.mojo</groupId>
 			<artifactId>wagon-maven-plugin</artifactId>
-			<version>2.0.2</version>
+			<version>3.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.maven.plugins</groupId>
 			<artifactId>maven-shade-plugin</artifactId>
-			<version>3.5.3</version>
+			<version>3.6.2</version>
 		</dependency>
 		<dependency>
 			<groupId>io.github.zlika</groupId>
@@ -590,18 +590,12 @@
 		<dependency>
 			<groupId>org.graalvm.buildtools</groupId>
 			<artifactId>native-maven-plugin</artifactId>
-			<version>0.10.1</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.google.cloud.tools</groupId>
-			<artifactId>jib-maven-plugin</artifactId>
-			<version>3.4.2</version>
+			<version>1.1.14</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.maven.plugins</groupId>
 			<artifactId>maven-jlink-plugin</artifactId>
-			<version>3.2.0</version>
+			<version>3.3.0</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.launch4j</groupId>
@@ -611,7 +605,7 @@
 		<dependency>
 			<groupId>com.akathist.maven.plugins.launch4j</groupId>
 			<artifactId>launch4j-maven-plugin</artifactId>
-			<version>2.6.0</version>
+			<version>2.7.0</version>
 		</dependency>
 		<dependency>
 			<groupId>colt</groupId>
@@ -631,13 +625,13 @@
 		<dependency>
 			<groupId>nl.tudelft.simulation</groupId>
 			<artifactId>dsol</artifactId>
-			<version>4.2.11</version>
+			<version>4.3.2</version>
 			<type>pom</type>
 		</dependency>
 		<dependency>
 			<groupId>org.jvnet.jaxb2.maven2</groupId>
 			<artifactId>maven-jaxb2-plugin</artifactId>
-			<version>0.13.1</version>
+			<version>0.15.3</version>
 		</dependency>
 		<dependency>
 			<groupId>org.codehaus.mojo</groupId>
@@ -647,47 +641,47 @@
 		<dependency>
 			<groupId>javax.xml.bind</groupId>
 			<artifactId>jaxb-api</artifactId>
-			<version>2.2.4</version>
+			<version>2.4.0-b180830.0359</version>
 		</dependency>
 		<dependency>
 			<groupId>jakarta.activation</groupId>
 			<artifactId>jakarta.activation-api</artifactId>
-			<version>1.2.2</version>
+			<version>2.2.0-M2</version>
 		</dependency>
 		<dependency>
 			<groupId>jakarta.xml.bind</groupId>
 			<artifactId>jakarta.xml.bind-api</artifactId>
-			<version>2.3.3</version>
+			<version>4.1.0-M1</version>
 		</dependency>
 		<dependency>
 			<groupId>com.sun.xml.bind</groupId>
 			<artifactId>jaxb-impl</artifactId>
-			<version>2.3.3</version>
+			<version>4.0.9</version>
 		</dependency>
 		<dependency>
 			<groupId>org.codehaus.mojo</groupId>
 			<artifactId>xmlbeans-maven-plugin</artifactId>
-			<version>2.3.2</version>
+			<version>2.3.3</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
-			<version>3.3.3</version>
+			<version>4.2.0-M2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-orm</artifactId>
-			<version>6.1.12</version>
+			<version>7.1.0-M2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jaxb</groupId>
 			<artifactId>jaxb-runtime</artifactId>
-			<version>2.3.3</version>
+			<version>4.0.9</version>
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jaxb</groupId>
 			<artifactId>jaxb-core</artifactId>
-			<version>2.3.0.1</version>
+			<version>4.0.9</version>
 		</dependency>
 	</dependencies>
 
@@ -727,7 +721,7 @@
 			<plugin>
 				<groupId>com.google.cloud.tools</groupId>
 				<artifactId>jib-maven-plugin</artifactId>
-				<version>3.4.0</version>
+				<version>3.5.1</version>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.wagon</groupId>
@@ -761,17 +755,17 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
-				<version>3.5.3</version>
+				<version>3.6.2</version>
 			</plugin> -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
-				<version>3.4.1</version>
+				<version>3.5.0</version>
 			</plugin>
 			<plugin>
 				<groupId>org.sonarsource.scanner.maven</groupId>
 				<artifactId>sonar-maven-plugin</artifactId>
-				<version>5.5.0.6356</version>
+				<version>5.7.0.6970</version>
 			</plugin>
 			<plugin>
 				<groupId>com.checkmarx.maven</groupId>
@@ -818,7 +812,7 @@
 			<!-- <plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jlink-plugin</artifactId>
-				<version>3.2.0</version>
+				<version>3.3.0</version>
 				<executions>
 					<execution>
 						<goals>
@@ -896,7 +890,7 @@
 			<plugin>
 				<groupId>org.cyclonedx</groupId>
 				<artifactId>cyclonedx-maven-plugin</artifactId>
-				<version>2.8.0</version>
+				<version>2.9.1</version>
 				<!-- <version>2.7.0</version> -->
 				<executions>
 					<execution>
@@ -978,7 +972,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>versions-maven-plugin</artifactId>
-				<version>2.16.2</version>
+				<version>2.21.0</version>
 				<reportSets>
 					<reportSet>
 						<reports>

@@ -48,3 +48,4 @@ bin/
 .classpath
 dependency-reduced-pom.xml
 pom.xml.versionsBackup
+*.versionsBackup

@@ -42,7 +42,7 @@ jobs:
       GH_TOKEN: ${{ github.token }}
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Set up JDK
         uses: actions/setup-java@v5
@@ -75,7 +75,7 @@ jobs:
       GH_TOKEN: ${{ github.token }}
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Set up JDK
         uses: actions/setup-java@v5
@@ -85,7 +85,7 @@ jobs:
           cache: maven
           
       - name: Cache Maven repository
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ~/.m2/repository
           key: maven-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}
@@ -169,7 +169,7 @@ jobs:
       contents: read
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Setup Git
         run: |
@@ -205,7 +205,7 @@ jobs:
       GH_TOKEN: ${{ github.token }}
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Set up JDK
         uses: actions/setup-java@v5
@@ -215,7 +215,7 @@ jobs:
           cache: maven
 
       - name: Cache Maven repository
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ~/.m2/repository
           key: maven-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}
@@ -278,7 +278,7 @@ jobs:
 
       - name: Upload SARIF to GitHub Code Scanning
         if: always()
-        uses: github/codeql-action/upload-sarif@v4
+        uses: github/codeql-action/upload-sarif@v4.37.4
         with:
           sarif_file: ${{ vars.COLLECTOR }}-grype-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.sarif
 
@@ -373,7 +373,7 @@ jobs:
       #     echo '```' >> $GITHUB_STEP_SUMMARY
 
       - name: Update dependency graph
-        uses: advanced-security/maven-dependency-submission-action@v5.0.0
+        uses: advanced-security/maven-dependency-submission-action@v6.0.0
         with:
           ignore-maven-wrapper: true
           settings-file: settings.xml
@@ -532,7 +532,7 @@ jobs:
       pull-requests: read
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Download Artifacts
         uses: actions/download-artifact@v8
@@ -552,7 +552,7 @@ jobs:
       pull-requests: read
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Download Artifacts
         uses: actions/download-artifact@v8
