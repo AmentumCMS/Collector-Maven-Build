@@ -17,3 +17,18 @@ updates:
     schedule:
       interval: "daily"
     target-branch: "develop"
+    groups:
+      all-actions:
+        patterns:
+          - "*"
+  # Maintain dependencies for Maven projects
+  - package-ecosystem: "maven"
+    directory: "/"
+    target-branch: "develop"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    groups:
+      all-maven:
+        patterns:
+          - "*"
