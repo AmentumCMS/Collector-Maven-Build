@@ -19,12 +19,15 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       Date: ${{ steps.date.outputs.date }}
+      RefName: ${{ steps.date.outputs.ref_name }}
     steps:
       - name: Get current date
         id: DATE
         run: |
           echo -n "Setting Date in "
           echo "DATE=$(date '+%Y%m%d-%H%M')" >> $GITHUB_OUTPUT
+          ref_name=$(printf '%s' "$GITHUB_REF_NAME" | LC_ALL=C tr -c 'A-Za-z0-9._-' '-')
+          echo "ref_name=$ref_name" >> "$GITHUB_OUTPUT"
           echo "$GITHUB_OUTPUT"
           echo "Values: $(cat $GITHUB_OUTPUT)"
       - name: Display Envars
@@ -100,30 +103,30 @@ jobs:
         run: |
           mvn -DskipTests=true --no-transfer-progress -B -s settings.xml \
             -DoutputType=text \
-            -DoutputFile="${{ vars.COLLECTOR }}-deptree-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.txt" \
+            -DoutputFile="${{ vars.COLLECTOR }}-deptree-${{ needs.Date.outputs.RefName }}-${{ needs.Date.outputs.Date }}.txt" \
             dependency:tree
 
           mvn -DskipTests=true --no-transfer-progress -B -s settings.xml \
             -DoutputType=dot \
-            -DoutputFile="${{ vars.COLLECTOR }}-deptree-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.dot" \
+            -DoutputFile="${{ vars.COLLECTOR }}-deptree-${{ needs.Date.outputs.RefName }}-${{ needs.Date.outputs.Date }}.dot" \
             dependency:tree
 
-          ls -1sh ${{ vars.COLLECTOR }}-deptree-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.*
+          ls -1sh ${{ vars.COLLECTOR }}-deptree-${{ needs.Date.outputs.RefName }}-${{ needs.Date.outputs.Date }}.*
 
       - name: Upload dependency tree artifacts
         uses: actions/upload-artifact@v7
         with:
-          name: ${{ vars.COLLECTOR }}-deptree-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}
+          name: ${{ vars.COLLECTOR }}-deptree-${{ needs.Date.outputs.RefName }}-${{ needs.Date.outputs.Date }}
           path: |
-            ${{ vars.COLLECTOR }}-deptree-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.txt
-            ${{ vars.COLLECTOR }}-deptree-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.dot
+            ${{ vars.COLLECTOR }}-deptree-${{ needs.Date.outputs.RefName }}-${{ needs.Date.outputs.Date }}.txt
+            ${{ vars.COLLECTOR }}-deptree-${{ needs.Date.outputs.RefName }}-${{ needs.Date.outputs.Date }}.dot
 
       - name: TARchive .m2 directory (collector payload)
         run: |
-          tar -cvzf ${{ vars.COLLECTOR }}-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.tgz \
+          tar -cvzf ${{ vars.COLLECTOR }}-m2-${{ needs.Date.outputs.RefName }}-${{ needs.Date.outputs.Date }}.tgz \
             --exclude='_remote.repositories' -C ~/.m2 \
             repository \
-            | tee ${{ vars.COLLECTOR }}-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.tgz.txt
+            | tee ${{ vars.COLLECTOR }}-m2-${{ needs.Date.outputs.RefName }}-${{ needs.Date.outputs.Date }}.tgz.txt
 
       - name: List Files for Debug
         run: |
@@ -132,15 +135,15 @@ jobs:
       - name: Upload M2 artifact
         uses: actions/upload-artifact@v7
         with:
-          name: ${{ vars.COLLECTOR }}-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.tgz
-          path: ${{ vars.COLLECTOR }}-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.tgz*
+          name: ${{ vars.COLLECTOR }}-m2-${{ needs.Date.outputs.RefName }}-${{ needs.Date.outputs.Date }}.tgz
+          path: ${{ vars.COLLECTOR }}-m2-${{ needs.Date.outputs.RefName }}-${{ needs.Date.outputs.Date }}.tgz*
           if-no-files-found: error
 
       - name: Upload M2 ToC artifact
         uses: actions/upload-artifact@v7
         with:
-          name: ${{ vars.COLLECTOR }}-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.tgz.txt
-          path: ${{ vars.COLLECTOR }}-m2-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.tgz.txt
+          name: ${{ vars.COLLECTOR }}-m2-${{ needs.Date.outputs.RefName }}-${{ needs.Date.outputs.Date }}.tgz.txt
+          path: ${{ vars.COLLECTOR }}-m2-${{ needs.Date.outputs.RefName }}-${{ needs.Date.outputs.Date }}.tgz.txt
           if-no-files-found: error
 
   Code:
@@ -159,19 +162,19 @@ jobs:
 
       - name: Bundle code base
         run: |
-          git bundle create --progress ${{ vars.COLLECTOR }}-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.bundle --all
+          git bundle create --progress ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.RefName }}-${{ needs.Date.outputs.Date }}.bundle --all
           ls -1Ssh *
 
       - name: Generate Bundle Hash
         run: |
-          sha256sum -b ${{ vars.COLLECTOR }}-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.bundle \
-          | tee ${{ vars.COLLECTOR }}-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.bundle.sha
+          sha256sum -b ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.RefName }}-${{ needs.Date.outputs.Date }}.bundle \
+          | tee ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.RefName }}-${{ needs.Date.outputs.Date }}.bundle.sha
 
       - name: Upload bundle
         uses: actions/upload-artifact@v7
         with:
-          name: ${{ vars.COLLECTOR }}-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.bundle
-          path: ${{ vars.COLLECTOR }}-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.bundle*
+          name: ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.RefName }}-${{ needs.Date.outputs.Date }}.bundle
+          path: ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.RefName }}-${{ needs.Date.outputs.Date }}.bundle*
           if-no-files-found: error
 
   CollectBOM:
@@ -217,14 +220,14 @@ jobs:
           echo -e "\nTree of Target directory"
           tree target
           echo -e "\nZipping BOMs"
-          zip -jD ${{ vars.COLLECTOR }}-bom-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.zip \
+          zip -jD ${{ vars.COLLECTOR }}-bom-${{ needs.Date.outputs.RefName }}-${{ needs.Date.outputs.Date }}.zip \
             target/bom.*
 
       - name: Upload BOM ZIP
         uses: actions/upload-artifact@v7
         with:
-          name: ${{ vars.COLLECTOR }}-bom-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.zip
-          path: ${{ vars.COLLECTOR }}-bom-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.zip
+          name: ${{ vars.COLLECTOR }}-bom-${{ needs.Date.outputs.RefName }}-${{ needs.Date.outputs.Date }}.zip
+          path: ${{ vars.COLLECTOR }}-bom-${{ needs.Date.outputs.RefName }}-${{ needs.Date.outputs.Date }}.zip
           if-no-files-found: error
 
       - name: Generate SBOM (Syft) for ~/.m2/repository
@@ -232,13 +235,13 @@ jobs:
         with:
           path: ~/.m2/repository
           format: spdx-json
-          output-file: ${{ vars.COLLECTOR }}-sbom-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.spdx.json
+          output-file: ${{ vars.COLLECTOR }}-sbom-${{ needs.Date.outputs.RefName }}-${{ needs.Date.outputs.Date }}.spdx.json
 
       - name: Upload SBOM (Syft)
         uses: actions/upload-artifact@v7
         with:
-          name: ${{ vars.COLLECTOR }}-sbom-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.spdx.json
-          path: ${{ vars.COLLECTOR }}-sbom-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.spdx.json
+          name: ${{ vars.COLLECTOR }}-sbom-${{ needs.Date.outputs.RefName }}-${{ needs.Date.outputs.Date }}.spdx.json
+          path: ${{ vars.COLLECTOR }}-sbom-${{ needs.Date.outputs.RefName }}-${{ needs.Date.outputs.Date }}.spdx.json
           if-no-files-found: error
 
       - name: Grype scan (SARIF)
@@ -248,20 +251,20 @@ jobs:
           fail-build: false
           severity-cutoff: high
           output-format: sarif
-          output-file: ${{ vars.COLLECTOR }}-grype-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.sarif
+          output-file: ${{ vars.COLLECTOR }}-grype-${{ needs.Date.outputs.RefName }}-${{ needs.Date.outputs.Date }}.sarif
 
       - name: Upload Grype SARIF
         uses: actions/upload-artifact@v7
         with:
-          name: ${{ vars.COLLECTOR }}-grype-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.sarif
-          path: ${{ vars.COLLECTOR }}-grype-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.sarif
+          name: ${{ vars.COLLECTOR }}-grype-${{ needs.Date.outputs.RefName }}-${{ needs.Date.outputs.Date }}.sarif
+          path: ${{ vars.COLLECTOR }}-grype-${{ needs.Date.outputs.RefName }}-${{ needs.Date.outputs.Date }}.sarif
           if-no-files-found: error
 
       - name: Upload SARIF to GitHub Code Scanning
         if: always()
         uses: github/codeql-action/upload-sarif@v4.37.4
         with:
-          sarif_file: ${{ vars.COLLECTOR }}-grype-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.sarif
+          sarif_file: ${{ vars.COLLECTOR }}-grype-${{ needs.Date.outputs.RefName }}-${{ needs.Date.outputs.Date }}.sarif
 
       - name: Grype scan (JSON)
         uses: anchore/scan-action@v7.4.0
@@ -270,13 +273,13 @@ jobs:
           fail-build: false
           severity-cutoff: high
           output-format: json
-          output-file: ${{ vars.COLLECTOR }}-grype-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.json
+          output-file: ${{ vars.COLLECTOR }}-grype-${{ needs.Date.outputs.RefName }}-${{ needs.Date.outputs.Date }}.json
 
       - name: Upload Grype JSON
         uses: actions/upload-artifact@v7
         with:
-          name: ${{ vars.COLLECTOR }}-grype-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.json
-          path: ${{ vars.COLLECTOR }}-grype-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.json
+          name: ${{ vars.COLLECTOR }}-grype-${{ needs.Date.outputs.RefName }}-${{ needs.Date.outputs.Date }}.json
+          path: ${{ vars.COLLECTOR }}-grype-${{ needs.Date.outputs.RefName }}-${{ needs.Date.outputs.Date }}.json
 
       # Human-friendly "proof" report into Step Summary (like your container workflow)
       - name: Generate Grype Proof Report
@@ -303,7 +306,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: evidence-grype-report-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}
+          name: evidence-grype-report-${{ needs.Date.outputs.RefName }}-${{ needs.Date.outputs.Date }}
           path: grype-report.txt
 
       # OSV scanning + Summary
@@ -379,18 +382,18 @@ jobs:
       - name: Zipup XSDs
         run: |
           cd maven.apache.org
-          zip -r  ../${{ vars.COLLECTOR }}-xsd-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.zip xsd
+          zip -r  ../${{ vars.COLLECTOR }}-xsd-${{ needs.Date.outputs.RefName }}-${{ needs.Date.outputs.Date }}.zip xsd
 
       - name: Generate Artifact Hash
         run: |
-          sha256sum -b ${{ vars.COLLECTOR }}-xsd-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.zip \
-          | tee ${{ vars.COLLECTOR }}-xsd-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.zip.sha
+          sha256sum -b ${{ vars.COLLECTOR }}-xsd-${{ needs.Date.outputs.RefName }}-${{ needs.Date.outputs.Date }}.zip \
+          | tee ${{ vars.COLLECTOR }}-xsd-${{ needs.Date.outputs.RefName }}-${{ needs.Date.outputs.Date }}.zip.sha
 
       - name: Upload XSD artifact
         uses: actions/upload-artifact@v7
         with:
-          name: ${{ vars.COLLECTOR }}-xsd-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.zip
-          path: ${{ vars.COLLECTOR }}-xsd-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.zip
+          name: ${{ vars.COLLECTOR }}-xsd-${{ needs.Date.outputs.RefName }}-${{ needs.Date.outputs.Date }}.zip
+          path: ${{ vars.COLLECTOR }}-xsd-${{ needs.Date.outputs.RefName }}-${{ needs.Date.outputs.Date }}.zip
           if-no-files-found: error
 
   MakeISO:
@@ -414,14 +417,14 @@ jobs:
 
       - name: Generate Artifact Hash
         run: |
-          sha256sum -b ${{ vars.COLLECTOR }}-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}* \
-          | tee ${{ vars.COLLECTOR }}-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.sha
+          sha256sum -b ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.RefName }}-${{ needs.Date.outputs.Date }}* \
+          | tee ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.RefName }}-${{ needs.Date.outputs.Date }}.sha
 
       - name: Upload Artifact sha artifact
         uses: actions/upload-artifact@v7
         with:
-          name: ${{ vars.COLLECTOR }}-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.sha
-          path: ${{ vars.COLLECTOR }}-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.sha
+          name: ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.RefName }}-${{ needs.Date.outputs.Date }}.sha
+          path: ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.RefName }}-${{ needs.Date.outputs.Date }}.sha
           if-no-files-found: error
 
       - name: Show Artifacts
@@ -431,17 +434,17 @@ jobs:
         run: |
           mkisofs -J -R -v -T -l \
             -V '${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}' \
-            -A '${{ vars.COLLECTOR }}-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}' \
-            -o ${{ vars.COLLECTOR }}-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.iso \
+            -A '${{ vars.COLLECTOR }}-${{ needs.Date.outputs.RefName }}-${{ needs.Date.outputs.Date }}' \
+            -o ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.RefName }}-${{ needs.Date.outputs.Date }}.iso \
             ${{ vars.COLLECTOR }}-*.*
 
       - name: Implant MD5 sum into iso
-        run: implantisomd5 ${{ vars.COLLECTOR }}-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.iso
+        run: implantisomd5 ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.RefName }}-${{ needs.Date.outputs.Date }}.iso
 
       - name: Generate ISO Hash
         run: |
-          sha256sum -b ${{ vars.COLLECTOR }}-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.iso \
-          | tee ${{ vars.COLLECTOR }}-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.iso.sha
+          sha256sum -b ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.RefName }}-${{ needs.Date.outputs.Date }}.iso \
+          | tee ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.RefName }}-${{ needs.Date.outputs.Date }}.iso.sha
 
       - name: Show ISO & Hash
         run: ls -1Ssh *.iso*
@@ -449,7 +452,7 @@ jobs:
       - name: Upload iso artifact
         uses: actions/upload-artifact@v7
         with:
-          name: ${{ vars.COLLECTOR }}-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.iso
+          name: ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.RefName }}-${{ needs.Date.outputs.Date }}.iso
           path: "*.iso*"
           if-no-files-found: error
 
@@ -489,17 +492,17 @@ jobs:
       - name: Save scan summary
         if: always()
         run: |
-          echo "Virus scan completed" > ${{ vars.COLLECTOR }}-virus-scan-report-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.txt
-          echo "Scan finished: ${{ steps.virus_scan.outputs.finish }}" >> ${{ vars.COLLECTOR }}-virus-scan-report-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.txt
-          echo "Viruses found: ${{ steps.virus_scan.outputs.found }}" >> ${{ vars.COLLECTOR }}-virus-scan-report-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.txt
-          echo "" >> ${{ vars.COLLECTOR }}-virus-scan-report-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.txt
-          echo "For detailed scan results, check the job logs and step summary." >> ${{ vars.COLLECTOR }}-virus-scan-report-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.txt
+          echo "Virus scan completed" > ${{ vars.COLLECTOR }}-virus-scan-report-${{ needs.Date.outputs.RefName }}-${{ needs.Date.outputs.Date }}.txt
+          echo "Scan finished: ${{ steps.virus_scan.outputs.finish }}" >> ${{ vars.COLLECTOR }}-virus-scan-report-${{ needs.Date.outputs.RefName }}-${{ needs.Date.outputs.Date }}.txt
+          echo "Viruses found: ${{ steps.virus_scan.outputs.found }}" >> ${{ vars.COLLECTOR }}-virus-scan-report-${{ needs.Date.outputs.RefName }}-${{ needs.Date.outputs.Date }}.txt
+          echo "" >> ${{ vars.COLLECTOR }}-virus-scan-report-${{ needs.Date.outputs.RefName }}-${{ needs.Date.outputs.Date }}.txt
+          echo "For detailed scan results, check the job logs and step summary." >> ${{ vars.COLLECTOR }}-virus-scan-report-${{ needs.Date.outputs.RefName }}-${{ needs.Date.outputs.Date }}.txt
 
       - name: Upload virus scan report
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: ${{ vars.COLLECTOR }}-virus-scan-report-${{ github.ref_name }}-${{ needs.Date.outputs.Date }}.txt
+          name: ${{ vars.COLLECTOR }}-virus-scan-report-${{ needs.Date.outputs.RefName }}-${{ needs.Date.outputs.Date }}.txt
           path: "*-virus-scan-report-*.txt"
           if-no-files-found: warn
 
