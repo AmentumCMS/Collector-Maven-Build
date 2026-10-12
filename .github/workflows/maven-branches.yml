@@ -16,7 +16,7 @@ on:
   workflow_dispatch:
 jobs:
   Date:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26
     outputs:
       Date: ${{ steps.date.outputs.date }}
     steps:
@@ -32,7 +32,7 @@ jobs:
 
 # Update Component Versions
   UpdateVers:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26
     needs: [ Date ]
     permissions:
       contents: write
@@ -66,7 +66,7 @@ jobs:
 # It also produces the most critical artifact (the .m2 repository) that we want to get scanned as soon as possible, so we prioritize its completion.
   CollectM2:
     needs: [ Date, UpdateVers ]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26
     permissions:
       contents: write
       pull-requests: read
@@ -145,7 +145,7 @@ jobs:
 
   Code:
     needs: [ Date ]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26
     permissions:
       contents: read
     steps:
@@ -176,7 +176,7 @@ jobs:
 
   CollectBOM:
     needs: [ Date, CollectM2 ]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26
     permissions:
       actions: read
       contents: write
@@ -361,7 +361,7 @@ jobs:
 
   CollectXSD:
     needs: [ Date ]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26
     permissions:
       contents: write
       pull-requests: read
@@ -394,7 +394,7 @@ jobs:
           if-no-files-found: error
 
   MakeISO:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26
     needs: [ Date, CollectM2, CollectBOM, CollectXSD, Code ]
     env:
       GH_TOKEN: ${{ github.token }}
@@ -454,7 +454,7 @@ jobs:
           if-no-files-found: error
 
   VirusScan:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26
     needs: [ Date, MakeISO ]
     permissions:
       contents: write
@@ -504,7 +504,7 @@ jobs:
           if-no-files-found: warn
 
   Release:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26
     needs: [ Date, VirusScan ]
     env:
       GH_TOKEN: ${{ github.token }}
@@ -524,7 +524,7 @@ jobs:
         run: ls -1Ssh ${{ vars.COLLECTOR }}-*.*
 
   Sharepoint:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26
     needs: [ Date, VirusScan ]
     env:
       GH_TOKEN: ${{ github.token }}
