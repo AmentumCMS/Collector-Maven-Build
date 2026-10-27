@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>4.2.0-M2</version>
+		<version>4.2.0-RC1</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 
@@ -20,9 +20,9 @@
 	<properties>
 		<!-- Properites used by Maven plugins -->
 		<java.version>17</java.version>
-		<spring-cloud.version>2025.0.0</spring-cloud.version>
-		<spring-modulith.version>2.0.6</spring-modulith.version>
-		<spring-shell.version>4.0.2</spring-shell.version>
+		<spring-cloud.version>2025.1.4</spring-cloud.version>
+		<spring-modulith.version>2.1.2</spring-modulith.version>
+		<spring-shell.version>4.0.3</spring-shell.version>
 		<!-- Encoding -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -37,7 +37,7 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.module</groupId>
 			<artifactId>jackson-module-jaxb-annotations</artifactId>
-			<version>2.22.3</version>
+			<version>2.22.4</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -125,7 +125,7 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-pulsar</artifactId>
-			<version>4.2.0-M2</version>
+			<version>4.2.0-RC1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -163,7 +163,7 @@
 		<dependency>
 			<groupId>org.apache.camel.springboot</groupId>
 			<artifactId>camel-spring-boot-starter</artifactId>
-			<version>4.22.1</version>
+			<version>4.23.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.kafka</groupId>
@@ -178,17 +178,17 @@
 		<dependency>
 			<groupId>org.apache.activemq</groupId>
 			<artifactId>activemq-broker</artifactId>
-			<version>6.3.2</version>
+			<version>6.4.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.activemq</groupId>
 			<artifactId>activemq-client</artifactId>
-			<version>6.3.2</version>
+			<version>6.4.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.activemq</groupId>
 			<artifactId>activemq-openwire-legacy</artifactId>
-			<version>6.3.2</version>
+			<version>6.4.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.geronimo.specs</groupId>
@@ -198,12 +198,12 @@
 		<dependency>
 			<groupId>org.apache.activemq</groupId>
 			<artifactId>activemq-kahadb-store</artifactId>
-			<version>6.3.2</version>
+			<version>6.4.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.activemq</groupId>
 			<artifactId>activemq-pool</artifactId>
-			<version>6.3.2</version>
+			<version>6.4.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.geronimo.specs</groupId>
@@ -589,7 +589,7 @@
 		<dependency>
 			<groupId>org.graalvm.buildtools</groupId>
 			<artifactId>native-maven-plugin</artifactId>
-			<version>1.1.14</version>
+			<version>1.1.17</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.maven.plugins</groupId>
@@ -665,12 +665,12 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
-			<version>4.2.0-M2</version>
+			<version>4.2.0-RC1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-orm</artifactId>
-			<version>7.1.0-M2</version>
+			<version>7.1.0-RC1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jaxb</groupId>
@@ -685,7 +685,7 @@
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-iostreams</artifactId>
-			<version>2.25.4</version>
+			<version>2.26.1</version>
 		</dependency>
 	</dependencies>
 
@@ -720,12 +720,12 @@
 			<plugin>
 				<groupId>org.graalvm.buildtools</groupId>
 				<artifactId>native-maven-plugin</artifactId>
-				<version>0.10.0</version>
+				<version>1.1.17</version>
 			</plugin>
 			<plugin>
 				<groupId>com.google.cloud.tools</groupId>
 				<artifactId>jib-maven-plugin</artifactId>
-				<version>3.5.1</version>
+				<version>3.5.2</version>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.wagon</groupId>
@@ -764,12 +764,12 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
-				<version>3.5.0</version>
+				<version>3.5.1</version>
 			</plugin>
 			<plugin>
 				<groupId>org.sonarsource.scanner.maven</groupId>
 				<artifactId>sonar-maven-plugin</artifactId>
-				<version>5.7.0.6970</version>
+				<version>5.8.0.7211</version>
 			</plugin>
 			<plugin>
 				<groupId>com.checkmarx.maven</groupId>
@@ -779,7 +779,7 @@
 			<plugin>
 				<groupId>org.asciidoctor</groupId>
 				<artifactId>asciidoctor-maven-plugin</artifactId>
-				<version>2.2.1</version>
+				<version>3.2.0</version>
 				<executions>
 					<execution>
 						<id>generate-docs</id>
@@ -894,7 +894,7 @@
 			<plugin>
 				<groupId>org.cyclonedx</groupId>
 				<artifactId>cyclonedx-maven-plugin</artifactId>
-				<version>2.9.1</version>
+				<version>2.9.3</version>
 				<!-- <version>2.7.0</version> -->
 				<executions>
 					<execution>
@@ -976,7 +976,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>versions-maven-plugin</artifactId>
-				<version>2.21.0</version>
+				<version>2.23.0</version>
 				<reportSets>
 					<reportSet>
 						<reports>
